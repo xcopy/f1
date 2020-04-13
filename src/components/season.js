@@ -2,14 +2,14 @@ import React, {Component} from 'react';
 import Moment from 'react-moment';
 import api from '../api';
 
-const currentYear = new Date().getFullYear()
+export const currentYear = new Date().getFullYear()
 
-class Season extends Component {
+export default class Season extends Component {
     constructor(props) {
         super(props);
 
         const {match} = props;
-        const {year = currentYear} = match.params;
+        const {year} = match.params;
 
         this.state = {
             busy: false,
@@ -134,5 +134,3 @@ class Season extends Component {
         );
     }
 }
-
-export default Season;

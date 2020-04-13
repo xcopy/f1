@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import Moment from 'react-moment';
 import api from '../api';
 
 const currentYear = new Date().getFullYear()
@@ -38,7 +39,6 @@ class Season extends Component {
         this.setState({
             busy: true,
             year,
-            results: [],
         }, () => history.push(`/${year}`));
     }
 
@@ -116,7 +116,9 @@ class Season extends Component {
 
                                         return (<tr key={round}>
                                             <td className="uk-text-center">{round}</td>
-                                            <td>{date}</td>
+                                            <td>
+                                                <Moment format="DD MMM YYYY">{date}</Moment>
+                                            </td>
                                             <td>{raceName}</td>
                                             <td>{locality}, {country}</td>
                                         </tr>)

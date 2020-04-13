@@ -17,8 +17,11 @@ function App() {
             <Switch>
                 <Route path="/drivers">Drivers</Route>
                 <Route path="/teams">Teams</Route>
-                <Route path="/:year" component={Season}/>
+                <Route path="/:year(\d+)" component={Season}/>
                 <Redirect exact from="/" to={`/${currentYear}`}/>
+                <Route render={() => (
+                    <h1 className="uk-margin-medium uk-text-center">Page not found. Sorry.</h1>
+                )}/>
             </Switch>
         </>
     );

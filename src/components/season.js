@@ -111,8 +111,8 @@ export default class Season extends Component {
                                 <tbody>
                                     {results.map(race => {
                                         const {round, date, raceName, Circuit} = race;
-                                        const {Location} = Circuit;
-                                        const {country, locality} = Location;
+                                        const {Location, circuitName} = Circuit;
+                                        const {country, locality, lat, long} = Location;
 
                                         return (<tr key={round}>
                                             <td className="uk-text-center">{round}</td>
@@ -120,7 +120,12 @@ export default class Season extends Component {
                                                 <Moment format="DD MMM YYYY">{date}</Moment>
                                             </td>
                                             <td>{raceName}</td>
-                                            <td>{locality}, {country}</td>
+                                            <td>
+                                                <div>
+                                                    <a href={`https://google.com/maps/?q=${lat},${long}`} target="_blank">{circuitName}</a>
+                                                </div>
+                                                {locality}, {country}
+                                            </td>
                                         </tr>)
                                     })}
                                 </tbody>

@@ -11,7 +11,7 @@ class Season extends Component {
         const {year = currentYear} = match.params;
 
         this.state = {
-            tab: 'results',
+            busy: false,
             year: year,
             results: [],
             drivers: [],
@@ -35,20 +35,17 @@ class Season extends Component {
         const {history} = this.props;
         const year = e.target.value;
 
-        history.push(`/${e.target.value}`);
-
-        this.getResults(year);
-    }
-
-    handleChangeTab(e) {
         this.setState({
-            tab: e.target.value
-        });
+            busy: true,
+            year,
+            results: [],
+        }, () => history.push(`/${year}`));
     }
 
     getResults(year) {
         api.get(year).then(response => {
             this.setState({
+                busy: false,
                 year: year,
                 results: response.data.RaceTable.Races
             });
@@ -56,7 +53,7 @@ class Season extends Component {
     }
 
     render() {
-        const {year, results} = this.state;
+        const {busy, year, results} = this.state;
         const seasons = [];
 
         for (let season = 1950; season <= currentYear; season++) {
@@ -71,7 +68,8 @@ class Season extends Component {
                             <select
                                 className="uk-select"
                                 value={year}
-                                onChange={this.handleChangeSeason.bind(this)}>
+                                onChange={this.handleChangeSeason.bind(this)}
+                                disabled={busy}>
                                 {seasons.map(season =>
                                     <option
                                         key={season}
@@ -104,7 +102,7 @@ class Season extends Component {
                             <table className="uk-table uk-table-striped">
                                 <thead>
                                     <tr>
-                                        <th>Round</th>
+                                        <th className="uk-table-shrink">Round</th>
                                         <th>Date</th>
                                         <th>Grand Prix</th>
                                         <th>Location</th>
@@ -117,7 +115,7 @@ class Season extends Component {
                                         const {country, locality} = Location;
 
                                         return (<tr key={round}>
-                                            <td>{round}</td>
+                                            <td className="uk-text-center">{round}</td>
                                             <td>{date}</td>
                                             <td>{raceName}</td>
                                             <td>{locality}, {country}</td>

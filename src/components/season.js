@@ -9,24 +9,26 @@ class Season extends Component {
 
         const {match} = props;
         const {year = currentYear} = match.params;
-        console.log('constructor', year);
 
         this.state = {
+            tab: 'results',
             year: year,
-            races: []
+            results: [],
+            drivers: [],
+            constructors: []
         };
     }
 
     componentDidMount() {
         const {year} = this.state;
 
-        this.getRaces(year);
+        this.getResults(year);
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         const {year} = this.state;
 
-        year === prevState.year || this.getRaces(year);
+        year === prevState.year || this.getResults(year);
     }
 
     handleChangeSeason(e) {
@@ -35,20 +37,26 @@ class Season extends Component {
 
         history.push(`/${e.target.value}`);
 
-        this.getRaces(year);
+        this.getResults(year);
     }
 
-    getRaces(year) {
+    handleChangeTab(e) {
+        this.setState({
+            tab: e.target.value
+        });
+    }
+
+    getResults(year) {
         api.get(year).then(response => {
             this.setState({
                 year: year,
-                races: response.data.RaceTable.Races
+                results: response.data.RaceTable.Races
             });
         });
     }
 
     render() {
-        const {year, races} = this.state;
+        const {tab, year, results} = this.state;
         const seasons = [];
 
         for (let season = 1950; season <= currentYear; season++) {
@@ -75,10 +83,13 @@ class Season extends Component {
                         </div>
 
                         <div className="uk-width-1-3">
-                            <select className="uk-select">
-                                <option value="races">Races</option>
+                            <select
+                                className="uk-select"
+                                value={tab}
+                                onChange={this.handleChangeTab.bind(this)}>
+                                <option value="results">Results</option>
                                 <option value="drivers">Drivers</option>
-                                <option value="constructors">Teams</option>
+                                <option value="constructors">Constructors</option>
                             </select>
                         </div>
 
@@ -90,31 +101,43 @@ class Season extends Component {
                     </div>
                 </div>
                 <div className="uk-padding-small">
-                    <h1 className="uk-text-uppercase">{year} Race Results</h1>
-                    <table className="uk-table uk-table-striped">
-                        <thead>
-                            <tr>
-                                <th>Round</th>
-                                <th>Date</th>
-                                <th>Grand Prix</th>
-                                <th>Location</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {races.map(race => {
-                            const {round, date, raceName, Circuit} = race;
-                            const {Location} = Circuit;
-                            const {country, locality} = Location;
+                    <h1 className="uk-text-uppercase">
+                        {year} {{
+                            'results': 'Race Results',
+                            'drivers': 'Driver Standings',
+                            'constructors': 'Constructor Standings',
+                        }[tab]}
+                    </h1>
 
-                            return (<tr key={round}>
-                                <td>{round}</td>
-                                <td>{date}</td>
-                                <td>{raceName}</td>
-                                <td>{locality}, {country}</td>
-                            </tr>)
-                        })}
-                        </tbody>
-                    </table>
+                    {tab === 'results' && (
+                        <table className="uk-table uk-table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Round</th>
+                                    <th>Date</th>
+                                    <th>Grand Prix</th>
+                                    <th>Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {results.map(race => {
+                                const {round, date, raceName, Circuit} = race;
+                                const {Location} = Circuit;
+                                const {country, locality} = Location;
+
+                                return (<tr key={round}>
+                                    <td>{round}</td>
+                                    <td>{date}</td>
+                                    <td>{raceName}</td>
+                                    <td>{locality}, {country}</td>
+                                </tr>)
+                            })}
+                            </tbody>
+                        </table>
+                    )}
+
+                    {tab === 'drivers' && 'Drivers'}
+                    {tab === 'constructors' && 'Constructors'}
                 </div>
             </>
         );

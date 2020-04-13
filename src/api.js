@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const axiosInstance = axios.create({
     baseURL: 'http://ergast.com/api/f1/',
-    timeout: 2000
+    // timeout: 2000
 });
 
 axiosInstance.interceptors.request.use((config) => {

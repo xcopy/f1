@@ -43,7 +43,7 @@ export default class Season extends Component {
     }
 
     getResults(year) {
-        api.get(year).then(response => {
+        api.get(`${year}/results/1`).then(response => {
             this.setState({
                 busy: false,
                 year: year,
@@ -106,13 +106,18 @@ export default class Season extends Component {
                                         <th>Date</th>
                                         <th>Grand Prix</th>
                                         <th>Location</th>
+                                        <th>Winner</th>
+                                        <th>Laps</th>
+                                        <th>Time</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {results.map(race => {
-                                        const {round, date, raceName, Circuit} = race;
+                                        const {round, date, raceName, Circuit, Results} = race;
                                         const {Location, circuitName} = Circuit;
                                         const {country, locality, lat, long} = Location;
+                                        const {laps, Driver, Constructor, Time} = Results[0];
+                                        const {givenName, familyName} = Driver;
 
                                         return (<tr key={round}>
                                             <td className="uk-text-center">{round}</td>
@@ -122,10 +127,16 @@ export default class Season extends Component {
                                             <td>{raceName}</td>
                                             <td>
                                                 <div>
-                                                    <a href={`https://google.com/maps/?q=${lat},${long}`} target="_blank">{circuitName}</a>
+                                                    <a href={`https://google.com/maps/?q=${lat},${long}`}>{circuitName}</a>
                                                 </div>
                                                 {locality}, {country}
                                             </td>
+                                            <td>
+                                                <div>{givenName} {familyName}</div>
+                                                <b>{Constructor.name}</b>
+                                            </td>
+                                            <td>{laps}</td>
+                                            <td>{Time.time}</td>
                                         </tr>)
                                     })}
                                 </tbody>

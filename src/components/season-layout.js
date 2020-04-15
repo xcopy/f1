@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import {NavLink} from 'react-router-dom';
 import {generatePath} from 'react-router';
 
 export const currentYear = new Date().getFullYear();
@@ -36,6 +36,12 @@ export default class SeasonLayout extends Component {
             years.push(y.toString());
         }
 
+        const links = {
+            results: ['table', 'Results'],
+            drivers: ['users', 'Drivers'],
+            teams: ['nut', 'Teams']
+        };
+
         return (
             <>
                 <div className="uk-padding-small">
@@ -50,15 +56,17 @@ export default class SeasonLayout extends Component {
                         </div>
 
                         <div className="uk-width-auto">
-                            <Link to={`/${year}`} className="uk-button uk-button-default">
-                                <span data-uk-icon="table"/>{' '}Results
-                            </Link>
-                            <Link to={`/${year}/drivers`} className="uk-button uk-button-default">
-                                <span data-uk-icon="users"/>{' '}Drivers
-                            </Link>
-                            <Link to={`/${year}/teams`} className="uk-button uk-button-default">
-                                <span data-uk-icon="nut"/>{' '}Teams
-                            </Link>
+                            {Object.keys(links).map(key => {
+                                const [icon, label] = links[key];
+
+                                return (
+                                    <NavLink to={`/${year}/${key}`} key={key}
+                                        className="uk-button uk-button-default"
+                                        activeClassName="uk-button-primary">
+                                        <span data-uk-icon={icon}/>{' '}{label}
+                                    </NavLink>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>

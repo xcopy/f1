@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
+import {generatePath} from 'react-router';
 
 export const currentYear = new Date().getFullYear();
 
@@ -16,12 +17,14 @@ export default class SeasonLayout extends Component {
     }
 
     handleChange(e) {
-        const {history} = this.props;
+        const {match, history} = this.props;
+        const {path} = match;
         const year = e.target.value;
+        const url = generatePath(path, {year});
 
         this.setState({
             year
-        }, history.push(`/${year}`));
+        }, history.push(url));
     }
 
     render() {

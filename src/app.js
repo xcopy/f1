@@ -4,6 +4,7 @@ import Navbar from './components/navbar';
 import SeasonLayout, {currentYear} from './components/season-layout';
 import SeasonResults from './components/season-results';
 import SeasonDrivers from './components/season-drivers';
+import SeasonTeams from './components/season-teams';
 
 import 'uikit/dist/css/uikit.min.css';
 import UIkit from 'uikit';
@@ -27,8 +28,9 @@ function App() {
             <Navbar/>
 
             <Switch>
-                <SeasonRouteWrapper path="/:year(\d+)/drivers" component={SeasonDrivers}/>
                 <SeasonRouteWrapper path="/:year(\d+)/results" component={SeasonResults}/>
+                <SeasonRouteWrapper path="/:year(\d+)/drivers" component={SeasonDrivers}/>
+                <SeasonRouteWrapper path="/:year(\d+)/teams" component={SeasonTeams}/>
 
                 <Route exact path="/:year(\d+)" render={({match}) => (
                     <Redirect to={`/${match.params.year}/results`}/>

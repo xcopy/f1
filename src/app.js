@@ -3,6 +3,7 @@ import {Switch, Route, Redirect} from 'react-router-dom';
 import Navbar from './components/navbar';
 import SeasonLayout, {currentYear} from './components/season-layout';
 import SeasonResults from './components/season-results';
+import SeasonDrivers from './components/season-drivers';
 
 import 'uikit/dist/css/uikit.min.css';
 import UIkit from 'uikit';
@@ -26,6 +27,7 @@ function App() {
             <Navbar/>
 
             <Switch>
+                <SeasonRouteWrapper path="/:year(\d+)/drivers" component={SeasonDrivers}/>
                 <SeasonRouteWrapper path="/:year(\d+)" component={SeasonResults}/>
                 <Redirect exact from="/" to={`/${currentYear}`}/>
                 <Route render={() => (

@@ -48,7 +48,7 @@ const SeasonResultsTable = ({busy, year, data}) => {
                                 <td>{Time.time}</td>
                             </tr>
                         )
-                    }) : ''}
+                    }) : null}
                     </tbody>
                 </table>
             </div>

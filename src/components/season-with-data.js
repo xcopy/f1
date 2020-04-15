@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 import api from '../api';
 
 const seasonWithData = (WrappedComponent, url) => {
@@ -13,17 +14,25 @@ const seasonWithData = (WrappedComponent, url) => {
             };
         }
 
+        cancelSource = axios.CancelToken.source();
+
         componentDidMount() {
             this.setState({
                 busy: true
             }, () =>
-                api.get(url).then(response => {
+                api.get(url, {
+                    cancelToken: this.cancelSource.token
+                }).then(response => {
                     this.setState({
                         busy: false,
                         data: response.data
                     });
                 })
             );
+        }
+
+        componentWillUnmount() {
+            this.cancelSource.cancel('Request cancelled');
         }
 
         render() {

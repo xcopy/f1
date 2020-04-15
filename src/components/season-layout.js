@@ -32,7 +32,7 @@ export default class SeasonLayout extends Component {
         const {year} = this.state;
         const years = [];
 
-        for (let y = 1950; y <= currentYear; y++) {
+        for (let y = currentYear; y >= 1950; y--) {
             years.push(y.toString());
         }
 

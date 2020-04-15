@@ -28,8 +28,14 @@ function App() {
 
             <Switch>
                 <SeasonRouteWrapper path="/:year(\d+)/drivers" component={SeasonDrivers}/>
-                <SeasonRouteWrapper path="/:year(\d+)" component={SeasonResults}/>
-                <Redirect exact from="/" to={`/${currentYear}`}/>
+                <SeasonRouteWrapper path="/:year(\d+)/results" component={SeasonResults}/>
+
+                <Route exact path="/:year(\d+)" render={({match}) => (
+                    <Redirect to={`/${match.params.year}/results`}/>
+                )}/>
+
+                <Redirect exact from="/" to={`/${currentYear}/results`}/>
+
                 <Route render={() => (
                     <h1 className="uk-margin-medium uk-text-center">Page not found. Sorry.</h1>
                 )}/>

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import {linkToDriver, linkToTeam} from '../helpers';
 
 const SeasonDriversTable = ({busy, year, data}) => {
     return (
@@ -21,18 +21,16 @@ const SeasonDriversTable = ({busy, year, data}) => {
                     <tbody>
                     {data.StandingsTable ? data.StandingsTable.StandingsLists[0].DriverStandings.map(standings => {
                         const {position, Driver, Constructors, wins, points} = standings;
-                        const {driverId, givenName, familyName, nationality} = Driver;
+                        const {nationality} = Driver;
 
                         return (
                             <tr key={position}>
                                 <td className="uk-text-center">{position}</td>
-                                <td>
-                                    <Link to={`/drivers/${driverId}`}>{givenName} {familyName}</Link>
-                                </td>
+                                <td>{linkToDriver(Driver)}</td>
                                 <td>{nationality}</td>
                                 <td>
                                     {Constructors.map(constructor =>
-                                        <div key={constructor.name}>{constructor.name}</div>
+                                        <div key={constructor.constructorId}>{linkToTeam(constructor)}</div>
                                     )}
                                 </td>
                                 <td>{wins}</td>

@@ -10,6 +10,6 @@ export default function LinkTeam({constructor}) {
     const {constructorId, name} = constructor;
 
     return (
-        <Link to={`/teams/${constructorId}`}>{name}</Link>
+        <Link to={`/teams/${constructorId}`}>{name.toUpperCase()}</Link>
     );
 };

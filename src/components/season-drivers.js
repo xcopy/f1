@@ -3,8 +3,7 @@ import seasonWithData from './season-with-data';
 import SeasonDriversTable from './season-drivers-table';
 
 const SeasonDrivers = (props) => {
-    const {match} = props;
-    const {year} = match.params;
+    const {match: {params: {year}}} = props;
     const SeasonDriversWithData = seasonWithData(
         SeasonDriversTable,
         `${year}/driverStandings`

@@ -1,8 +1,8 @@
 import React from 'react';
-import {Link} from 'react-router-dom';
+import LinkTeam from "./link-team";
 
 const SeasonTeamsTable = ({busy, data, match}) => {
-    const {year} = match.params;
+    const {params: {year}} = match;
 
     return (
         <>
@@ -31,13 +31,13 @@ const SeasonTeamsTable = ({busy, data, match}) => {
                         <tbody>
                         {ConstructorStandings.map(standings => {
                             const {position, Constructor, wins, points} = standings;
-                            const {constructorId, name, nationality} = Constructor;
+                            const {nationality} = Constructor;
 
                             return (
                                 <tr key={position}>
                                     <td className="uk-text-center">{position}</td>
                                     <td>
-                                        <Link to={`/teams/${constructorId}`}>{name}</Link>
+                                        <LinkTeam constructor={Constructor}/>
                                     </td>
                                     <td>{nationality}</td>
                                     <td>{wins}</td>

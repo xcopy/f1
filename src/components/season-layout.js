@@ -6,8 +6,7 @@ export const currentYear = new Date().getFullYear();
 
 export default class SeasonLayout extends Component {
     handleChange(e) {
-        const {match, history} = this.props;
-        const {path} = match;
+        const {match: {path}, history} = this.props;
         const url = generatePath(path, {year: e.target.value});
 
         history.push(url);
@@ -15,7 +14,7 @@ export default class SeasonLayout extends Component {
 
     render() {
         const {match, children} = this.props;
-        const {year} = match.params;
+        const {params: {year}} = match;
         const years = [];
 
         for (let y = currentYear; y >= 1950; y--) {

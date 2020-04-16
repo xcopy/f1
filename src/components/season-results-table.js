@@ -5,7 +5,7 @@ import LinkDriver from './link-driver';
 import LinkTeam from './link-team';
 
 const SeasonResultsTable = ({busy, data, match}) => {
-    const {year} = match.params;
+    const {params: {year}} = match;
 
     return (
         <>
@@ -34,10 +34,22 @@ const SeasonResultsTable = ({busy, data, match}) => {
                         </thead>
                         <tbody>
                         {Races.map(race => {
-                            const {round, date, raceName, Circuit, Results} = race;
-                            const {Location, circuitName} = Circuit;
-                            const {country, locality} = Location;
-                            const {laps, Driver, Constructor, Time} = Results[0];
+                            const {
+                                round,
+                                date,
+                                raceName,
+                                Circuit: {
+                                    circuitName,
+                                    Location: {country, locality}
+                                },
+                                Results
+                            } = race;
+                            const {
+                                laps,
+                                Driver,
+                                Constructor,
+                                Time: {time}
+                            } = Results[0];
 
                             return (
                                 <tr key={round}>
@@ -59,7 +71,7 @@ const SeasonResultsTable = ({busy, data, match}) => {
                                         <LinkTeam constructor={Constructor}/>
                                     </td>
                                     <td>{laps}</td>
-                                    <td>{Time.time}</td>
+                                    <td>{time}</td>
                                 </tr>
                             )
                         })}

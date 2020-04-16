@@ -5,7 +5,7 @@ import LinkDriver from "./link-driver";
 import LinkTeam from "./link-team";
 
 const GrandPrixDetails = ({match}) => {
-    const {year, round} = match.params;
+    const {params: {year, round}} = match;
     const [busy, setBusy] = useState(true);
     const [race, setRace] = useState({});
 

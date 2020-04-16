@@ -3,7 +3,7 @@ import LinkDriver from "./link-driver";
 import LinkTeam from "./link-team";
 
 const SeasonDriversTable = ({busy, data, match}) => {
-    const {year} = match.params;
+    const {params: {year}} = match;
 
     return (
         <>

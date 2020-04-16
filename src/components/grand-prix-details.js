@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import api from '../api';
+import Moment from "react-moment";
 import LinkDriver from "./link-driver";
 import LinkTeam from "./link-team";
 
@@ -13,8 +14,7 @@ const GrandPrixDetails = ({match}) => {
 
         api.get(`${year}/${round}/results`)
             .then(response => {
-                const {RaceTable} = response.data;
-                const {Races} = RaceTable;
+                const {RaceTable: {Races}} = response.data;
 
                 if (isMounted) {
                     setRace(Races[0]);
@@ -30,11 +30,26 @@ const GrandPrixDetails = ({match}) => {
     return (
         <>
             {busy ? <div data-uk-spinner=""/> : (() => {
-                const {season, raceName, Results} = race;
+                const {
+                    season,
+                    date,
+                    raceName,
+                    Results,
+                    Circuit: {
+                        circuitName,
+                        Location: {country, locality}
+                    }
+                } = race;
 
                 return (
                     <>
                         <h1 className="uk-text-uppercase">{season} {raceName}</h1>
+                        <div className="uk-margin-medium-bottom">
+                            <b className="uk-margin-small-right">
+                                <Moment format="DD MMM YYYY">{date}</Moment>
+                            </b>
+                            {circuitName} / {locality}, {country}
+                        </div>
                         <div data-uk-grid="">
                             <div className="uk-width-1-6">
                                 <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
@@ -61,21 +76,29 @@ const GrandPrixDetails = ({match}) => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                            {Results.map(result => {
-                                                const {position, Driver, Constructor, laps, points, Time, status} = result;
-                                                const {driverId, permanentNumber} = Driver;
+                                            {Results.map((result, i) => {
+                                                const {
+                                                    position,
+                                                    number,
+                                                    Driver,
+                                                    Constructor,
+                                                    laps,
+                                                    points,
+                                                    Time,
+                                                    status
+                                                } = result;
 
                                                 return (
-                                                    <tr key={driverId}>
+                                                    <tr key={`result-${i}`}>
                                                         <td className="uk-text-center">{position}</td>
-                                                        <td>{permanentNumber}</td>
+                                                        <td>{number}</td>
                                                         <td>
                                                             <LinkDriver driver={Driver}/>
                                                         </td>
                                                         <td>
                                                             <LinkTeam constructor={Constructor}/>
                                                         </td>
-                                                        <td>{Time ? Time.time : status}</td>
+                                                        <td>{Time?.time || status}</td>
                                                         <td>{laps}</td>
                                                         <td><b>{points}</b></td>
                                                     </tr>
@@ -103,15 +126,23 @@ const GrandPrixDetails = ({match}) => {
 
                                                 return results.sort((a, b) => {
                                                     return a.FastestLap.rank - b.FastestLap.rank;
-                                                }).map(result => {
-                                                    const {Driver, Constructor, FastestLap} = result;
-                                                    const {driverId, permanentNumber} = Driver;
-                                                    const {rank, lap, Time, AverageSpeed} = FastestLap;
+                                                }).map((result, i) => {
+                                                    const {
+                                                        number,
+                                                        Driver,
+                                                        Constructor,
+                                                        FastestLap: {
+                                                            rank,
+                                                            lap,
+                                                            Time: {time},
+                                                            AverageSpeed: {speed}
+                                                        }
+                                                    } = result;
 
                                                     return (
-                                                        <tr key={driverId}>
+                                                        <tr key={`fastest-lap-${i}`}>
                                                             <td className="uk-text-center">{rank}</td>
-                                                            <td>{permanentNumber}</td>
+                                                            <td>{number}</td>
                                                             <td>
                                                                 <LinkDriver driver={Driver}/>
                                                             </td>
@@ -119,8 +150,8 @@ const GrandPrixDetails = ({match}) => {
                                                                 <LinkTeam constructor={Constructor}/>
                                                             </td>
                                                             <td>{lap}</td>
-                                                            <td>{Time.time}</td>
-                                                            <td>{AverageSpeed.speed}</td>
+                                                            <td>{time}</td>
+                                                            <td>{speed}</td>
                                                         </tr>
                                                     );
                                                 })

@@ -17,7 +17,7 @@ const SeasonRouteWrapper = ({component: Component, ...rest}) => {
     return (
         <Route {...rest} render={props =>
             <SeasonLayout {...props}>
-                <Component year={props.match.params.year} {...props}/>
+                <Component {...props}/>
             </SeasonLayout>
         }/>
     );

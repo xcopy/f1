@@ -31,7 +31,7 @@ export default class SeasonLayout extends Component {
         return (
             <>
                 <div className="uk-padding-small">
-                    <div className="uk-grid-small" data-uk-grid>
+                    <div className="uk-grid-small" data-uk-grid="">
                         <div className="uk-width-1-6">
                             <select
                                 className="uk-select"

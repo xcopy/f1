@@ -9,7 +9,6 @@ const seasonWithData = (WrappedComponent, url) => {
 
             this.state = {
                 busy: false,
-                year: props.year,
                 data: {}
             };
         }
@@ -24,10 +23,11 @@ const seasonWithData = (WrappedComponent, url) => {
                     cancelToken: this.cancelSource.token
                 }).then(response => {
                     this.setState({
-                        busy: false,
                         data: response.data
                     });
-                })
+                }).then(() => this.setState({
+                    busy: false
+                }))
             );
         }
 
@@ -36,19 +36,11 @@ const seasonWithData = (WrappedComponent, url) => {
         }
 
         render() {
-            /*
-            const {busy} = this.state;
-
-            if (busy) {
-                return (
-                    <div className="uk-position-center">
-                        <div data-uk-spinner/>
-                    </div>
-                );
-            }
-            */
-
-            return <WrappedComponent {...this.state}/>;
+            // return table (wrapped) component and pass
+            // 1. local state: busy, data
+            // 2. route props of the wrapped component: history, location, match
+            // as it's props
+            return <WrappedComponent {...this.state} {...this.props}/>;
         }
     }
 };

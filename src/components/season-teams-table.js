@@ -1,42 +1,54 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 
-const SeasonTeamsTable = ({busy, year, data}) => {
+const SeasonTeamsTable = ({busy, data, match}) => {
+    const {year} = match.params;
+
     return (
         <>
             <h1 className="uk-text-uppercase">{year} Constructor Standings</h1>
-            <div className="uk-inline uk-dark uk-width-1-1">
-                {/*<div className={busy ? 'uk-overlay-default uk-position-cover' : ''}/>*/}
-                <table className="uk-table uk-table-striped">
-                    <thead>
-                    <tr>
-                        <th className="uk-table-shrink">Pos</th>
-                        <th>Team</th>
-                        <th>Nationality</th>
-                        <th>Wins</th>
-                        <th>Pts</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {data.StandingsTable ? data.StandingsTable.StandingsLists[0].ConstructorStandings.map(standings => {
-                        const {position, Constructor, wins, points} = standings;
-                        const {constructorId, name, nationality} = Constructor;
+            {busy ? <div data-uk-spinner=""/> : (() => {
+                const {StandingsTable} = data;
+                const {StandingsLists} = {...StandingsTable};
 
-                        return (
-                            <tr key={position}>
-                                <td className="uk-text-center">{position}</td>
-                                <td>
-                                    <Link to={`/teams/${constructorId}`}>{name}</Link>
-                                </td>
-                                <td>{nationality}</td>
-                                <td>{wins}</td>
-                                <td><b>{points}</b></td>
+                if (!StandingsLists?.length) {
+                    return 'There are no results to display.';
+                }
+
+                const {ConstructorStandings} = StandingsLists[0];
+
+                return (
+                    <table className="uk-table uk-table-striped">
+                        <thead>
+                            <tr>
+                                <th className="uk-table-shrink">Pos</th>
+                                <th>Team</th>
+                                <th>Nationality</th>
+                                <th>Wins</th>
+                                <th>Pts</th>
                             </tr>
-                        )
-                    }) : null}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                        {ConstructorStandings.map(standings => {
+                            const {position, Constructor, wins, points} = standings;
+                            const {constructorId, name, nationality} = Constructor;
+
+                            return (
+                                <tr key={position}>
+                                    <td className="uk-text-center">{position}</td>
+                                    <td>
+                                        <Link to={`/teams/${constructorId}`}>{name}</Link>
+                                    </td>
+                                    <td>{nationality}</td>
+                                    <td>{wins}</td>
+                                    <td><b>{points}</b></td>
+                                </tr>
+                            )
+                        })}
+                        </tbody>
+                    </table>
+                )
+            })()}
         </>
     );
 };

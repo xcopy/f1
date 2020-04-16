@@ -1,5 +1,6 @@
 import React from 'react';
-import {linkToDriver, linkToTeam} from '../helpers';
+import LinkDriver from "./link-driver";
+import LinkTeam from "./link-team";
 
 const SeasonDriversTable = ({busy, data, match}) => {
     const {year} = match.params;
@@ -37,14 +38,18 @@ const SeasonDriversTable = ({busy, data, match}) => {
                             return (
                                 <tr key={position}>
                                     <td className="uk-text-center">{position}</td>
-                                    <td>{linkToDriver(Driver)}</td>
+                                    <td>
+                                        <LinkDriver driver={Driver}/>
+                                    </td>
                                     <td>{nationality}</td>
                                     <td>
                                         {Constructors.map(constructor => {
                                             const {constructorId} = constructor;
 
                                             return (
-                                                <div key={constructorId}>{linkToTeam(constructor)}</div>
+                                                <div key={constructorId}>
+                                                    <LinkTeam constructor={constructor}/>
+                                                </div>
                                             );
                                         })}
                                     </td>

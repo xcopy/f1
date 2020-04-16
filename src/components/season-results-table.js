@@ -1,7 +1,8 @@
 import React from 'react';
 import Moment from 'react-moment';
 import {Link} from 'react-router-dom';
-import {linkToDriver, linkToTeam} from '../helpers';
+import LinkDriver from './link-driver';
+import LinkTeam from './link-team';
 
 const SeasonResultsTable = ({busy, data, match}) => {
     const {year} = match.params;
@@ -51,8 +52,12 @@ const SeasonResultsTable = ({busy, data, match}) => {
                                         <div>{circuitName}</div>
                                         {locality}, {country}
                                     </td>
-                                    <td>{linkToDriver(Driver)}</td>
-                                    <td>{linkToTeam(Constructor)}</td>
+                                    <td>
+                                        <LinkDriver driver={Driver}/>
+                                    </td>
+                                    <td>
+                                        <LinkTeam constructor={Constructor}/>
+                                    </td>
                                     <td>{laps}</td>
                                     <td>{Time.time}</td>
                                 </tr>

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import api from '../api';
-import {linkToDriver, linkToTeam} from '../helpers';
+import LinkDriver from "./link-driver";
+import LinkTeam from "./link-team";
 
 const GrandPrixDetails = ({match}) => {
     const {year, round} = match.params;
@@ -70,8 +71,12 @@ const GrandPrixDetails = ({match}) => {
                                                     <tr key={driverId}>
                                                         <td>{position}</td>
                                                         <td>{permanentNumber}</td>
-                                                        <td>{linkToDriver(Driver)}</td>
-                                                        <td>{linkToTeam(Constructor)}</td>
+                                                        <td>
+                                                            <LinkDriver driver={Driver}/>
+                                                        </td>
+                                                        <td>
+                                                            <LinkTeam constructor={Constructor}/>
+                                                        </td>
                                                         <td>{Time ? Time.time : status}</td>
                                                         <td>{laps}</td>
                                                         <td><b>{points}</b></td>

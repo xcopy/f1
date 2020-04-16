@@ -12,7 +12,8 @@ axiosInstance.interceptors.request.use((config) => {
 });
 
 axiosInstance.interceptors.response.use((response) => {
-    response.data = response.data.MRData;
+    const {MRData} = response.data;
+    response.data = MRData;
     return response;
 });
 

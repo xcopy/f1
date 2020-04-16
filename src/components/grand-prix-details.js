@@ -23,9 +23,9 @@ const GrandPrixDetails = ({match}) => {
             });
 
         return () => {
-            isMounted = false
+            isMounted = false;
         };
-    });
+    }, []);
 
     return (
         <>

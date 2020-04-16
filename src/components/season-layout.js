@@ -5,31 +5,17 @@ import {generatePath} from 'react-router';
 export const currentYear = new Date().getFullYear();
 
 export default class SeasonLayout extends Component {
-    constructor(props) {
-        super(props);
-
-        const {match} = props;
-        const {year} = match.params;
-
-        this.state = {
-            year: year
-        };
-    }
-
     handleChange(e) {
         const {match, history} = this.props;
         const {path} = match;
-        const year = e.target.value;
-        const url = generatePath(path, {year});
+        const url = generatePath(path, {year: e.target.value});
 
-        this.setState({
-            year
-        }, history.push(url));
+        history.push(url);
     }
 
     render() {
-        const {children} = this.props;
-        const {year} = this.state;
+        const {match, children} = this.props;
+        const {year} = match.params;
         const years = [];
 
         for (let y = currentYear; y >= 1950; y--) {

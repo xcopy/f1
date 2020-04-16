@@ -38,9 +38,7 @@ const GrandPrixDetails = ({match}) => {
                         <div data-uk-grid="">
                             <div className="uk-width-1-6">
                                 <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
-                                    <li>
-                                        <a href="/">Race Result</a>
-                                    </li>
+                                    <li><a href="/">Race Result</a></li>
                                     <li><a href="/">Fastest Laps</a></li>
                                     <li><a href="/">Starting Grid</a></li>
                                     <li><a href="/">Pit Stop Summary</a></li>
@@ -52,15 +50,15 @@ const GrandPrixDetails = ({match}) => {
                                     <li>
                                         <table className="uk-table uk-table-striped">
                                             <thead>
-                                            <tr>
-                                                <th className="uk-table-shrink">Pos</th>
-                                                <th>No</th>
-                                                <th>Driver</th>
-                                                <th>Car</th>
-                                                <th>Time/Retired</th>
-                                                <th>Laps</th>
-                                                <th>Points</th>
-                                            </tr>
+                                                <tr>
+                                                    <th className="uk-table-shrink">Pos</th>
+                                                    <th>No</th>
+                                                    <th>Driver</th>
+                                                    <th>Car</th>
+                                                    <th>Time/Status</th>
+                                                    <th>Laps</th>
+                                                    <th>Points</th>
+                                                </tr>
                                             </thead>
                                             <tbody>
                                             {Results.map(result => {
@@ -69,7 +67,7 @@ const GrandPrixDetails = ({match}) => {
 
                                                 return (
                                                     <tr key={driverId}>
-                                                        <td>{position}</td>
+                                                        <td className="uk-text-center">{position}</td>
                                                         <td>{permanentNumber}</td>
                                                         <td>
                                                             <LinkDriver driver={Driver}/>
@@ -86,7 +84,50 @@ const GrandPrixDetails = ({match}) => {
                                             </tbody>
                                         </table>
                                     </li>
-                                    <li>2</li>
+                                    <li>
+                                        <table className="uk-table uk-table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th className="uk-table-shrink">Pos</th>
+                                                    <th>No</th>
+                                                    <th>Driver</th>
+                                                    <th>Car</th>
+                                                    <th>Lap</th>
+                                                    <th>Time</th>
+                                                    <th>Avg Speed (kph)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            {(() => {
+                                                const results = Results.filter(r => r.FastestLap);
+
+                                                return results.sort((a, b) => {
+                                                    return a.FastestLap.rank - b.FastestLap.rank;
+                                                }).map(result => {
+                                                    const {Driver, Constructor, FastestLap} = result;
+                                                    const {driverId, permanentNumber} = Driver;
+                                                    const {rank, lap, Time, AverageSpeed} = FastestLap;
+
+                                                    return (
+                                                        <tr key={driverId}>
+                                                            <td className="uk-text-center">{rank}</td>
+                                                            <td>{permanentNumber}</td>
+                                                            <td>
+                                                                <LinkDriver driver={Driver}/>
+                                                            </td>
+                                                            <td>
+                                                                <LinkTeam constructor={Constructor}/>
+                                                            </td>
+                                                            <td>{lap}</td>
+                                                            <td>{Time.time}</td>
+                                                            <td>{AverageSpeed.speed}</td>
+                                                        </tr>
+                                                    );
+                                                })
+                                            })()}
+                                            </tbody>
+                                        </table>
+                                    </li>
                                 </ul>
                             </div>
                         </div>

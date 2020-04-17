@@ -7,17 +7,19 @@ import LinkTeam from "./link-team";
 const GrandPrixDetails = ({match}) => {
     const {params: {year, round}} = match;
     const [busy, setBusy] = useState(true);
-    const [race, setRace] = useState({});
+    const [races, setRaces] = useState({});
 
     useEffect(() => {
         let isMounted = true;
+
+        setBusy(true);
 
         api.get(`${year}/${round}/results`)
             .then(response => {
                 const {RaceTable: {Races}} = response.data;
 
                 if (isMounted) {
-                    setRace(Races[0]);
+                    setRaces(Races);
                     setBusy(false);
                 }
             });
@@ -25,11 +27,15 @@ const GrandPrixDetails = ({match}) => {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [year, round]);
 
     return (
         <>
             {busy ? <div data-uk-spinner=""/> : (() => {
+                if (!races.length) {
+                    return 'There are no results to display.';
+                }
+
                 const {
                     season,
                     date,
@@ -39,16 +45,18 @@ const GrandPrixDetails = ({match}) => {
                         circuitName,
                         Location: {country, locality}
                     }
-                } = race;
+                } = races[0];
 
                 return (
                     <>
                         <h1 className="uk-text-uppercase">{season} {raceName}</h1>
                         <div className="uk-margin-medium-bottom">
-                            <b className="uk-margin-small-right">
-                                <Moment format="DD MMM YYYY">{date}</Moment>
-                            </b>
-                            {circuitName} / {locality}, {country}
+                            <span data-uk-icon="calendar"/>{' '}
+                            <b><Moment format="DD MMM YYYY">{date}</Moment></b> / Round {round}
+                            <div>
+                                <span data-uk-icon="location"/>{' '}
+                                {circuitName} / {locality}, {country}
+                            </div>
                         </div>
                         <div data-uk-grid="">
                             <div className="uk-width-1-6">

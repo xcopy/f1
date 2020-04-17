@@ -23,11 +23,10 @@ const seasonWithData = (WrappedComponent, url) => {
                     cancelToken: this.cancelSource.token
                 }).then(response => {
                     this.setState({
-                        data: response.data
+                        data: response.data,
+                        busy: false
                     });
-                }).then(() => this.setState({
-                    busy: false
-                }))
+                })
             );
         }
 

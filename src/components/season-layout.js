@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {NavLink} from 'react-router-dom';
 import {generatePath} from 'react-router';
 
+export const minYear = 1950;
 export const currentYear = new Date().getFullYear();
 
 export default class SeasonLayout extends Component {
@@ -23,7 +24,7 @@ export default class SeasonLayout extends Component {
         const {params: {year}} = match;
         const years = [];
 
-        for (let y = currentYear; y >= 1950; y--) {
+        for (let y = currentYear; y >= minYear; y--) {
             years.push(y.toString());
         }
 

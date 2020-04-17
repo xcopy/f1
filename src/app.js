@@ -1,7 +1,7 @@
 import React from 'react';
 import {Switch, Route, Redirect} from 'react-router-dom';
 import Navbar from './components/navbar';
-import SeasonLayout, {currentYear} from './components/season-layout';
+import SeasonLayout, {minYear, currentYear} from './components/season-layout';
 import SeasonResults from './components/season-results';
 import SeasonDrivers from './components/season-drivers';
 import SeasonTeams from './components/season-teams';
@@ -35,9 +35,14 @@ function App() {
                 <SeasonRouteWrapper path="/:year(\d+)/drivers" component={SeasonDrivers}/>
                 <SeasonRouteWrapper path="/:year(\d+)/teams" component={SeasonTeams}/>
 
-                <Route exact path="/:year(\d+)" render={({match}) => (
-                    <Redirect to={`/${match.params.year}/results`}/>
-                )}/>
+                <Route exact path="/:year(\d+)" render={({match}) => {
+                    let {params: {year}} = match;
+
+                    // must be 1950 >= year =< 2020
+                    (year < minYear || year > currentYear) && (year = currentYear);
+
+                    return <Redirect to={`/${year}/results`}/>;
+                }}/>
 
                 <Redirect exact from="/" to={`/${currentYear}/results`}/>
 

@@ -7,11 +7,12 @@ import LinkTeam from "./link-team";
 const GrandPrixDetails = ({match}) => {
     const {params: {year, round}} = match;
     const [busy, setBusy] = useState(true);
-    const [races, setRaces] = useState({});
+    const [races, setRaces] = useState([]);
 
     useEffect(() => {
         let isMounted = true;
 
+        setRaces([]);
         setBusy(true);
 
         api.get(`${year}/${round}/results`)

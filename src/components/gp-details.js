@@ -6,7 +6,7 @@ import GPRaceResult from './gp-race-result';
 import GPFastestLaps from './gp-fastest-laps';
 import GPStartingGrid from './gp-starting-grid';
 
-const GPDetails = ({match}) => {
+export default function GPDetails({match}) {
     const {params: {year, round}} = match;
     const [busy, setBusy] = useState(true);
     const [races, setRaces] = useState([]);
@@ -101,5 +101,3 @@ const GPDetails = ({match}) => {
         </>
     );
 };
-
-export default GPDetails;

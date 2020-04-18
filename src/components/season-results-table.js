@@ -16,11 +16,7 @@ const SeasonResultsTable = ({busy, data, match}) => {
             <h1 className="uk-text-uppercase">{year} Race Results</h1>
             {busy ? <div data-uk-spinner=""/> : (() => {
                 const {RaceTable} = data;
-                const {Races} = {...RaceTable};
-
-                if (!Races?.length) {
-                    return 'There are no results to display.';
-                }
+                const {Races = []} = {...RaceTable};
 
                 const tableColumns = [
                     {

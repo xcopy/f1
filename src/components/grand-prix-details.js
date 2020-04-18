@@ -50,7 +50,7 @@ const GrandPrixDetails = ({match}) => {
         <>
             {busy ? <div data-uk-spinner=""/> : (() => {
                 if (!races.length) {
-                    return 'There are no results to display.';
+                    return 'There are no results to display';
                 }
 
                 const {

@@ -1,5 +1,11 @@
 import React from 'react';
-import LinkTeam from "./link-team";
+import DataTable, {
+    positionCell,
+    nationalityCell,
+    teamCell,
+    winsCell,
+    pointsCell
+} from './data-table';
 
 const SeasonTeamsTable = ({busy, data, match}) => {
     const {params: {year}} = match;
@@ -16,38 +22,26 @@ const SeasonTeamsTable = ({busy, data, match}) => {
                 }
 
                 const {ConstructorStandings} = StandingsLists[0];
+                const tableColumns = [
+                    positionCell,
+                    teamCell,
+                    nationalityCell,
+                    winsCell,
+                    pointsCell
+                ];
+                const tableData = [];
 
-                return (
-                    <table className="uk-table uk-table-striped">
-                        <thead>
-                            <tr>
-                                <th className="uk-table-shrink">Pos</th>
-                                <th>Team</th>
-                                <th>Nationality</th>
-                                <th>Wins</th>
-                                <th>Pts</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {ConstructorStandings.map(standings => {
-                            const {position, Constructor, wins, points} = standings;
-                            const {nationality} = Constructor;
+                ConstructorStandings.forEach(standings => {
+                    const {position, wins, points, Constructor} = standings;
+                    const {nationality} = Constructor;
 
-                            return (
-                                <tr key={position}>
-                                    <td className="uk-text-center">{position}</td>
-                                    <td>
-                                        <LinkTeam constructor={Constructor}/>
-                                    </td>
-                                    <td>{nationality}</td>
-                                    <td>{wins}</td>
-                                    <td><b>{points}</b></td>
-                                </tr>
-                            )
-                        })}
-                        </tbody>
-                    </table>
-                )
+                    tableData.push({
+                        position, nationality, wins, points,
+                        Constructor
+                    });
+                });
+
+                return <DataTable keyField="position" columns={tableColumns} data={tableData}/>;
             })()}
         </>
     );

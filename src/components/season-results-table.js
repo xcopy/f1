@@ -1,8 +1,12 @@
 import React from 'react';
-import Moment from 'react-moment';
+import moment from 'moment';
 import {Link} from 'react-router-dom';
-import LinkDriver from './link-driver';
-import LinkTeam from './link-team';
+import DataTable, {
+    driverCell,
+    teamCell,
+    lapsCell,
+    timeCell
+} from './data-table';
 
 const SeasonResultsTable = ({busy, data, match}) => {
     const {params: {year}} = match;
@@ -18,66 +22,64 @@ const SeasonResultsTable = ({busy, data, match}) => {
                     return 'There are no results to display.';
                 }
 
-                return (
-                    <table className="uk-table uk-table-striped">
-                        <thead>
-                            <tr>
-                                <th className="uk-table-shrink">Round</th>
-                                <th>Date</th>
-                                <th>Grand Prix</th>
-                                <th>Location</th>
-                                <th>Winner</th>
-                                <th>Car</th>
-                                <th>Laps</th>
-                                <th>Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {Races.map(race => {
+                const tableColumns = [
+                    {
+                        name: 'Round',
+                        selector: 'round',
+                        center: true,
+                        grow: 0
+                    },
+                    {
+                        name: 'Date',
+                        selector: 'date',
+                        format: row => moment(row.date).format('DD MMM YYYY')
+                    },
+                    {
+                        name: 'Grand Prix',
+                        selector: 'raceName',
+                        grow: 2,
+                        cell: row => {
+                            const {round, raceName} = row;
+                            return <Link to={`/${year}/results/${round}`}>{raceName}</Link>;
+                        }
+                    },
+                    {
+                        name: 'Location',
+                        grow: 2,
+                        cell: row => {
                             const {
-                                round,
-                                date,
-                                raceName,
                                 Circuit: {
                                     circuitName,
                                     Location: {country, locality}
-                                },
-                                Results
-                            } = race;
-                            const {
-                                laps,
-                                Driver,
-                                Constructor,
-                                Time: {time}
-                            } = Results[0];
+                                }
+                            } = row;
 
                             return (
-                                <tr key={round}>
-                                    <td className="uk-text-center">{round}</td>
-                                    <td>
-                                        <Moment format="DD MMM YYYY">{date}</Moment>
-                                    </td>
-                                    <td>
-                                        <Link to={`/${year}/results/${round}`}>{raceName}</Link>
-                                    </td>
-                                    <td>
-                                        <div>{circuitName}</div>
-                                        {locality}, {country}
-                                    </td>
-                                    <td>
-                                        <LinkDriver driver={Driver}/>
-                                    </td>
-                                    <td>
-                                        <LinkTeam constructor={Constructor}/>
-                                    </td>
-                                    <td>{laps}</td>
-                                    <td>{time}</td>
-                                </tr>
-                            )
-                        })}
-                        </tbody>
-                    </table>
-                );
+                                <div>
+                                    <div>{circuitName}</div>
+                                    <div>{locality}, {country}</div>
+                                </div>
+                            );
+                        }
+                    },
+                    driverCell,
+                    teamCell,
+                    lapsCell,
+                    timeCell
+                ];
+                const tableData = [];
+
+                Races.forEach(race => {
+                    const {round, date, raceName, Circuit, Results} = race;
+                    const {laps, Driver, Constructor, Time} = Results[0];
+
+                    tableData.push({
+                        round, date, raceName, laps,
+                        Circuit, Driver, Constructor, Time
+                    });
+                });
+
+                return <DataTable keyField="round" columns={tableColumns} data={tableData}/>;
             })()}
         </>
     );

@@ -1,6 +1,12 @@
 import React from 'react';
-import LinkDriver from "./link-driver";
-import LinkTeam from "./link-team";
+import DataTable, {
+    positionCell,
+    nationalityCell,
+    driverCell,
+    teamCell,
+    winsCell,
+    pointsCell
+} from './data-table';
 
 const SeasonDriversTable = ({busy, data, match}) => {
     const {params: {year}} = match;
@@ -17,50 +23,27 @@ const SeasonDriversTable = ({busy, data, match}) => {
                 }
 
                 const {DriverStandings} = StandingsLists[0];
+                const tableColumns = [
+                    positionCell,
+                    driverCell,
+                    nationalityCell,
+                    teamCell,
+                    winsCell,
+                    pointsCell
+                ];
+                const tableData = [];
 
-                return (
-                    <table className="uk-table uk-table-striped">
-                        <thead>
-                            <tr>
-                                <th className="uk-table-shrink">Pos</th>
-                                <th>Driver</th>
-                                <th>Nationality</th>
-                                <th>Car</th>
-                                <th>Wins</th>
-                                <th>Pts</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {DriverStandings.map(standings => {
-                            const {position, Driver, Constructors, wins, points} = standings;
-                            const {nationality} = Driver;
+                DriverStandings.forEach(standings => {
+                    const {position, wins, points, Driver, Constructors} = standings;
+                    const {nationality} = Driver;
 
-                            return (
-                                <tr key={position}>
-                                    <td className="uk-text-center">{position}</td>
-                                    <td>
-                                        <LinkDriver driver={Driver}/>
-                                    </td>
-                                    <td>{nationality}</td>
-                                    <td>
-                                        {Constructors.map(constructor => {
-                                            const {constructorId} = constructor;
+                    tableData.push({
+                        position, wins, points, nationality,
+                        Driver, Constructors
+                    });
+                })
 
-                                            return (
-                                                <div key={constructorId}>
-                                                    <LinkTeam constructor={constructor}/>
-                                                </div>
-                                            );
-                                        })}
-                                    </td>
-                                    <td>{wins}</td>
-                                    <td><b>{points}</b></td>
-                                </tr>
-                            )
-                        })}
-                        </tbody>
-                    </table>
-                );
+                return <DataTable keyField="position" columns={tableColumns} data={tableData}/>;
             })()}
         </>
     );

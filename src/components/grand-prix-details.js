@@ -1,8 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import api from '../api';
-import Moment from "react-moment";
-import LinkDriver from "./link-driver";
-import LinkTeam from "./link-team";
+import Moment from 'react-moment';
+import DataTable, {
+    positionCell,
+    numberCell,
+    driverCell,
+    teamCell,
+    lapsCell,
+    timeCell,
+    pointsCell
+} from './data-table';
 
 const GrandPrixDetails = ({match}) => {
     const {params: {year, round}} = match;
@@ -53,7 +60,7 @@ const GrandPrixDetails = ({match}) => {
                         <h1 className="uk-text-uppercase">{season} {raceName}</h1>
                         <div className="uk-margin-medium-bottom">
                             <span data-uk-icon="calendar"/>{' '}
-                            <b><Moment format="DD MMM YYYY">{date}</Moment></b> / Round {round}
+                            <Moment format="DD MMM YYYY" className="uk-text-bold">{date}</Moment> / Round {round}
                             <div>
                                 <span data-uk-icon="location"/>{' '}
                                 {circuitName} / {locality}, {country}
@@ -72,22 +79,21 @@ const GrandPrixDetails = ({match}) => {
                             <div className="uk-width-5-6">
                                 <ul id="contents" className="uk-switcher">
                                     <li>
-                                        <table className="uk-table uk-table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th className="uk-table-shrink">Pos</th>
-                                                    <th>No</th>
-                                                    <th>Driver</th>
-                                                    <th>Car</th>
-                                                    <th>Time/Status</th>
-                                                    <th>Laps</th>
-                                                    <th>Points</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            {Results.map((result, i) => {
+                                        {(() => {
+                                            const tableColumns = [
+                                                positionCell,
+                                                numberCell,
+                                                driverCell,
+                                                teamCell,
+                                                lapsCell,
+                                                timeCell,
+                                                pointsCell
+                                            ];
+                                            const tableData = [];
+
+                                            Results.forEach(result => {
                                                 const {
-                                                    position,
+                                                    positionText,
                                                     number,
                                                     Driver,
                                                     Constructor,
@@ -97,76 +103,66 @@ const GrandPrixDetails = ({match}) => {
                                                     status
                                                 } = result;
 
-                                                return (
-                                                    <tr key={`result-${i}`}>
-                                                        <td className="uk-text-center">{position}</td>
-                                                        <td>{number}</td>
-                                                        <td>
-                                                            <LinkDriver driver={Driver}/>
-                                                        </td>
-                                                        <td>
-                                                            <LinkTeam constructor={Constructor}/>
-                                                        </td>
-                                                        <td>{Time?.time || status}</td>
-                                                        <td>{laps}</td>
-                                                        <td><b>{points}</b></td>
-                                                    </tr>
-                                                );
-                                            })}
-                                            </tbody>
-                                        </table>
+                                                tableData.push({
+                                                    id: `${number}-${positionText}`,
+                                                    positionText, number, laps, points, status,
+                                                    Driver, Constructor, Time
+                                                });
+                                            });
+
+                                            return <DataTable
+                                                keyField="id"
+                                                columns={tableColumns}
+                                                data={tableData}/>
+                                        })()}
                                     </li>
                                     <li>
-                                        <table className="uk-table uk-table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th className="uk-table-shrink">Pos</th>
-                                                    <th>No</th>
-                                                    <th>Driver</th>
-                                                    <th>Car</th>
-                                                    <th>Lap</th>
-                                                    <th>Time</th>
-                                                    <th>Avg Speed (kph)</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            {(() => {
-                                                const results = Results.filter(r => r.FastestLap);
+                                        {(() => {
+                                            const results = Results.filter(result => result.FastestLap);
+                                            const tableColumns = [
+                                                positionCell,
+                                                numberCell,
+                                                driverCell,
+                                                teamCell,
+                                                {
+                                                    name: 'Lap',
+                                                    selector: 'lap'
+                                                },
+                                                timeCell,
+                                                {
+                                                    name: 'Avg Speed (kph)',
+                                                    selector: 'speed'
+                                                }
+                                            ];
+                                            const tableData = [];
 
-                                                return results.sort((a, b) => {
-                                                    return a.FastestLap.rank - b.FastestLap.rank;
-                                                }).map((result, i) => {
-                                                    const {
-                                                        number,
-                                                        Driver,
-                                                        Constructor,
-                                                        FastestLap: {
-                                                            rank,
-                                                            lap,
-                                                            Time: {time},
-                                                            AverageSpeed: {speed}
-                                                        }
-                                                    } = result;
+                                            results.sort((a, b) => {
+                                                return a.FastestLap.rank - b.FastestLap.rank;
+                                            }).forEach(result => {
+                                                const {
+                                                    number,
+                                                    Driver,
+                                                    Constructor,
+                                                    FastestLap: {
+                                                        rank,
+                                                        lap,
+                                                        Time,
+                                                        AverageSpeed: {speed}
+                                                    }
+                                                } = result;
 
-                                                    return (
-                                                        <tr key={`fastest-lap-${i}`}>
-                                                            <td className="uk-text-center">{rank}</td>
-                                                            <td>{number}</td>
-                                                            <td>
-                                                                <LinkDriver driver={Driver}/>
-                                                            </td>
-                                                            <td>
-                                                                <LinkTeam constructor={Constructor}/>
-                                                            </td>
-                                                            <td>{lap}</td>
-                                                            <td>{time}</td>
-                                                            <td>{speed}</td>
-                                                        </tr>
-                                                    );
-                                                })
-                                            })()}
-                                            </tbody>
-                                        </table>
+                                                tableData.push({
+                                                    position: rank,
+                                                    number, lap, speed,
+                                                    Driver, Constructor, Time
+                                                });
+                                            });
+
+                                            return <DataTable
+                                                keyField="position"
+                                                columns={tableColumns}
+                                                data={tableData}/>
+                                        })()}
                                     </li>
                                 </ul>
                             </div>

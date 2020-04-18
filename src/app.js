@@ -5,7 +5,7 @@ import SeasonLayout, {minYear, currentYear} from './components/season-layout';
 import SeasonResults from './components/season-results';
 import SeasonDrivers from './components/season-drivers';
 import SeasonTeams from './components/season-teams';
-import GrandPrixDetails from './components/grand-prix-details';
+import GPDetails from './components/gp-details';
 
 import 'uikit/dist/css/uikit.min.css';
 import UIkit from 'uikit';
@@ -30,7 +30,7 @@ function App() {
 
             <Switch>
                 <SeasonRouteWrapper exact path="/:year(\d+)/results" component={SeasonResults}/>
-                <SeasonRouteWrapper exact path="/:year(\d+)/results/:round(\d+)" component={GrandPrixDetails}/>
+                <SeasonRouteWrapper exact path="/:year(\d+)/results/:round(\d+)" component={GPDetails}/>
 
                 <SeasonRouteWrapper path="/:year(\d+)/drivers" component={SeasonDrivers}/>
                 <SeasonRouteWrapper path="/:year(\d+)/teams" component={SeasonTeams}/>

@@ -107,7 +107,7 @@ export const timeCell = {
     name: 'Time',
     cell: row => {
         const {Time, status} = row;
-        return Time?.time || status;
+        return Time?.time || status || '--:--';
     }
 };
 

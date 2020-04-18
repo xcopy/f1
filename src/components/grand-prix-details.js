@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import axios from 'axios';
 import api from '../api';
 import Moment from 'react-moment';
 import DataTable, {
@@ -10,6 +11,7 @@ import DataTable, {
     timeCell,
     pointsCell
 } from './data-table';
+import f1CarIcon from '../img/f1-car-icon.svg';
 
 const GrandPrixDetails = ({match}) => {
     const {params: {year, round}} = match;
@@ -22,15 +24,22 @@ const GrandPrixDetails = ({match}) => {
         setRaces([]);
         setBusy(true);
 
-        api.get(`${year}/${round}/results`)
-            .then(response => {
-                const {RaceTable: {Races}} = response.data;
+        axios.all([
+            api.get(`${year}/${round}/results`),
+            api.get(`${year}/${round}/qualifying`)
+        ]).then(axios.spread((R, Q) => {
+            const {RaceTable: {Races: $races}} = R.data;
+            const {RaceTable: {Races: $races_}} = Q.data;
 
-                if (isMounted) {
-                    setRaces(Races);
-                    setBusy(false);
-                }
-            });
+            if (isMounted) {
+                $races.length && (
+                    $races[0].QualifyingResults = $races_[0]?.QualifyingResults || []
+                );
+
+                setRaces($races);
+                setBusy(false);
+            }
+        }));
 
         return () => {
             isMounted = false;
@@ -49,6 +58,7 @@ const GrandPrixDetails = ({match}) => {
                     date,
                     raceName,
                     Results,
+                    QualifyingResults,
                     Circuit: {
                         circuitName,
                         Location: {country, locality}
@@ -95,23 +105,24 @@ const GrandPrixDetails = ({match}) => {
                                                 const {
                                                     positionText,
                                                     number,
-                                                    Driver,
-                                                    Constructor,
                                                     laps,
                                                     points,
-                                                    Time,
-                                                    status
+                                                    status,
+                                                    Driver,
+                                                    Constructor,
+                                                    Time
                                                 } = result;
+                                                const {driverId} = Driver;
 
                                                 tableData.push({
-                                                    id: `${number}-${positionText}`,
                                                     positionText, number, laps, points, status,
-                                                    Driver, Constructor, Time
+                                                    Driver, Constructor, Time,
+                                                    driverId
                                                 });
                                             });
 
                                             return <DataTable
-                                                keyField="id"
+                                                keyField="driverId"
                                                 columns={tableColumns}
                                                 data={tableData}/>
                                         })()}
@@ -136,32 +147,108 @@ const GrandPrixDetails = ({match}) => {
                                             ];
                                             const tableData = [];
 
-                                            results.sort((a, b) => {
-                                                return a.FastestLap.rank - b.FastestLap.rank;
-                                            }).forEach(result => {
-                                                const {
-                                                    number,
-                                                    Driver,
-                                                    Constructor,
-                                                    FastestLap: {
-                                                        rank,
-                                                        lap,
-                                                        Time,
-                                                        AverageSpeed: {speed}
-                                                    }
-                                                } = result;
+                                            results
+                                                .sort((a, b) => a.FastestLap.rank - b.FastestLap.rank)
+                                                .forEach(result => {
+                                                    const {
+                                                        number,
+                                                        Driver,
+                                                        Constructor,
+                                                        FastestLap: {
+                                                            rank,
+                                                            lap,
+                                                            Time,
+                                                            AverageSpeed: {speed}
+                                                        }
+                                                    } = result;
+                                                    const {driverId} = Driver;
 
-                                                tableData.push({
-                                                    position: rank,
-                                                    number, lap, speed,
-                                                    Driver, Constructor, Time
+                                                    tableData.push({
+                                                        position: rank,
+                                                        number, lap, speed,
+                                                        Driver, Constructor, Time,
+                                                        driverId
+                                                    });
                                                 });
-                                            });
 
                                             return <DataTable
-                                                keyField="position"
+                                                keyField="driverId"
                                                 columns={tableColumns}
                                                 data={tableData}/>
+                                        })()}
+                                    </li>
+                                    <li>
+                                        {(() => {
+                                            const results = Results.filter(result => result.grid > 0);
+                                            const tableColumns = [
+                                                positionCell,
+                                                numberCell,
+                                                driverCell,
+                                                teamCell,
+                                                timeCell
+                                            ];
+                                            const tableData = [];
+
+                                            results
+                                                .sort((a, b) => a.grid - b.grid)
+                                                .forEach(result => {
+                                                    const {
+                                                        grid,
+                                                        number,
+                                                        Driver,
+                                                        Constructor
+                                                    } = result;
+                                                    const {driverId} = Driver;
+                                                    const [Q = {}] = QualifyingResults.filter(result => result.position === grid);
+                                                    const {Q1, Q2, Q3} = Q;
+
+                                                    tableData.push({
+                                                        position: grid, number,
+                                                        Driver, Constructor,
+                                                        Time: {
+                                                            time: Q3 || Q2 || Q1
+                                                        },
+                                                        driverId
+                                                    });
+                                                });
+
+                                            return (
+                                                <div data-uk-grid="">
+                                                    <div className="uk-width-2-3">
+                                                        <DataTable
+                                                            keyField="driverId"
+                                                            columns={tableColumns}
+                                                            data={tableData}/>
+                                                    </div>
+                                                    <div className="uk-width-1-3">
+                                                        <div data-uk-grid="">
+                                                            {tableData.map((row, i) => {
+                                                                const {
+                                                                    Time: {time = '--:--'},
+                                                                    Driver: {code, givenName, familyName}
+                                                                } = row;
+                                                                const fullName = `${givenName} ${familyName}`;
+
+                                                                return (
+                                                                    <div key={i} className="uk-width-1-2 uk-text-center">
+                                                                        <div className={i % 2 ? ' uk-margin-large-top' : ''}>
+                                                                            <img src={f1CarIcon} alt="" style={{opacity: .5}}/>
+                                                                            <div className={`uk-text-bold uk-margin-remove uk-${code ? 'h1' : 'h4'}`}
+                                                                                 title={fullName}>
+                                                                                {code
+                                                                                    ? code
+                                                                                    : <div className="uk-text-truncate">{fullName}</div>
+                                                                                }
+                                                                            </div>
+                                                                            <div>{time}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
                                         })()}
                                     </li>
                                 </ul>

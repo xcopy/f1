@@ -3,6 +3,7 @@ import axios from 'axios';
 import api from '../api';
 import Moment from 'react-moment';
 import GPRaceResult from './gp-race-result';
+import GPQualifying from './gp-qualifying';
 import GPFastestLaps from './gp-fastest-laps';
 import GPStartingGrid from './gp-starting-grid';
 
@@ -73,10 +74,10 @@ export default function GPDetails({match}) {
                             <div className="uk-width-1-6">
                                 <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
                                     <li><a href="/">Race Result</a></li>
-                                    <li><a href="/">Fastest Laps</a></li>
-                                    <li><a href="/">Starting Grid</a></li>
-                                    <li><a href="/">Pit Stop Summary</a></li>
                                     <li><a href="/">Qualifying</a></li>
+                                    <li><a href="/">Starting Grid</a></li>
+                                    <li><a href="/">Fastest Laps</a></li>
+                                    <li><a href="/">Pit Stop Summary</a></li>
                                 </ul>
                             </div>
                             <div className="uk-width-5-6">
@@ -85,13 +86,17 @@ export default function GPDetails({match}) {
                                         <GPRaceResult results={Results}/>
                                     </li>
                                     <li>
-                                        <GPFastestLaps results={Results.filter(result => result.FastestLap)}/>
+                                        <GPQualifying results={QualifyingResults}/>
                                     </li>
                                     <li>
                                         <GPStartingGrid
                                             results={Results.filter(result => result.grid > 0)}
                                             qualifyingResults={QualifyingResults}/>
                                     </li>
+                                    <li>
+                                        <GPFastestLaps results={Results.filter(result => result.FastestLap)}/>
+                                    </li>
+                                    <li>+</li>
                                 </ul>
                             </div>
                         </div>

@@ -1,0 +1,118 @@
+$borderColor: #666;
+
+.container {
+  overflow: hidden;
+  position: relative;
+  border: 1px solid $borderColor;
+  margin: 20px auto;
+
+  small {
+    font-weight: bold;
+  }
+
+  .circuit {
+    display: flex;
+    flex-direction: row;
+
+    .starting-grid,
+    .lap {
+      flex: none;
+      position: relative;
+      box-shadow: 1px 0 1px -1px $borderColor;
+      width: 100px;
+      text-transform: uppercase;
+
+      small {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 5px;
+      }
+    }
+
+    .starting-grid {
+      order: 0;
+    }
+
+    .lap {
+      &:last-child {
+        border-right: 0;
+      }
+    }
+  }
+
+  .drivers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+
+    .driver {
+      position: absolute;
+      line-height: 1;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      // height: 30px;
+      transition: all 500ms linear;
+
+      small {
+        color: #fff;
+        padding: 5px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        max-width: 100%;
+
+        &.pit {
+          border: 1px solid green;
+          color: green;
+          padding: 4px;
+          text-transform: uppercase;
+        }
+
+        &.clock {
+          background-color: #ea3aea;
+        }
+
+        &.time {
+          background-color: $borderColor;
+        }
+
+        &.car {
+          min-width: 30px;
+
+          $teams: (
+            "mercedes": (#00D2BE, #000),
+            "ferrari": (#DC0000),
+            "red_bull": (#1E41FF),
+            "renault": (#FFF500, #000),
+            "haas": (#F0D787, #000),
+            "racing_point": (#F596C8, #000),
+            "toro_rosso": (#469BFF),
+            "mclaren": (#FF8700),
+            "alfa": (#9B0000),
+            "williams": (#C7E2F5, #000),
+          );
+
+          @each $name, $colors in $teams {
+            &.#{$name} {
+              background-color: nth($colors, 1);
+              @if length($colors) == 2 {
+                color: nth($colors, 2);
+              }
+            }
+          }
+        }
+      }
+
+      &.dnf {
+        .car {
+          background-color: red !important;
+          color: white !important;
+        }
+      }
+    }
+  }
+}

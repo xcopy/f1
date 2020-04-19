@@ -6,6 +6,7 @@ import GPRaceResult from './gp-race-result';
 import GPQualifying from './gp-qualifying';
 import GPFastestLaps from './gp-fastest-laps';
 import GPStartingGrid from './gp-starting-grid';
+import GPPitStops from './gp-pit-stops';
 
 export default function GPDetails({match}) {
     const {params: {year, round}} = match;
@@ -18,19 +19,24 @@ export default function GPDetails({match}) {
         setRaces([]);
         setBusy(true);
 
+        const basePath = `${year}/${round}`;
+
         axios.all([
-            api.get(`${year}/${round}/results`),
-            api.get(`${year}/${round}/qualifying`)
-        ]).then(axios.spread((R, Q) => {
-            const {RaceTable: {Races: $races}} = R.data;
-            const {RaceTable: {Races: $races_}} = Q.data;
+            api.get(`${basePath}/results`),
+            api.get(`${basePath}/qualifying`),
+            api.get(`${basePath}/pitstops`)
+        ]).then(axios.spread((R, Q, P) => {
+            const {RaceTable: {Races: $Races}} = R.data;
+            const {RaceTable: {Races: $RacesQ}} = Q.data;
+            const {RaceTable: {Races: $RacesP}} = P.data;
 
             if (isMounted) {
-                $races.length && (
-                    $races[0].QualifyingResults = $races_[0]?.QualifyingResults || []
-                );
+                if ($Races.length) {
+                    $Races[0].QualifyingResults = $RacesQ[0]?.QualifyingResults || [];
+                    $Races[0].PitStops = $RacesP[0]?.PitStops || [];
+                }
 
-                setRaces($races);
+                setRaces($Races);
                 setBusy(false);
             }
         }));
@@ -93,7 +99,9 @@ export default function GPDetails({match}) {
                                     <li>
                                         <GPFastestLaps race={race}/>
                                     </li>
-                                    <li>+</li>
+                                    <li>
+                                        <GPPitStops race={race}/>
+                                    </li>
                                 </ul>
                             </div>
                         </div>

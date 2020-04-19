@@ -47,17 +47,16 @@ export default function GPDetails({match}) {
                     return 'There are no results to display';
                 }
 
+                const [race] = races;
                 const {
                     season,
                     date,
                     raceName,
-                    Results,
-                    QualifyingResults,
                     Circuit: {
                         circuitName,
                         Location: {country, locality}
                     }
-                } = races[0];
+                } = race;
 
                 return (
                     <>
@@ -83,18 +82,16 @@ export default function GPDetails({match}) {
                             <div className="uk-width-5-6">
                                 <ul id="contents" className="uk-switcher">
                                     <li>
-                                        <GPRaceResult results={Results}/>
+                                        <GPRaceResult race={race}/>
                                     </li>
                                     <li>
-                                        <GPQualifying results={QualifyingResults}/>
+                                        <GPQualifying race={race}/>
                                     </li>
                                     <li>
-                                        <GPStartingGrid
-                                            results={Results.filter(result => result.grid > 0)}
-                                            qualifyingResults={QualifyingResults}/>
+                                        <GPStartingGrid race={race}/>
                                     </li>
                                     <li>
-                                        <GPFastestLaps results={Results.filter(result => result.FastestLap)}/>
+                                        <GPFastestLaps race={race}/>
                                     </li>
                                     <li>+</li>
                                 </ul>

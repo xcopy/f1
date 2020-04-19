@@ -9,7 +9,8 @@ import DataTable, {
 } from './data-table';
 import f1CarIcon from '../img/f1-car-icon.svg';
 
-export default function GPStartingGrid({results, qualifyingResults}) {
+export default function GPStartingGrid({race}) {
+    const data = [];
     const columns = [
         positionCell,
         numberCell,
@@ -17,7 +18,9 @@ export default function GPStartingGrid({results, qualifyingResults}) {
         teamCell,
         timeCell
     ];
-    const data = [];
+
+    const {Results, QualifyingResults} = race;
+    const results = Results.filter(result => result.grid > 0);
 
     results
         .sort((a, b) => a.grid - b.grid)
@@ -29,7 +32,7 @@ export default function GPStartingGrid({results, qualifyingResults}) {
                 Constructor
             } = result;
             const {driverId} = Driver;
-            const [Q = {}] = qualifyingResults.filter(result => result.position === grid);
+            const [Q = {}] = QualifyingResults.filter(result => result.position === grid);
             const {Q1, Q2, Q3} = Q;
 
             data.push({
@@ -79,6 +82,5 @@ export default function GPStartingGrid({results, qualifyingResults}) {
 }
 
 GPStartingGrid.propTypes = {
-    results: PropTypes.array.isRequired,
-    qualifyingResults: PropTypes.array.isRequired
+    race: PropTypes.object.isRequired
 };

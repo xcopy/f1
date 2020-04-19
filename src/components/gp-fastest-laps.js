@@ -8,7 +8,8 @@ import DataTable, {
     timeCell
 } from './data-table';
 
-export default function GPFastestLaps({results}) {
+export default function GPFastestLaps({race}) {
+    const data = [];
     const columns = [
         positionCell,
         numberCell,
@@ -24,7 +25,9 @@ export default function GPFastestLaps({results}) {
             selector: 'speed'
         }
     ];
-    const data = [];
+
+    const {Results} = race;
+    const results = Results.filter(result => result.FastestLap);
 
     results
         .sort((a, b) => a.FastestLap.rank - b.FastestLap.rank)
@@ -54,5 +57,5 @@ export default function GPFastestLaps({results}) {
 }
 
 GPFastestLaps.propTypes = {
-    results: PropTypes.array.isRequired
+    race: PropTypes.object.isRequired
 };

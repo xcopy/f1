@@ -7,7 +7,8 @@ import DataTable, {
     teamCell
 } from './data-table';
 
-export default function GPQualifying({results}) {
+export default function GPQualifying({race}) {
+    const data = [];
     const columns = [
         positionCell,
         numberCell,
@@ -17,7 +18,8 @@ export default function GPQualifying({results}) {
         {name: 'Q2', selector: 'Q2'},
         {name: 'Q3', selector: 'Q3'}
     ];
-    const data = [];
+
+    const {QualifyingResults: results} = race;
 
     results.forEach(result => {
         const {number, position, Driver, Constructor, Q1, Q2, Q3} = result;
@@ -35,5 +37,5 @@ export default function GPQualifying({results}) {
 }
 
 GPQualifying.propTypes = {
-    results: PropTypes.array.isRequired
+    race: PropTypes.object.isRequired
 };

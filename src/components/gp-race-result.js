@@ -10,7 +10,8 @@ import DataTable, {
     timeCell
 } from './data-table';
 
-export default function GPRaceResult({results}) {
+export default function GPRaceResult({race}) {
+    const data = [];
     const columns = [
         positionCell,
         numberCell,
@@ -20,7 +21,8 @@ export default function GPRaceResult({results}) {
         timeCell,
         pointsCell
     ];
-    const data = [];
+
+    const {Results: results} = race;
 
     results.forEach(result => {
         const {
@@ -46,5 +48,5 @@ export default function GPRaceResult({results}) {
 }
 
 GPRaceResult.propTypes = {
-    results: PropTypes.array.isRequired
+    race: PropTypes.object.isRequired
 };

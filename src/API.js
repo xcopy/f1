@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://ergast.com/api/f1/',
+    baseURL: 'https://ergast.com/api/f1/',
     // timeout: 2000
 });
 

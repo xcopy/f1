@@ -6,7 +6,7 @@ import DataTable, {
     positionCell,
     teamCell,
     timeCell
-} from './data-table';
+} from '../data-table';
 
 export default function GPFastestLaps({race}) {
     const data = [];

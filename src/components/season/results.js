@@ -1,6 +1,6 @@
 import React from 'react';
-import seasonWithData from './season-with-data';
-import SeasonResultsTable from './season-results-table';
+import seasonWithData from './with-data';
+import SeasonResultsTable from './results-table';
 
 const SeasonResults = (props) => {
     const {match: {params: {year}}} = props;

@@ -6,8 +6,8 @@ import DataTable, {
     positionCell,
     teamCell,
     timeCell
-} from './data-table';
-import f1CarIcon from '../img/f1-car-icon.svg';
+} from '../data-table';
+import f1CarIcon from '../../img/f1-car-icon.svg';
 
 export default function GPStartingGrid({race}) {
     const data = [];

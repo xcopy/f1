@@ -6,7 +6,7 @@ import DataTable, {
     teamCell,
     lapsCell,
     timeCell
-} from './data-table';
+} from '../data-table';
 
 const SeasonResultsTable = ({busy, data, match}) => {
     const {params: {year}} = match;

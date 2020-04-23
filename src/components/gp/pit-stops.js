@@ -5,7 +5,7 @@ import DataTable, {
     driverCell,
     teamCell,
     timeCell
-} from './data-table';
+} from '../data-table';
 
 export default function GPPitStops({race}) {
     const data = [];

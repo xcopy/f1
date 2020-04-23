@@ -1,6 +1,6 @@
 import React from 'react';
-import seasonWithData from './season-with-data';
-import SeasonDriversTable from './season-drivers-table';
+import seasonWithData from './with-data';
+import SeasonDriversTable from './drivers-table';
 
 const SeasonDrivers = (props) => {
     const {match: {params: {year}}} = props;

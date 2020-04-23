@@ -1,11 +1,11 @@
 import React from 'react';
 import {Switch, Route, Redirect} from 'react-router-dom';
 import Navbar from './components/navbar';
-import SeasonLayout, {minYear, currentYear} from './components/season-layout';
-import SeasonResults from './components/season-results';
-import SeasonDrivers from './components/season-drivers';
-import SeasonTeams from './components/season-teams';
-import GPDetails from './components/gp-details';
+import SeasonLayout, {minYear, currentYear} from './components/season/layout';
+import SeasonResults from './components/season/results';
+import SeasonDrivers from './components/season/drivers';
+import SeasonTeams from './components/season/teams';
+import GPDetails from './components/gp/details';
 import Play from './components/play';
 
 import 'uikit/dist/css/uikit.min.css';

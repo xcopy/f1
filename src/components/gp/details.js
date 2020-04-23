@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import api from '../api';
+import api from '../../api';
 import Moment from 'react-moment';
-import GPRaceResult from './gp-race-result';
-import GPQualifying from './gp-qualifying';
-import GPFastestLaps from './gp-fastest-laps';
-import GPStartingGrid from './gp-starting-grid';
-import GPPitStops from './gp-pit-stops';
+import GPRaceResult from './race-result';
+import GPQualifying from './qualifying';
+import GPFastestLaps from './fastest-laps';
+import GPStartingGrid from './starting-grid';
+import GPPitStops from './pit-stops';
 
 export default function GPDetails({match}) {
     const {params: {year, round}} = match;

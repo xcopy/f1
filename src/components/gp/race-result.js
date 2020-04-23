@@ -8,7 +8,7 @@ import DataTable, {
     positionCell,
     teamCell,
     timeCell
-} from './data-table';
+} from '../data-table';
 
 export default function GPRaceResult({race}) {
     const data = [];

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import api from '../../api';
+import API from '../../API';
 
 const seasonWithData = (WrappedComponent, url) => {
     return class extends Component {
@@ -19,7 +19,7 @@ const seasonWithData = (WrappedComponent, url) => {
             this.setState({
                 busy: true
             }, () =>
-                api.get(url, {
+                API.get(url, {
                     cancelToken: this.cancelSource.token
                 }).then(response => {
                     this.setState({

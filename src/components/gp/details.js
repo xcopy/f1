@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import api from '../../api';
+import API from '../../API';
 import Moment from 'react-moment';
 import GPRaceResult from './race-result';
 import GPQualifying from './qualifying';
@@ -22,9 +22,9 @@ export default function GPDetails({match}) {
         const basePath = `${year}/${round}`;
 
         axios.all([
-            api.get(`${basePath}/results`),
-            api.get(`${basePath}/qualifying`),
-            api.get(`${basePath}/pitstops`)
+            API.get(`${basePath}/results`),
+            API.get(`${basePath}/qualifying`),
+            API.get(`${basePath}/pitstops`)
         ]).then(axios.spread((R, Q, P) => {
             const {RaceTable: {Races: $Races}} = R.data;
             const {RaceTable: {Races: $RacesQ}} = Q.data;

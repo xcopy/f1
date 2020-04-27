@@ -103,7 +103,7 @@ export default function Play() {
                     position = 0
                 } = {...Timings.find(t => code === t.code)};
                 const $driver = $(`#${code}`);
-                const inPit = pits.find(p => {
+                const pit = pits.find(p => {
                     const {lap, driverId: $driverId} = p;
                     return lapNumber === parseInt(lap) && driverId === $driverId;
                 });
@@ -141,10 +141,9 @@ export default function Play() {
                     $driver.find('.clock').removeClass('uk-hidden');
                 }
 
-                if (inPit) {
-                    $('.pit').addClass('uk-hidden');
-                    $driver.find('.pit').removeClass('uk-hidden');
-                }
+                $driver.find('.pit')
+                    .text(pit ? `Pit${pit.stop}` : '')
+                    .toggleClass('uk-hidden', !pit);
             });
 
             if (isFinalLap) {
@@ -258,7 +257,7 @@ export default function Play() {
                                     id={code}
                                     className="driver"
                                     style={styles}>
-                                    <small className="pit uk-hidden">In Pit</small>
+                                    <small className="pit uk-hidden"/>
                                     <small className="clock uk-hidden">
                                         <span data-uk-icon="icon: clock; ratio: 0.6"/>
                                     </small>

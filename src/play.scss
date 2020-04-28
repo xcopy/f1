@@ -41,77 +41,73 @@ $borderColor: #666;
     }
   }
 
-  .drivers {
+  .driver {
+    $padding: 5px;
+    $height: 30px;
+
     position: absolute;
-    top: 0;
-    left: 0;
     z-index: 1;
+    line-height: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    height: $height;
+    transition-property: all;
+    transition-timing-function: linear;
 
-    .driver {
-      position: absolute;
-      line-height: 1;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-end;
-      // height: 30px;
-      transition: all 500ms linear;
+    small {
+      color: #fff;
+      padding: $padding;
+      text-align: center;
 
-      small {
-        color: #fff;
-        padding: 5px;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        max-width: 100%;
+      &.pit {
+        border: 1px solid green;
+        color: green;
+        padding: $padding - 1px;
+        text-transform: uppercase;
+      }
 
-        &.pit {
-          border: 1px solid green;
-          color: green;
-          padding: 4px;
-          text-transform: uppercase;
-        }
+      &.clock {
+        background-color: #ea3aea;
+      }
 
-        &.clock {
-          background-color: #ea3aea;
-        }
+      &.time {
+        background-color: $borderColor;
+      }
 
-        &.time {
-          background-color: $borderColor;
-        }
+      &.car {
+        min-width: $height;
+        max-width: $height + $padding * 2;
 
-        &.car {
-          min-width: 30px;
+        $teams: (
+          "mercedes": (#00D2BE, #000),
+          "ferrari": (#DC0000),
+          "red_bull": (#1E41FF),
+          "renault": (#FFF500, #000),
+          "haas": (#F0D787, #000),
+          "racing_point": (#F596C8, #000),
+          "toro_rosso": (#469BFF),
+          "mclaren": (#FF8700),
+          "alfa": (#9B0000),
+          "williams": (#C7E2F5, #000),
+        );
 
-          $teams: (
-            "mercedes": (#00D2BE, #000),
-            "ferrari": (#DC0000),
-            "red_bull": (#1E41FF),
-            "renault": (#FFF500, #000),
-            "haas": (#F0D787, #000),
-            "racing_point": (#F596C8, #000),
-            "toro_rosso": (#469BFF),
-            "mclaren": (#FF8700),
-            "alfa": (#9B0000),
-            "williams": (#C7E2F5, #000),
-          );
-
-          @each $name, $colors in $teams {
-            &.#{$name} {
-              background-color: nth($colors, 1);
-              @if length($colors) == 2 {
-                color: nth($colors, 2);
-              }
+        @each $name, $colors in $teams {
+          &.#{$name} {
+            background-color: nth($colors, 1);
+            @if length($colors) == 2 {
+              color: nth($colors, 2);
             }
           }
         }
       }
+    }
 
-      &.dnf {
-        .car {
-          background-color: red !important;
-          color: white !important;
-        }
+    &.dnf {
+      .time {
+        background-color: red !important;
+        color: white !important;
       }
     }
   }

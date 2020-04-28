@@ -1,6 +1,7 @@
 $borderColor: #666;
+$lapWidth: 100px;
 
-.container {
+#container {
   overflow: hidden;
   position: relative;
   border: 1px solid $borderColor;
@@ -10,7 +11,7 @@ $borderColor: #666;
     font-weight: bold;
   }
 
-  .circuit {
+  #circuit {
     display: flex;
     flex-direction: row;
 
@@ -19,7 +20,7 @@ $borderColor: #666;
       flex: none;
       position: relative;
       box-shadow: 1px 0 1px -1px $borderColor;
-      width: 100px;
+      width: $lapWidth;
       text-transform: uppercase;
 
       small {
@@ -37,6 +38,32 @@ $borderColor: #666;
     .lap {
       &:last-child {
         border-right: 0;
+      }
+    }
+  }
+
+  #lights {
+    position: absolute;
+    z-index: 2;
+    left: $lapWidth;
+    top: 50%;
+    transform: translateY(-50%);
+    width: $lapWidth / 2;
+    height: $lapWidth * 2;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+
+    .light {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background-color: #222;
+
+      &.on {
+        background-color: #bb0000;
       }
     }
   }

@@ -61,7 +61,6 @@ export default function Play() {
         for (let i = 1; i <= lapsCount; i++) {
             laps.push(
                 <div key={`lap-${i}`}
-                    id={`lap-${i}`}
                     className="lap"
                     data-order={i}
                     style={{order: i}}>
@@ -73,14 +72,17 @@ export default function Play() {
         return laps;
     }
 
+    function delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     function start() {
         const
+            $lights = $('#lights div'),
             xLapsExp = /\+(\d+)/,
             // pxs to increase driver width on each lap
             step = Math.round(lapWidth * (limit - 1) / lapsCount),
-            retiredDrivers = [];
-
-        const
+            retiredDrivers = [],
             driversProgress = (lapNumber) => {
                 const
                     isFinalLap = lapNumber === lapsCount,
@@ -97,7 +99,7 @@ export default function Play() {
                 // sort that times to calc fastest time per lap
                 times.sort((a, b) => a - b);
 
-                console.log(`--- LAP ${lapNumber} ---`);
+                // console.log(`--- LAP ${lapNumber} ---`);
 
                 results.forEach(r => {
                     const
@@ -187,26 +189,40 @@ export default function Play() {
                 }
             };
 
+        timer || reset();
+
         setStarted(true);
 
-        $('.starting-grid').css('order', lapsCount + 1);
+        $lights.each((i, e) => {
+            delay(i * interval).then(() => {
+                $(e).addClass('on');
 
-        timer = setInterval(timerHandler, interval);
+                (i === $lights.length - 1) && $lights.removeClass('on');
+            });
+        });
+
+        delay(interval * 6).then(() => {
+            $('#lights div').removeClass('on');
+
+            $('#lights').addClass('uk-hidden');
+
+            timer = setInterval(timerHandler, interval);
+        });
     }
 
     function stop() {
         timer && clearInterval(timer);
     }
 
-    /*
     function reset() {
-        $('.starting-grid').css('order', 0);
+        $('#lights').removeClass('uk-hidden');
 
         $('.lap').each(function (i, e) {
-            $(e).css('order', i + 1);
+            $(e).css('order', i);
         });
+
+        setStarted(false);
     }
-    */
 
     if (busy) {
         return 'loading...';
@@ -233,7 +249,7 @@ export default function Play() {
 
     return (
         <>
-            <div className="container" style={{width: containerWidth}}>
+            <div id="container" style={{width: containerWidth}}>
                 {results
                     .sort((a, b) => a.grid - b.grid)
                     .map(r => {
@@ -267,18 +283,24 @@ export default function Play() {
                             </div>
                         );
                 })}
-                <div className="circuit" style={{height: circuitHeight}}>
-                    <div className="starting-grid">
+                <div id="lights" className="uk-hidden">
+                    {[...Array(5).keys()].map(l =>
+                        <div key={l} className="light"/>
+                    )}
+                    <div/>
+                </div>
+                <div id="circuit" style={{height: circuitHeight}}>
+                    <div className="starting-grid lap" data-order="0">
                         <small>Grid</small>
                     </div>
                     {renderLaps()}
                 </div>
             </div>
             <div className="uk-margin uk-text-center">
-                <button className="uk-button uk-button-primary"
-                    onClick={started ? stop : start}>
-                    {started ? 'Pause' : 'Start'}
-                </button>
+                {started ? '' : (<button className="uk-button uk-button-primary"
+                    onClick={start}>
+                    Start
+                </button>)}
             </div>
         </>
     );

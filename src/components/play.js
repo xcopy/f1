@@ -263,8 +263,7 @@ export default function Play() {
                             } = r,
                             styles = {
                                 width: lapWidth - (grid - 1),
-                                top: (grid - 1) * driverHeight,
-                                transitionDuration: `${interval}ms`
+                                top: (grid - 1) * driverHeight
                             };
 
                         return (

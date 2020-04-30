@@ -80,8 +80,7 @@ $lapWidth: 100px;
     align-items: center;
     justify-content: flex-end;
     height: $height;
-    transition-property: all;
-    transition-timing-function: linear;
+    transition: all 500ms linear;
 
     small {
       color: #fff;

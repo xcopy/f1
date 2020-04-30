@@ -8,7 +8,7 @@ const seasonWithData = (WrappedComponent, url) => {
             super(props);
 
             this.state = {
-                busy: false,
+                busy: true,
                 data: {}
             };
         }
@@ -16,18 +16,14 @@ const seasonWithData = (WrappedComponent, url) => {
         cancelSource = axios.CancelToken.source();
 
         componentDidMount() {
-            this.setState({
-                busy: true
-            }, () =>
-                API.get(url, {
-                    cancelToken: this.cancelSource.token
-                }).then(response => {
-                    this.setState({
-                        data: response.data,
-                        busy: false
-                    });
-                })
-            );
+            API.get(url, {
+                cancelToken: this.cancelSource.token
+            }).then(response => {
+                this.setState({
+                    busy: false,
+                    data: response.data
+                });
+            });
         }
 
         componentWillUnmount() {

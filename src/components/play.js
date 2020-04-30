@@ -45,10 +45,8 @@ export default function Play() {
             setResults($results);
             setLaps($laps);
             setPits($pits);
-            setBusy(false)
-        })).then(() => {
             setBusy(false);
-        });
+        }));
 
         return () => {
             cancelTokenSource.cancel();

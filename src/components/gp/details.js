@@ -7,6 +7,7 @@ import GPQualifying from './qualifying';
 import GPFastestLaps from './fastest-laps';
 import GPStartingGrid from './starting-grid';
 import GPPitStops from './pit-stops';
+import GPV11n from './v11n';
 
 export default function GPDetails({match}) {
     const {params: {year, round}} = match;
@@ -78,6 +79,7 @@ export default function GPDetails({match}) {
                         <div data-uk-grid="">
                             <div className="uk-width-1-6">
                                 <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
+                                    <li><a href="/">Visualization</a></li>
                                     <li><a href="/">Race Result</a></li>
                                     <li><a href="/">Qualifying</a></li>
                                     <li><a href="/">Starting Grid</a></li>
@@ -87,6 +89,9 @@ export default function GPDetails({match}) {
                             </div>
                             <div className="uk-width-5-6">
                                 <ul id="contents" className="uk-switcher">
+                                    <li>
+                                        <GPV11n race={race}/>
+                                    </li>
                                     <li>
                                         <GPRaceResult race={race}/>
                                     </li>

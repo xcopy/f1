@@ -15,8 +15,7 @@ const SeasonResultsTable = ({busy, data, match}) => {
         <>
             <h1 className="uk-text-uppercase">{year} Race Results</h1>
             {busy ? <div data-uk-spinner=""/> : (() => {
-                const {RaceTable} = data;
-                const {Races = []} = {...RaceTable};
+                const {RaceTable: {Races}} = data;
 
                 const tableColumns = [
                     {
@@ -66,8 +65,8 @@ const SeasonResultsTable = ({busy, data, match}) => {
                 const tableData = [];
 
                 Races.forEach(race => {
-                    const {round, date, raceName, Circuit, Results} = race;
-                    const {laps, Driver, Constructor, Time} = Results[0];
+                    const {round, date, raceName, Circuit, Results: [results]} = race;
+                    const {laps, Driver, Constructor, Time} = results;
 
                     tableData.push({
                         round, date, raceName, laps,

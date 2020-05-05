@@ -15,9 +15,13 @@ const SeasonDriversTable = ({busy, data, match}) => {
         <>
             <h1 className="uk-text-uppercase">{year} Driver Standings</h1>
             {busy ? <div data-uk-spinner=""/> : (() => {
-                const {StandingsTable = {}} = data;
-                const {StandingsLists = []} = StandingsTable;
-                const [StandingsList = {}] = StandingsLists;
+                const {
+                    StandingsTable: {
+                        StandingsLists: [
+                            StandingsList = {}
+                        ]
+                    }
+                } = data;
                 const {DriverStandings = []} = StandingsList;
                 const tableColumns = [
                     positionCell,

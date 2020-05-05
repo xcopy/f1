@@ -19,7 +19,7 @@ export default function GPStartingGrid({race}) {
         timeCell
     ];
 
-    const {Results, QualifyingResults} = race;
+    const {QualifyingResults} = race;
 
     QualifyingResults
         .sort((a, b) => a.position - b.position)

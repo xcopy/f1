@@ -25,22 +25,32 @@ export default function GPDetails({match}) {
         const basePath = `${year}/${round}`;
 
         axios.all([
+            // the first 3 are always there
             API.get(`${basePath}/results`),
             API.get(`${basePath}/qualifying`),
             API.get(`${basePath}/pitstops`),
-            API.get(`${basePath}/laps`)
-        ]).then(axios.spread((R, Q, P, L) => {
-            const
-                {RaceTable: {Races: [$R]}} = R.data,
-                {RaceTable: {Races: [$Q]}} = Q.data,
-                {RaceTable: {Races: [$P]}} = P.data,
-                {RaceTable: {Races: [$L]}} = L.data;
+            // except the laps
+            API.get(`${basePath}/laps`).catch(() => null)
+        ]).then(responses => {
+            const objects = [];
+
+            responses.forEach(response => {
+                const {
+                    data: {
+                        RaceTable: {
+                            Races: [obj] = []
+                        } = {}
+                    } = {}
+                } = response || {};
+
+                obj && objects.push(obj);
+            });
 
             if (isMounted) {
-                $R && setRace(Object.assign($R, $Q, $P, $L));
+                objects.length && setRace(Object.assign({}, ...objects));
                 setBusy(false);
             }
-        }));
+        });
 
         return () => {
             isMounted = false;
@@ -61,8 +71,10 @@ export default function GPDetails({match}) {
                     Circuit: {
                         circuitName,
                         Location: {country, locality}
-                    }
+                    },
+                    Laps = []
                 } = race;
+                const hasVisualization = Laps.length > 0;
 
                 return (
                     <>
@@ -78,7 +90,9 @@ export default function GPDetails({match}) {
                         <div data-uk-grid="">
                             <div className="uk-width-1-6">
                                 <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
-                                    <li><a href="/">Visualization</a></li>
+                                    {hasVisualization && (
+                                        <li><a href="/">Visualization</a></li>
+                                    )}
                                     <li><a href="/">Race Result</a></li>
                                     <li><a href="/">Qualifying</a></li>
                                     <li><a href="/">Starting Grid</a></li>
@@ -88,9 +102,11 @@ export default function GPDetails({match}) {
                             </div>
                             <div className="uk-width-5-6">
                                 <ul id="contents" className="uk-switcher">
-                                    <li>
-                                        <GPV11n race={race}/>
-                                    </li>
+                                    {hasVisualization && (
+                                        <li>
+                                            <GPV11n race={race}/>
+                                        </li>
+                                    )}
                                     <li>
                                         <GPRaceResult race={race}/>
                                     </li>

@@ -11,13 +11,15 @@ import GPV11n from './v11n';
 
 export default function GPDetails({match}) {
     const {params: {year, round}} = match;
-    const [busy, setBusy] = useState(true);
-    const [races, setRaces] = useState([]);
+
+    const
+        [busy, setBusy] = useState(true),
+        [race, setRace] = useState(null);
 
     useEffect(() => {
         let isMounted = true;
 
-        setRaces([]);
+        setRace(null);
         setBusy(true);
 
         const basePath = `${year}/${round}`;
@@ -25,19 +27,17 @@ export default function GPDetails({match}) {
         axios.all([
             API.get(`${basePath}/results`),
             API.get(`${basePath}/qualifying`),
-            API.get(`${basePath}/pitstops`)
-        ]).then(axios.spread((R, Q, P) => {
-            const {RaceTable: {Races: $Races}} = R.data;
-            const {RaceTable: {Races: $RacesQ}} = Q.data;
-            const {RaceTable: {Races: $RacesP}} = P.data;
+            API.get(`${basePath}/pitstops`),
+            API.get(`${basePath}/laps`)
+        ]).then(axios.spread((R, Q, P, L) => {
+            const
+                {RaceTable: {Races: [$R]}} = R.data,
+                {RaceTable: {Races: [$Q]}} = Q.data,
+                {RaceTable: {Races: [$P]}} = P.data,
+                {RaceTable: {Races: [$L]}} = L.data;
 
             if (isMounted) {
-                if ($Races.length) {
-                    $Races[0].QualifyingResults = $RacesQ[0]?.QualifyingResults || [];
-                    $Races[0].PitStops = $RacesP[0]?.PitStops || [];
-                }
-
-                setRaces($Races);
+                $R && setRace(Object.assign($R, $Q, $P, $L));
                 setBusy(false);
             }
         }));
@@ -50,11 +50,10 @@ export default function GPDetails({match}) {
     return (
         <>
             {busy ? <div data-uk-spinner=""/> : (() => {
-                if (!races.length) {
+                if (!race) {
                     return 'There are no results to display';
                 }
 
-                const [race] = races;
                 const {
                     season,
                     date,

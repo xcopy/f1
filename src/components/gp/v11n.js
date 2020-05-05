@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
-import axios from 'axios';
 import './v11n.scss';
 
 function Button({onClick, children, ...attrs}) {
@@ -28,7 +27,6 @@ function GPV11n({race}) {
         driverHeight = 30;
 
     const
-        [busy, setBusy] = useState(true),
         [delay, setDelay] = useState(500),
         [grid, setGrid] = useState({order: 0, number: 0}),
         [currentLap, setCurrentLap] = useState(1),
@@ -42,70 +40,56 @@ function GPV11n({race}) {
 
     useEffect(() => {
         const
-            {season, round, Results} = race,
-            cancelTokenSource = axios.CancelToken.source();
+            {Results, Laps: laps$} = race,
+            drivers$ = {};
 
-        setBusy(true);
+        laps$.forEach((lap, i) => {
+            const {Timings} = lap;
 
-        axios.get(
-            `/data/${season}/${round}/laps.json`,
-            {cancelToken: cancelTokenSource.token}
-        ).then(response => {
-            const
-                {data: laps$} = response,
-                drivers$ = {};
+            lap.order = i + 1;
 
-            laps$.forEach((lap, i) => {
-                const {Timings} = lap;
+            Timings.forEach(timing => {
+                const
+                    {driverId: $driverId} = timing,
+                    {number, Driver: {code}} = Results.find(result => {
+                        const {Driver: {driverId}} = result;
+                        return $driverId === driverId;
+                    });
 
-                lap.order = i + 1;
-
-                Timings.forEach(timing => {
-                    const
-                        {driverId: $driverId} = timing,
-                        {number, Driver: {code}} = Results.find(result => {
-                            const {Driver: {driverId}} = result;
-                            return $driverId === driverId;
-                        });
-
-                    timing.code = code;
-                    timing.number = number;
-                });
+                timing.code = code;
+                timing.number = number;
             });
-
-            Results
-                .sort((a, b) => a.grid - b.grid)
-                .forEach(result => {
-                    const
-                        {
-                            grid,
-                            status,
-                            Driver: {code},
-                            Constructor: {constructorId: team},
-                            Time
-                        } = result,
-                        styles = {
-                            width: lapWidth - (grid - 1),
-                            top: (grid - 1) * driverHeight
-                        };
-
-                    drivers$[code] = {
-                        time: Time?.time || status,
-                        team,
-                        styles,
-                        showClock: false,
-                        showPit: false,
-                        showTime: false
-                    };
-                });
-
-            setLapsCount(laps$.length);
-            setLaps(laps$);
-            setDrivers(drivers$);
-            setBusy(false);
         });
 
-        return () => cancelTokenSource.cancel();
+        Results
+            .sort((a, b) => a.grid - b.grid)
+            .forEach(result => {
+                const
+                    {
+                        grid,
+                        status,
+                        Driver: {code},
+                        Constructor: {constructorId: team},
+                        Time
+                    } = result,
+                    styles = {
+                        width: lapWidth - (grid - 1),
+                        top: (grid - 1) * driverHeight
+                    };
+
+                drivers$[code] = {
+                    time: Time?.time || status,
+                    team,
+                    styles,
+                    showClock: false,
+                    showPit: false,
+                    showTime: false
+                };
+            });
+
+        setLapsCount(laps$.length);
+        setLaps(laps$);
+        setDrivers(drivers$);
     }, [race]);
 
     useEffect(() => {
@@ -162,10 +146,6 @@ function GPV11n({race}) {
 
         return () => clearInterval(intervalId);
     }, [raceStarted, racePaused, currentLap, lapsCount, delay]);
-
-    if (busy) {
-        return null;
-    }
 
     return (
         <div data-uk-grid="" className="uk-grid-small">

@@ -20,23 +20,21 @@ export default function GPStartingGrid({race}) {
     ];
 
     const {Results, QualifyingResults} = race;
-    const results = Results.filter(result => result.grid > 0);
 
-    results
-        .sort((a, b) => a.grid - b.grid)
+    QualifyingResults
+        .sort((a, b) => a.position - b.position)
         .forEach(result => {
             const {
-                grid,
+                position,
                 number,
                 Driver,
-                Constructor
+                Constructor,
+                Q1, Q2, Q3
             } = result;
             const {driverId} = Driver;
-            const [Q = {}] = QualifyingResults.filter(result => result.position === grid);
-            const {Q1, Q2, Q3} = Q;
 
             data.push({
-                position: grid, number,
+                position, number,
                 Driver, Constructor,
                 Time: {
                     time: Q3 || Q2 || Q1
@@ -62,15 +60,15 @@ export default function GPStartingGrid({race}) {
                         return (
                             <div key={i} className="uk-width-1-2 uk-text-center">
                                 <div className={i % 2 ? ' uk-margin-large-top' : ''}>
-                                    <img src={f1CarIcon} alt="" style={{opacity: .5}}/>
-                                    <div className={`uk-text-bold uk-margin-remove uk-${code ? 'h1' : 'h4'}`}
+                                    <img src={f1CarIcon} alt="" style={{opacity: .5, width: 100}}/>
+                                    <div className={`uk-text-bold uk-margin-remove uk-${code ? 'h3' : 'h5'}`}
                                          title={fullName}>
                                         {code
                                             ? code
                                             : <div className="uk-text-truncate">{fullName}</div>
                                         }
                                     </div>
-                                    <div>{time}</div>
+                                    <div>{time || '--:--'}</div>
                                 </div>
                             </div>
                         );

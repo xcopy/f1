@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {NavLink} from 'react-router-dom';
 import {generatePath} from 'react-router';
 
-export const minYear = 1950;
+export const minYear = 2018;
 export const currentYear = new Date().getFullYear();
 
 export default class SeasonLayout extends Component {

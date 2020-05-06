@@ -40,7 +40,7 @@ $lapWidth: 100px;
 
     #lights {
       position: absolute;
-      z-index: 1;
+      z-index: 2;
       left: $lapWidth;
       top: 50%;
       transform: translateY(-50%);
@@ -68,7 +68,7 @@ $lapWidth: 100px;
       position: absolute;
       width: 100%;
       height: inherit;
-      z-index: 0;
+      z-index: 1;
 
       .driver {
         $padding: 5px;
@@ -96,7 +96,7 @@ $lapWidth: 100px;
             text-transform: uppercase;
           }
 
-          &.clock {
+          &.fastest-lap {
             background-color: #ea3aea;
           }
 
@@ -104,7 +104,7 @@ $lapWidth: 100px;
             background-color: $borderColor;
           }
 
-          &.car {
+          &.team {
             min-width: $height;
             max-width: $height + $padding * 2;
 

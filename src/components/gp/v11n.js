@@ -40,7 +40,7 @@ function GPV11n({race}) {
 
     useEffect(() => {
         const
-            {Results, Laps: laps$} = race,
+            {Results, QualifyingResults, Laps: laps$} = race,
             drivers$ = {};
 
         laps$.forEach((lap, i) => {
@@ -61,29 +61,26 @@ function GPV11n({race}) {
             });
         });
 
-        Results
-            .sort((a, b) => a.grid - b.grid)
+        QualifyingResults
+            .sort((a, b) => a.position - b.position)
             .forEach(result => {
                 const
                     {
-                        grid,
-                        status,
+                        position,
                         Driver: {code},
-                        Constructor: {constructorId: team},
-                        Time
+                        Constructor: {constructorId: team}
                     } = result,
-                    styles = {
-                        width: lapWidth - (grid - 1),
-                        top: (grid - 1) * driverHeight
+                    css = {
+                        width: lapWidth - (position - 1),
+                        top: (position - 1) * driverHeight
                     };
 
                 drivers$[code] = {
-                    time: Time?.time || status,
                     team,
-                    styles,
-                    showClock: false,
-                    showPit: false,
-                    showTime: false
+                    css,
+                    fastestLap: false,
+                    pit: false,
+                    time: false
                 };
             });
 
@@ -170,19 +167,19 @@ function GPV11n({race}) {
                             {Object.keys(drivers).map(code => {
                                 const
                                     driver = drivers[code],
-                                    {time, team, styles, showClock, showPit, showTime} = driver;
+                                    {team, css, fastestLap, pit, time} = driver;
 
                                 return (
                                     <div key={code}
                                         id={code}
                                         className="driver"
-                                        style={styles}>
-                                        <small className={`time ${showTime || 'uk-hidden'}`}>{time}</small>
-                                        <small className={`pit ${showPit || 'uk-hidden'}`}>Pit</small>
-                                        <small className={`clock ${showClock || 'uk-hidden'}`}>
+                                        style={css}>
+                                        <small className={`time ${time || 'uk-hidden'}`}>{time}</small>
+                                        <small className={`pit ${pit || 'uk-hidden'}`}>Pit</small>
+                                        <small className={`fastest-lap ${fastestLap || 'uk-hidden'}`}>
                                             <span data-uk-icon="icon: clock; ratio: 0.6"/>
                                         </small>
-                                        <small className={`car ${team}`}>{code}</small>
+                                        <small className={`team ${team}`}>{code}</small>
                                     </div>
                                 );
                             })}

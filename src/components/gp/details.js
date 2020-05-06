@@ -10,7 +10,7 @@ import GPPitStops from './pit-stops';
 import GPV11n from './v11n';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCalendar} from '@fortawesome/free-regular-svg-icons';
-import {faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons';
+import {faMapMarkerAlt, faPlayCircle} from '@fortawesome/free-solid-svg-icons';
 
 export default function GPDetails({match}) {
     const {params: {year, round}} = match;
@@ -77,7 +77,6 @@ export default function GPDetails({match}) {
                     },
                     Laps = []
                 } = race;
-                const hasVisualization = Laps.length > 0;
 
                 return (
                     <>
@@ -93,23 +92,31 @@ export default function GPDetails({match}) {
                         <div data-uk-grid="">
                             <div className="uk-width-1-6">
                                 <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
-                                    {hasVisualization && (
-                                        <li><a href="/">Visualization</a></li>
-                                    )}
                                     <li><a href="/">Race Result</a></li>
                                     <li><a href="/">Qualifying</a></li>
                                     <li><a href="/">Starting Grid</a></li>
                                     <li><a href="/">Fastest Laps</a></li>
                                     <li><a href="/">Pit Stop Summary</a></li>
                                 </ul>
+
+                                {Laps.length > 0 && (
+                                    <>
+                                        <button
+                                            data-uk-toggle="target: #v11n"
+                                            type="button"
+                                            className="uk-button uk-button-secondary uk-button-small">
+                                            <FontAwesomeIcon icon={faPlayCircle}/>{' '}Visualization
+                                        </button>
+                                        <div data-uk-modal="" id="v11n" className="uk-flex-top">
+                                            <div className="uk-modal-dialog uk-modal-body">
+                                                <GPV11n race={race}/>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                             <div className="uk-width-5-6">
                                 <ul id="contents" className="uk-switcher">
-                                    {hasVisualization && (
-                                        <li>
-                                            <GPV11n race={race}/>
-                                        </li>
-                                    )}
                                     <li>
                                         <GPRaceResult race={race}/>
                                     </li>

@@ -2,11 +2,18 @@ import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faClock} from '@fortawesome/free-regular-svg-icons';
+import
+    {faPlay, faPause, faForward, faFastForward, faFastBackward, faTrafficLight, faFlagCheckered}
+from '@fortawesome/free-solid-svg-icons';
 import './v11n.scss';
 
-function Button({onClick, children, ...attrs}) {
+function Button({title, onClick, children, ...attrs}) {
     return (
-        <button className="uk-button uk-button-primary" onClick={onClick} {...attrs}>
+        <button
+            data-uk-tooltip={`title: ${title}; pos: bottom; delay: 100`}
+            className="uk-button uk-button-primary"
+            onClick={onClick}
+            {...attrs}>
             {children}
         </button>
     );
@@ -17,7 +24,12 @@ function Lap({lap}) {
 
     return (
         <div id={`lap-${number}`} className="lap" style={{order: order}}>
-            <small>{number === 0 ? 'Grid' : `Lap ${number}`}</small>
+            <small>
+                {number === 0
+                    ? <FontAwesomeIcon icon={order === 0 ? faTrafficLight : faFlagCheckered}/>
+                    : `Lap ${number}`
+                }
+            </small>
         </div>
     );
 }
@@ -25,11 +37,17 @@ function Lap({lap}) {
 function GPV11n({race}) {
     const
         lapWidth = 100,
-        limit = 5,
-        driverHeight = 30;
+        limit = 3,
+        driverHeight = 30,
+        defaultDelay = 500,
+        speeds = [
+            ['Slower', defaultDelay + 250, faFastBackward],
+            ['Normal', defaultDelay, faForward],
+            ['Faster', defaultDelay - 250, faFastForward]
+        ];
 
     const
-        [delay, setDelay] = useState(500),
+        [delay, setDelay] = useState(defaultDelay),
         [grid, setGrid] = useState({order: 0, number: 0}),
         [currentLap, setCurrentLap] = useState(1),
         [lapsCount, setLapsCount] = useState(0),
@@ -194,30 +212,52 @@ function GPV11n({race}) {
                     </div>
                 </div>
             </div>
-            <div className="uk-width-expand">
-                <div data-uk-grid="" className="uk-grid-small">
-                    <div className="uk-width-1-2">
-                        <select
-                            className="uk-select"
-                            value={delay}
-                            onChange={(e) => setDelay(parseInt(e.target.value))}>
-                            <option value="750">Slower</option>
-                            <option value="500">Normal</option>
-                            <option value="250">Faster</option>
-                        </select>
-                    </div>
-                    <div className="uk-width-expand">
-                        {showLights || (
-                            raceStarted ? '' : <Button onClick={() => setShowLights(true)}>Start</Button>
-                        )}
+            <div className="uk-width-expand uk-text-center">
+                {speeds.map((speed, key) => {
+                    const [t, d, i] = speed;
 
-                        {raceStarted && (
-                            <>
-                                {racePaused && <Button onClick={() => setRacePaused(false)}>Resume</Button>}
-                                {racePaused || <Button onClick={() => setRacePaused(true)}>Pause</Button>}
-                            </>
-                        )}
-                    </div>
+                    return (
+                        <Button
+                            key={key}
+                            title={t}
+                            onClick={() => setDelay(d)}
+                            className="uk-button uk-button-secondary"
+                            disabled={!raceStarted}>
+                            <FontAwesomeIcon icon={i}/>
+                        </Button>
+                    )
+                })}
+
+                <div className="uk-margin-top">
+                    {showLights || (
+                        raceStarted || (
+                            <Button
+                                title="Start"
+                                onClick={() => setShowLights(true)}>
+                                <FontAwesomeIcon icon={faPlay}/>
+                            </Button>
+                        )
+                    )}
+
+                    {raceStarted && (
+                        <>
+                            {racePaused && (
+                                <Button
+                                    title="Resume"
+                                    onClick={() => setRacePaused(false)}>
+                                    <FontAwesomeIcon icon={faPlay}/>
+                                </Button>
+                            )}
+
+                            {racePaused || (
+                                <Button
+                                    title="Pause"
+                                    onClick={() => setRacePaused(true)}>
+                                    <FontAwesomeIcon icon={faPause}/>
+                                </Button>
+                            )}
+                        </>
+                    )}
                 </div>
             </div>
         </div>

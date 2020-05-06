@@ -63,7 +63,8 @@ export const numberCell = {
         return <abbr title="Number">No</abbr>;
     })(),
     selector: 'number',
-    center: true
+    center: true,
+    grow: 0
 };
 
 export const nationalityCell = {

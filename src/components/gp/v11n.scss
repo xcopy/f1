@@ -98,6 +98,7 @@ $lapWidth: 100px;
 
           &.fastest-lap {
             background-color: #ea3aea;
+            padding: $padding - 1px;
           }
 
           &.time {

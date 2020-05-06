@@ -8,6 +8,9 @@ import GPFastestLaps from './fastest-laps';
 import GPStartingGrid from './starting-grid';
 import GPPitStops from './pit-stops';
 import GPV11n from './v11n';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faCalendar} from '@fortawesome/free-regular-svg-icons';
+import {faMapMarkerAlt} from '@fortawesome/free-solid-svg-icons';
 
 export default function GPDetails({match}) {
     const {params: {year, round}} = match;
@@ -80,10 +83,10 @@ export default function GPDetails({match}) {
                     <>
                         <h1 className="uk-text-uppercase">{season} {raceName}</h1>
                         <div className="uk-margin-medium-bottom">
-                            <span data-uk-icon="calendar"/>{' '}
+                            <FontAwesomeIcon icon={faCalendar}/>{' '}
                             <Moment format="DD MMM YYYY" className="uk-text-bold">{date}</Moment> / Round {round}
                             <div>
-                                <span data-uk-icon="location"/>{' '}
+                                <FontAwesomeIcon icon={faMapMarkerAlt}/>{' '}
                                 {circuitName} / {locality}, {country}
                             </div>
                         </div>

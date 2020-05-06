@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faClock} from '@fortawesome/free-regular-svg-icons';
 import './v11n.scss';
 
 function Button({onClick, children, ...attrs}) {
@@ -177,7 +179,7 @@ function GPV11n({race}) {
                                         <small className={`time ${time || 'uk-hidden'}`}>{time}</small>
                                         <small className={`pit ${pit || 'uk-hidden'}`}>Pit</small>
                                         <small className={`fastest-lap ${fastestLap || 'uk-hidden'}`}>
-                                            <span data-uk-icon="icon: clock; ratio: 0.6"/>
+                                            <FontAwesomeIcon icon={faClock}/>
                                         </small>
                                         <small className={`team ${team}`}>{code}</small>
                                     </div>

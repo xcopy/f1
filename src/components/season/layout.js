@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {NavLink} from 'react-router-dom';
 import {generatePath} from 'react-router';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faList, faUser, faCar} from '@fortawesome/free-solid-svg-icons';
 
 export const minYear = 2018;
 export const currentYear = new Date().getFullYear();
@@ -29,9 +31,9 @@ export default class SeasonLayout extends Component {
         }
 
         const links = {
-            results: ['table', 'Results'],
-            drivers: ['users', 'Drivers'],
-            teams: ['nut', 'Teams']
+            results: [faList, 'Results'],
+            drivers: [faUser, 'Drivers'],
+            teams: [faCar, 'Teams']
         };
 
         return (
@@ -55,7 +57,7 @@ export default class SeasonLayout extends Component {
                                     <NavLink to={`/${year}/${key}`} key={key}
                                         className="uk-button uk-button-default"
                                         activeClassName="uk-button-primary">
-                                        <span data-uk-icon={icon}/>{' '}{label}
+                                        <FontAwesomeIcon icon={icon}/>{' '}{label}
                                     </NavLink>
                                 )
                             })}

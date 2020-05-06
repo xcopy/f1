@@ -6,6 +6,7 @@ import
     {faPlay, faPause, faForward, faFastForward, faFastBackward, faTrafficLight, faFlagCheckered}
 from '@fortawesome/free-solid-svg-icons';
 import './v11n.scss';
+import moment from 'moment';
 
 function Button({title, onClick, children, ...attrs}) {
     return (

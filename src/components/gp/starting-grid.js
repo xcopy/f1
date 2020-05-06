@@ -7,7 +7,6 @@ import DataTable, {
     teamCell,
     timeCell
 } from '../data-table';
-import f1CarIcon from '../../img/f1-car-icon.svg';
 
 export default function GPStartingGrid({race}) {
     const data = [];
@@ -43,40 +42,7 @@ export default function GPStartingGrid({race}) {
             });
         });
 
-    return (
-        <div data-uk-grid="">
-            <div className="uk-width-2-3">
-                <DataTable keyField="driverId" {...{columns, data}}/>
-            </div>
-            <div className="uk-width-1-3">
-                <div data-uk-grid="">
-                    {data.map((row, i) => {
-                        const {
-                            Time: {time = '--:--'},
-                            Driver: {code, givenName, familyName}
-                        } = row;
-                        const fullName = `${givenName} ${familyName}`;
-
-                        return (
-                            <div key={i} className="uk-width-1-2 uk-text-center">
-                                <div className={i % 2 ? ' uk-margin-large-top' : ''}>
-                                    <img src={f1CarIcon} alt="" style={{opacity: .5, width: 100}}/>
-                                    <div className={`uk-text-bold uk-margin-remove uk-${code ? 'h3' : 'h5'}`}
-                                         title={fullName}>
-                                        {code
-                                            ? code
-                                            : <div className="uk-text-truncate">{fullName}</div>
-                                        }
-                                    </div>
-                                    <div>{time || '--:--'}</div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-            </div>
-        </div>
-    );
+    return <DataTable keyField="driverId" {...{columns, data}}/>;
 }
 
 GPStartingGrid.propTypes = {

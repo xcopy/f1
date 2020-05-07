@@ -38,9 +38,8 @@ function Lap({lap}) {
 function GPV11n({race}) {
     const
         lapWidth = 100,
-        limit = 5,
         driverHeight = 30,
-        defaultDelay = 500,
+        defaultDelay = 100,
         speeds = [
             ['Slower', defaultDelay + 250, faFastBackward],
             ['Normal', defaultDelay, faForward],
@@ -52,6 +51,7 @@ function GPV11n({race}) {
         [grid, setGrid] = useState({order: 0, number: 0}),
         [currentLap, setCurrentLap] = useState(1),
         [lapsCount, setLapsCount] = useState(0),
+        [limit, setLimit] = useState(0),
         [lights, setLights] = useState([]),
         [showLights, setShowLights] = useState(false),
         [raceStarted, setRaceStarted] = useState(false),
@@ -60,6 +60,12 @@ function GPV11n({race}) {
         [drivers, setDrivers] = useState({});
 
     const el = useRef(null);
+
+    useEffect(() => {
+        document.getElementById('v11n').addEventListener('shown', (e) => {
+            setLimit(Math.floor(el.current.offsetWidth / lapWidth));
+        });
+    });
 
     useEffect(() => {
         const
@@ -165,9 +171,9 @@ function GPV11n({race}) {
                     }),
                     fastestTime = Math.min(...times);
 
-                console.log(`--- LAP ${currentLap} ---`, el.current);
+                if (currentLap <= lapsCount) {
+                    console.log(`--- LAP ${currentLap} ---`);
 
-                if (currentLap <= lapsCount - limit) {
                     Results.forEach(r => {
                         const
                             {
@@ -223,16 +229,20 @@ function GPV11n({race}) {
                         });
                     });
 
-                    setLaps(prevState => {
-                        const lap = prevState[currentLap - 1];
+                    if (currentLap <= lapsCount - limit) {
+                        console.log('change order');
+                        setLaps(prevState => {
+                            const lap = prevState[currentLap - 1];
 
-                        lap.order = currentLap + lapsCount + 1;
+                            lap.order = currentLap + lapsCount + 1;
 
-                        return prevState;
-                    });
+                            return prevState;
+                        });
+                    }
 
                     setCurrentLap(prevState => prevState + 1);
                 } else {
+                    setCurrentLap(prevState => prevState - 1);
                     setRaceStarted(false);
                 }
             }, delay);

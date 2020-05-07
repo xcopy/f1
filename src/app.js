@@ -6,7 +6,6 @@ import SeasonResults from './components/season/results';
 import SeasonDrivers from './components/season/drivers';
 import SeasonTeams from './components/season/teams';
 import GPDetails from './components/gp/details';
-import Play from './components/play';
 
 import 'uikit/dist/css/uikit.min.css';
 import UIkit from 'uikit';
@@ -35,8 +34,6 @@ function App() {
 
                 <SeasonRouteWrapper path="/:year(\d+)/drivers" component={SeasonDrivers}/>
                 <SeasonRouteWrapper path="/:year(\d+)/teams" component={SeasonTeams}/>
-
-                <Route path="/play" component={Play}/>
 
                 <Route exact path="/:year(\d+)" render={({match}) => {
                     let {params: {year}} = match;

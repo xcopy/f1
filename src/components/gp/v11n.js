@@ -39,7 +39,7 @@ function GPV11n({race}) {
     const
         lapWidth = 100,
         driverHeight = 30,
-        defaultDelay = 100,
+        defaultDelay = 500,
         speeds = [
             ['Slower', defaultDelay + 250, faFastBackward],
             ['Normal', defaultDelay, faForward],
@@ -59,12 +59,20 @@ function GPV11n({race}) {
         [laps, setLaps] = useState([]),
         [drivers, setDrivers] = useState({});
 
-    const el = useRef(null);
+    const circuitEl = useRef(null);
 
     useEffect(() => {
-        document.getElementById('v11n').addEventListener('shown', (e) => {
-            setLimit(Math.floor(el.current.offsetWidth / lapWidth));
-        });
+        const
+            modalEl = document.getElementById('modal'),
+            listener = () => {
+                setLimit(Math.floor(circuitEl.current['offsetWidth'] / lapWidth));
+            };
+
+        modalEl.addEventListener('shown', listener);
+
+        return () => {
+            modalEl.removeEventListener('shown', listener);
+        };
     });
 
     useEffect(() => {
@@ -152,85 +160,28 @@ function GPV11n({race}) {
 
         const
             {Results, PitStops} = race,
-            xLapsExp = /\+(\d+)/,
-            // pxs to increase driver width on each lap
-            step = Math.round(lapWidth * (limit - 1) / lapsCount);
+            step = Math.round(lapWidth * (limit - 1) / lapsCount),
+            retiredDrivers = [];
 
         if (raceStarted && !racePaused) {
             intervalId = setInterval(() => {
-                const
-                    isFinalLap = currentLap === lapsCount,
-                    {Timings} = laps.find(lap => {
-                        const {number} = lap;
-                        return currentLap === parseInt(number);
-                    }),
-                    // get all actual times
-                    times = Timings.map(t => {
-                        const {time} = t;
-                        return moment.duration(`0:${time}`).as('ms');
-                    }),
-                    fastestTime = Math.min(...times);
-
                 if (currentLap <= lapsCount) {
-                    console.log(`--- LAP ${currentLap} ---`);
+                    const
+                        isFinalLap = currentLap === lapsCount,
+                        {Timings} = laps.find(lap => {
+                            const {number} = lap;
+                            return currentLap === parseInt(number);
+                        }),
+                        // get all actual times (ms)
+                        times = Timings.map(t => {
+                            const {time} = t;
+                            return moment.duration(`0:${time}`).as('ms');
+                        }),
+                        fastestTime = Math.min(...times); // ms
 
-                    Results.forEach(r => {
-                        const
-                            {
-                                position: pos,
-                                status,
-                                Driver: {code, driverId},
-                                FastestLap
-                            } = r,
-                            {
-                                time = null,
-                                position = 0
-                            } = {...Timings.find(t => code === t.code)},
-                            pit = PitStops.find(p => {
-                                const {lap, driverId: $driverId} = p;
-                                return currentLap === parseInt(lap) && driverId === $driverId;
-                            }),
-                            xLaps = status.match(xLapsExp),
-                            // driver is:
-                            order = position
-                                // fighting
-                                ? position
-                                // behind +X laps OR retired
-                                : (xLaps ? pos : -1),
-                            // calc time gap
-                            ms = moment.duration(`0:${time}`).as('ms'),
-                            timeGap = ms
-                                ? Math.ceil((ms / fastestTime) * 100) - 100 // still active
-                                : -1, // retired
-                            // calc the range gap between drivers based on the time gap
-                            offset = timeGap === -1
-                                ? lapWidth
-                                : timeGap === 0 ? 0 : (timeGap * lapWidth) / 100;
-
-                        setDrivers(prevState => {
-                            const drivers = {...prevState};
-                            const driver = drivers[code];
-                            const {css: {width: w}} = driver;
-                            const width = isFinalLap
-                                ? (limit - (xLaps ? xLaps[1] : 0)) * lapWidth
-                                : w + step - offset;
-                            const css = {
-                                width
-                            };
-
-                            if (order > 0) {
-                                css.top = (order - 1) * driverHeight;
-                            }
-
-                            return {
-                                ...drivers,
-                                ...{[code]: {...driver, css}}
-                            };
-                        });
-                    });
+                    // console.log(`--- LAP ${currentLap} ---`);
 
                     if (currentLap <= lapsCount - limit) {
-                        console.log('change order');
                         setLaps(prevState => {
                             const lap = prevState[currentLap - 1];
 
@@ -240,9 +191,82 @@ function GPV11n({race}) {
                         });
                     }
 
-                    setCurrentLap(prevState => prevState + 1);
+                    Results.forEach(r => {
+                        const
+                            {
+                                position: pos,
+                                status,
+                                Driver: {code, driverId},
+                                FastestLap: {lap} = {},
+                                Time
+                            } = r,
+                            {
+                                time = null,
+                                position = 0
+                            } = {...Timings.find(t => code === t.code)},
+                            ps = PitStops.find(p => {
+                                const {lap, driverId: $driverId} = p;
+                                return currentLap === parseInt(lap) && driverId === $driverId;
+                            }),
+                            xLaps = status.match(/\+(\d+)/),
+                            // driver is:
+                            order = position
+                                // fighting
+                                ? position
+                                // behind +X laps OR retired
+                                : (xLaps ? pos : -1),
+                            // calc time gap
+                            retired = order === -1,
+                            ms = retired
+                                ? 0
+                                : moment.duration(`0:${time}`).as('ms'),
+                            timeDiff = ms - fastestTime,
+                            // calc the range gap between drivers based on the time gap
+                            offset = timeDiff === 0
+                                ? 0
+                                : (ms / fastestTime) * 100 - lapWidth;
+
+                        retired && retiredDrivers.indexOf(code) < 0 && retiredDrivers.push(code);
+
+                        setDrivers(prevState => {
+                            const
+                                drivers = {...prevState},
+                                driver = drivers[code],
+                                {css: {width: prevWidth}} = driver,
+                                width = retired
+                                    ? isFinalLap ? lapWidth : 0
+                                    : isFinalLap
+                                        ? (limit - (xLaps ? xLaps[1] : 0)) * lapWidth
+                                        : prevWidth + step - offset,
+                                top = retired
+                                    ? 'auto'
+                                    : (order - 1) * driverHeight,
+                                bottom = retired
+                                    ? retiredDrivers.indexOf(code) * driverHeight
+                                    : 'auto',
+                                css = {width, top, bottom},
+                                fastestLap = lap && currentLap === parseInt(lap),
+                                pit = ps ? `Pit${ps.stop}` : false,
+                                time = isFinalLap ? (Time?.time || status) : false;
+
+                            return {
+                                ...drivers,
+                                ...{
+                                    [code]: {
+                                        ...driver,
+                                        css,
+                                        fastestLap,
+                                        pit,
+                                        time
+                                    }
+                                }
+                            };
+                        });
+                    });
+
+                    setCurrentLap(currentLap + 1);
                 } else {
-                    setCurrentLap(prevState => prevState - 1);
+                    setCurrentLap(lapsCount);
                     setRaceStarted(false);
                 }
             }, delay);
@@ -251,13 +275,13 @@ function GPV11n({race}) {
         }
 
         return () => clearInterval(intervalId);
-    }, [race, raceStarted, racePaused, currentLap, lapsCount, laps, delay]);
+    }, [race, raceStarted, racePaused, currentLap, limit, lapsCount, laps, delay]);
 
     return (
         <div data-uk-grid="" className="uk-grid-small">
             <div className="uk-width-expand">
                 <div id="visualization">
-                    <div ref={el} id="circuit" style={{
+                    <div ref={circuitEl} id="circuit" style={{
                         // width: (lapWidth * limit) + lapWidth,
                         height: (Object.keys(drivers).length * driverHeight) + driverHeight
                     }}>
@@ -283,12 +307,18 @@ function GPV11n({race}) {
                                         id={code}
                                         className="driver"
                                         style={css}>
-                                        <small className={`time ${time || 'uk-hidden'}`}>{time}</small>
-                                        <small className={`pit ${pit || 'uk-hidden'}`}>Pit</small>
-                                        <small className={`fastest-lap ${fastestLap || 'uk-hidden'}`}>
+                                        <small className={`time uk-text-truncate${time ? '' : ' uk-hidden'}`}>
+                                            {time}
+                                        </small>
+                                        <small className={`pit${pit ? '' : ' uk-hidden'}`}>
+                                            {pit}
+                                        </small>
+                                        <small className={`fastest-lap${fastestLap || ' uk-hidden'}`}>
                                             <FontAwesomeIcon icon={faClock}/>
                                         </small>
-                                        <small className={`team ${team}`}>{code}</small>
+                                        <small className={`team ${team}`}>
+                                            {code}
+                                        </small>
                                     </div>
                                 );
                             })}

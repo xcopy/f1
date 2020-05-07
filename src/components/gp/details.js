@@ -102,12 +102,12 @@ export default function GPDetails({match}) {
                                 {Laps.length > 0 && (
                                     <>
                                         <button
-                                            data-uk-toggle="target: #v11n"
+                                            data-uk-toggle="target: #modal"
                                             type="button"
                                             className="uk-button uk-button-secondary uk-button-small">
                                             <FontAwesomeIcon icon={faPlayCircle}/>{' '}Visualization
                                         </button>
-                                        <div data-uk-modal="" id="v11n" className="uk-modal-container">
+                                        <div data-uk-modal="" id="modal" className="uk-modal-container">
                                             <div className="uk-modal-dialog uk-modal-body">
                                                 <GPV11n race={race}/>
                                             </div>

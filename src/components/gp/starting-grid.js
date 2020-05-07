@@ -7,6 +7,7 @@ import DataTable, {
     teamCell,
     timeCell
 } from '../data-table';
+import {normalizeResults} from '../../helpers';
 
 export default function GPStartingGrid({race}) {
     const data = [];
@@ -18,22 +19,26 @@ export default function GPStartingGrid({race}) {
         timeCell
     ];
 
-    const {QualifyingResults} = race;
+    const
+        {QualifyingResults} = race,
+        results = normalizeResults(race);
 
-    QualifyingResults
-        .sort((a, b) => a.position - b.position)
+    results
         .forEach(result => {
             const {
-                position,
+                grid,
                 number,
                 Driver,
-                Constructor,
-                Q1, Q2, Q3
+                Constructor
             } = result;
             const {driverId} = Driver;
+            const {Q1, Q2, Q3} = QualifyingResults.find(r => {
+                const {Driver: {driverId: driverId$}} = r;
+                return driverId$ === driverId;
+            }) || {};
 
             data.push({
-                position, number,
+                position: grid, number,
                 Driver, Constructor,
                 Time: {
                     time: Q3 || Q2 || Q1

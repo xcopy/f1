@@ -7,6 +7,7 @@ import
 from '@fortawesome/free-solid-svg-icons';
 import './v11n.scss';
 import moment from 'moment';
+import {normalizeResults} from '../../helpers';
 
 function Button({title, onClick, children, ...attrs}) {
     return (
@@ -77,7 +78,8 @@ function GPV11n({race}) {
 
     useEffect(() => {
         const
-            {Results, QualifyingResults, Laps: laps$} = race,
+            {Results, Laps: laps$} = race,
+            results = normalizeResults(race),
             drivers$ = {};
 
         laps$.forEach((lap, i) => {
@@ -98,18 +100,17 @@ function GPV11n({race}) {
             });
         });
 
-        QualifyingResults
-            .sort((a, b) => a.position - b.position)
+        results
             .forEach(result => {
                 const
                     {
-                        position,
+                        grid,
                         Driver: {code},
                         Constructor: {constructorId: team}
                     } = result,
                     css = {
-                        width: lapWidth - (position - 1),
-                        top: (position - 1) * driverHeight
+                        width: lapWidth - (grid - 1),
+                        top: (grid - 1) * driverHeight
                     };
 
                 drivers$[code] = {
@@ -205,8 +206,8 @@ function GPV11n({race}) {
                                 position = 0
                             } = {...Timings.find(t => code === t.code)},
                             ps = PitStops.find(p => {
-                                const {lap, driverId: $driverId} = p;
-                                return currentLap === parseInt(lap) && driverId === $driverId;
+                                const {lap, driverId: driverId$} = p;
+                                return currentLap === parseInt(lap) && driverId === driverId$;
                             }),
                             xLaps = status.match(/\+(\d+)/),
                             // driver is:

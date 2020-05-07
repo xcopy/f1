@@ -27,10 +27,17 @@ export default function GPFastestLaps({race}) {
     ];
 
     const {Results} = race;
-    const results = Results.filter(result => result.FastestLap);
+    const results = Results.filter(result => {
+        const {FastestLap} = result;
+        return FastestLap;
+    });
 
     results
-        .sort((a, b) => a.FastestLap.rank - b.FastestLap.rank)
+        .sort((next, current) => {
+            const {FastestLap: {rank: rank1}} = next;
+            const {FastestLap: {rank: rank2}} = current;
+            return rank1 - rank2;
+        })
         .forEach(result => {
             const {
                 number,

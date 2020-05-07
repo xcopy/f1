@@ -19,9 +19,9 @@ export default function GPQualifying({race}) {
         {name: 'Q3', selector: 'Q3'}
     ];
 
-    const {QualifyingResults: results} = race;
+    const {QualifyingResults} = race;
 
-    results.forEach(result => {
+    QualifyingResults.forEach(result => {
         const {number, position, Driver, Constructor, Q1, Q2, Q3} = result;
         const {driverId} = Driver;
 

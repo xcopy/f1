@@ -107,7 +107,7 @@ export default function GPDetails({match}) {
                                             className="uk-button uk-button-secondary uk-button-small">
                                             <FontAwesomeIcon icon={faPlayCircle}/>{' '}Visualization
                                         </button>
-                                        <div data-uk-modal="" id="v11n" className="uk-flex-top">
+                                        <div data-uk-modal="" id="v11n" className="uk-modal-container">
                                             <div className="uk-modal-dialog uk-modal-body">
                                                 <GPV11n race={race}/>
                                             </div>

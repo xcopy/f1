@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faClock} from '@fortawesome/free-regular-svg-icons';
@@ -38,7 +38,7 @@ function Lap({lap}) {
 function GPV11n({race}) {
     const
         lapWidth = 100,
-        limit = 3,
+        limit = 5,
         driverHeight = 30,
         defaultDelay = 500,
         speeds = [
@@ -58,6 +58,8 @@ function GPV11n({race}) {
         [racePaused, setRacePaused] = useState(false),
         [laps, setLaps] = useState([]),
         [drivers, setDrivers] = useState({});
+
+    const el = useRef(null);
 
     useEffect(() => {
         const
@@ -142,9 +144,85 @@ function GPV11n({race}) {
     useEffect(() => {
         let intervalId = null;
 
+        const
+            {Results, PitStops} = race,
+            xLapsExp = /\+(\d+)/,
+            // pxs to increase driver width on each lap
+            step = Math.round(lapWidth * (limit - 1) / lapsCount);
+
         if (raceStarted && !racePaused) {
             intervalId = setInterval(() => {
+                const
+                    isFinalLap = currentLap === lapsCount,
+                    {Timings} = laps.find(lap => {
+                        const {number} = lap;
+                        return currentLap === parseInt(number);
+                    }),
+                    // get all actual times
+                    times = Timings.map(t => {
+                        const {time} = t;
+                        return moment.duration(`0:${time}`).as('ms');
+                    }),
+                    fastestTime = Math.min(...times);
+
+                console.log(`--- LAP ${currentLap} ---`, el.current);
+
                 if (currentLap <= lapsCount - limit) {
+                    Results.forEach(r => {
+                        const
+                            {
+                                position: pos,
+                                status,
+                                Driver: {code, driverId},
+                                FastestLap
+                            } = r,
+                            {
+                                time = null,
+                                position = 0
+                            } = {...Timings.find(t => code === t.code)},
+                            pit = PitStops.find(p => {
+                                const {lap, driverId: $driverId} = p;
+                                return currentLap === parseInt(lap) && driverId === $driverId;
+                            }),
+                            xLaps = status.match(xLapsExp),
+                            // driver is:
+                            order = position
+                                // fighting
+                                ? position
+                                // behind +X laps OR retired
+                                : (xLaps ? pos : -1),
+                            // calc time gap
+                            ms = moment.duration(`0:${time}`).as('ms'),
+                            timeGap = ms
+                                ? Math.ceil((ms / fastestTime) * 100) - 100 // still active
+                                : -1, // retired
+                            // calc the range gap between drivers based on the time gap
+                            offset = timeGap === -1
+                                ? lapWidth
+                                : timeGap === 0 ? 0 : (timeGap * lapWidth) / 100;
+
+                        setDrivers(prevState => {
+                            const drivers = {...prevState};
+                            const driver = drivers[code];
+                            const {css: {width: w}} = driver;
+                            const width = isFinalLap
+                                ? (limit - (xLaps ? xLaps[1] : 0)) * lapWidth
+                                : w + step - offset;
+                            const css = {
+                                width
+                            };
+
+                            if (order > 0) {
+                                css.top = (order - 1) * driverHeight;
+                            }
+
+                            return {
+                                ...drivers,
+                                ...{[code]: {...driver, css}}
+                            };
+                        });
+                    });
+
                     setLaps(prevState => {
                         const lap = prevState[currentLap - 1];
 
@@ -163,14 +241,14 @@ function GPV11n({race}) {
         }
 
         return () => clearInterval(intervalId);
-    }, [raceStarted, racePaused, currentLap, lapsCount, delay]);
+    }, [race, raceStarted, racePaused, currentLap, lapsCount, laps, delay]);
 
     return (
         <div data-uk-grid="" className="uk-grid-small">
-            <div className="uk-width-auto">
+            <div className="uk-width-expand">
                 <div id="visualization">
-                    <div id="circuit" style={{
-                        width: (lapWidth * limit) + lapWidth,
+                    <div ref={el} id="circuit" style={{
+                        // width: (lapWidth * limit) + lapWidth,
                         height: (Object.keys(drivers).length * driverHeight) + driverHeight
                     }}>
                         <div id="lights" className={showLights ? '' : 'uk-hidden'}>
@@ -213,7 +291,7 @@ function GPV11n({race}) {
                     </div>
                 </div>
             </div>
-            <div className="uk-width-expand uk-text-center">
+            <div className="uk-width-auto uk-text-center">
                 {speeds.map((speed, key) => {
                     const [t, d, i] = speed;
 

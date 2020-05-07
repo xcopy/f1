@@ -182,7 +182,7 @@ function GPV11n({race}) {
 
                     // console.log(`--- LAP ${currentLap} ---`);
 
-                    if (currentLap <= lapsCount - limit) {
+                    if (currentLap <= lapsCount - limit + 1) {
                         setLaps(prevState => {
                             const lap = prevState[currentLap - 1];
 
@@ -237,7 +237,7 @@ function GPV11n({race}) {
                                 width = retired
                                     ? isFinalLap ? lapWidth : 0
                                     : isFinalLap
-                                        ? (limit - (xLaps ? xLaps[1] : 0)) * lapWidth
+                                        ? (limit - (xLaps ? xLaps[1] : 0) - 1) * lapWidth
                                         : prevWidth + step - offset,
                                 top = retired
                                     ? 'auto'
@@ -308,14 +308,14 @@ function GPV11n({race}) {
                                         id={code}
                                         className="driver"
                                         style={css}>
-                                        <small className={`time uk-text-truncate${time ? '' : ' uk-hidden'}`}>
-                                            {time}
-                                        </small>
                                         <small className={`pit${pit ? '' : ' uk-hidden'}`}>
                                             {pit}
                                         </small>
-                                        <small className={`fastest-lap${fastestLap || ' uk-hidden'}`}>
+                                        <small className={`fastest-lap${fastestLap ? '' : ' uk-hidden'}`}>
                                             <FontAwesomeIcon icon={faClock}/>
+                                        </small>
+                                        <small className={`time uk-text-truncate${time ? '' : ' uk-hidden'}`}>
+                                            {time}
                                         </small>
                                         <small className={`team ${team}`}>
                                             {code}
@@ -333,20 +333,22 @@ function GPV11n({race}) {
                 </div>
             </div>
             <div className="uk-width-auto uk-text-center">
-                {speeds.map((speed, key) => {
-                    const [t, d, i] = speed;
+                <div className="uk-button-group">
+                    {speeds.map((speed, key) => {
+                        const [t, d, i] = speed;
 
-                    return (
-                        <Button
-                            key={key}
-                            title={t}
-                            onClick={() => setDelay(d)}
-                            className="uk-button uk-button-secondary"
-                            disabled={!raceStarted}>
-                            <FontAwesomeIcon icon={i}/>
-                        </Button>
-                    )
-                })}
+                        return (
+                            <Button
+                                key={key}
+                                title={t}
+                                onClick={() => setDelay(d)}
+                                className="uk-button uk-button-secondary"
+                                disabled={!raceStarted}>
+                                <FontAwesomeIcon icon={i}/>
+                            </Button>
+                        )
+                    })}
+                </div>
 
                 <div className="uk-margin-top">
                     {showLights || (

@@ -161,7 +161,7 @@ function GPV11n({race}) {
 
         const
             {Results, PitStops} = race,
-            step = Math.round(lapWidth * (limit - 1) / lapsCount),
+            step = Math.round(lapWidth * (limit - 2) / lapsCount),
             retiredDrivers = [];
 
         if (raceStarted && !racePaused) {
@@ -245,7 +245,13 @@ function GPV11n({race}) {
                                 bottom = retired
                                     ? retiredDrivers.indexOf(code) * driverHeight
                                     : 'auto',
-                                css = {width, top, bottom},
+                                transitionDuration = `${delay}ms`,
+                                css = {
+                                    width,
+                                    top,
+                                    bottom,
+                                    transitionDuration
+                                },
                                 fastestLap = lap && currentLap === parseInt(lap),
                                 pit = ps ? `Pit${ps.stop}` : false,
                                 time = isFinalLap ? (Time?.time || status) : false;

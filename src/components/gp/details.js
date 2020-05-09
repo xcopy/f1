@@ -105,7 +105,9 @@ export default function GPDetails({match}) {
                                             data-uk-toggle="target: #modal"
                                             type="button"
                                             className="uk-button uk-button-secondary uk-button-small">
-                                            <FontAwesomeIcon icon={faPlayCircle}/>{' '}Visualization
+                                            <FontAwesomeIcon icon={faPlayCircle}/>
+                                            {' '}Visualization
+                                            {' '}<span className="uk-text-lowercase">&beta;</span>
                                         </button>
                                         <div data-uk-modal="" id="modal" className="uk-modal-container">
                                             <div className="uk-modal-dialog uk-modal-body">

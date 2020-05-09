@@ -10,6 +10,8 @@ import {
 import './v11n.scss';
 import moment from 'moment';
 import {normalizeResults} from '../../helpers';
+import LinkDriver from '../link/driver';
+import LinkTeam from '../link/team';
 
 function Button({title, onClick, children, ...attrs}) {
     return (
@@ -52,6 +54,7 @@ function GPV11n({race}) {
     const circuitEl = useRef(null);
 
     const
+        [busy, setBusy] = useState(true),
         [delay, setDelay] = useState(defaultDelay),
         [grid, setGrid] = useState({
             order: 0,
@@ -69,10 +72,14 @@ function GPV11n({race}) {
 
         [raceStarted, setRaceStarted] = useState(false),
         [racePaused, setRacePaused] = useState(false),
-        [raceFinished, setRaceFinished] = useState(false);
+        [raceFinished, setRaceFinished] = useState(false),
+
+        [winner, setWinner] = useState(),
+        [fastestLap, setFastestLap] = useState(),
+        [fastestPitStop, setFastestPitStop] = useState({});
 
     function init() {
-        let {Results, Laps} = race;
+        let {Results, PitStops, Laps} = race;
 
         Results = normalizeResults(race);
 
@@ -134,6 +141,25 @@ function GPV11n({race}) {
         setRaceStarted(false);
         setRacePaused(false);
         setRaceFinished(false);
+        setWinner(Results.find(r => {
+            const {position} = r;
+            return parseInt(position) === 1;
+        }));
+        setFastestLap(Results.find(r => {
+            const {FastestLap: {rank}} = r;
+            return parseInt(rank) === 1;
+        }));
+        setFastestPitStop(() => {
+            const {driverId, lap, duration} = PitStops.find((pitStop, i, arr) => {
+                const
+                    {duration} = pitStop,
+                    durations = arr.map(e => parseFloat(e.duration));
+                return duration === Math.min(...durations).toString();
+            });
+            const {Driver, Constructor} = Results.find(r => r.Driver.driverId === driverId);
+            return {lap, duration, Driver, Constructor};
+        });
+        setBusy(false);
     }
 
     // INIT
@@ -323,6 +349,10 @@ function GPV11n({race}) {
         delay
     ]);
 
+    if (busy) {
+        return null;
+    }
+
     return (
         <div data-uk-grid="" className="uk-grid-small">
             <div className="uk-width-expand">
@@ -377,8 +407,8 @@ function GPV11n({race}) {
                     </div>
                 </div>
             </div>
-            <div className="uk-width-auto uk-text-center">
-                <div className="uk-button-group">
+            <div className="uk-width-auto">
+                <div className="uk-button-group uk-text-center">
                     {speeds.map((speed, key) => {
                         const [t, d, i] = speed;
 
@@ -395,7 +425,7 @@ function GPV11n({race}) {
                     })}
                 </div>
 
-                <div className="uk-margin-top">
+                <div className="uk-margin-top uk-text-center">
                     {showLights || (
                         raceStarted || raceFinished || (
                             <Button
@@ -434,6 +464,32 @@ function GPV11n({race}) {
                         </Button>
                     )}
                 </div>
+
+                {raceFinished && (() => {
+                    const {Driver: D1, Constructor: C1, number} = winner;
+                    const {Driver: D2, Constructor: C2, FastestLap: {lap: lap1, Time: {time}}} = fastestLap;
+                    const {Driver: D3, Constructor: C3, lap: lap2, duration} = fastestPitStop;
+
+                    return (
+                        <dl className="uk-description-list uk-description-list-divider">
+                            <dt>Winner:</dt>
+                            <dd>
+                                <div>#{number} <LinkDriver driver={D1}/></div>
+                                <LinkTeam constructor={C1}/>
+                            </dd>
+                            <dt>Fastest Lap:</dt>
+                            <dd>
+                                <div>{time}, Lap #{lap1}</div>
+                                <LinkDriver driver={D2}/>, <LinkTeam constructor={C2}/>
+                            </dd>
+                            <dt>Fastest Pit Stop:</dt>
+                            <dd>
+                                <div>{duration}s, Lap #{lap2}</div>
+                                <LinkDriver driver={D3}/>, <LinkTeam constructor={C3}/>
+                            </dd>
+                        </dl>
+                    );
+                })()}
             </div>
         </div>
     );

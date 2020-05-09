@@ -17,7 +17,8 @@ export default function GPDetails({match}) {
 
     const
         [busy, setBusy] = useState(true),
-        [race, setRace] = useState(null);
+        [race, setRace] = useState(null),
+        [wiki, setWiki] = useState(null);
 
     useEffect(() => {
         let isMounted = true;
@@ -49,10 +50,27 @@ export default function GPDetails({match}) {
                 obj && objects.push(obj);
             });
 
+            const race$ = Object.assign({}, ...objects);
+
             if (isMounted) {
-                objects.length && setRace(Object.assign({}, ...objects));
-                setBusy(false);
+                objects.length && setRace(race$);
+                // setBusy(false);
             }
+
+            return race$;
+        }).then((race$) => {
+            const
+                {url} = race$,
+                {pathname} = new URL(url),
+                [,,path] = pathname.split('/');
+
+            axios.get(`https://en.wikipedia.org/api/rest_v1/page/summary/${path}`)
+                .then(response => {
+                    const {data} = response;
+
+                    setWiki(data);
+                    setBusy(false);
+                });
         });
 
         return () => {
@@ -68,6 +86,7 @@ export default function GPDetails({match}) {
                 }
 
                 const {
+                    url,
                     season,
                     date,
                     raceName,
@@ -81,14 +100,32 @@ export default function GPDetails({match}) {
                 return (
                     <>
                         <h1 className="uk-text-uppercase">{season} {raceName}</h1>
-                        <div className="uk-margin-medium-bottom">
-                            <FontAwesomeIcon icon={faCalendar}/>{' '}
-                            <Moment format="DD MMM YYYY" className="uk-text-bold">{date}</Moment> / Round {round}
-                            <div>
-                                <FontAwesomeIcon icon={faMapMarkerAlt}/>{' '}
-                                {circuitName} / {locality}, {country}
-                            </div>
+                        <FontAwesomeIcon icon={faCalendar}/>{' '}
+                        <Moment format="DD MMM YYYY" className="uk-text-bold">{date}</Moment> / Round {round}
+                        <div>
+                            <FontAwesomeIcon icon={faMapMarkerAlt}/>{' '}
+                            {circuitName} / {locality}, {country}
                         </div>
+                        <hr className="uk-divider-icon"/>
+                        {wiki && (() => {
+                            const {extract_html, thumbnail: {source}} = wiki;
+
+                            return (
+                                <>
+                                    <div data-uk-grid="" className="uk-grid-small">
+                                        <div className="uk-width-expand">
+                                            <div dangerouslySetInnerHTML={{__html: extract_html}}/>
+                                        </div>
+                                        <div className="uk-width-auto">
+                                            <a href={url} title={raceName}>
+                                                <img data-src={source} data-uk-img="" alt={circuitName}/>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <hr className="uk-divider-icon"/>
+                                </>
+                            );
+                        })()}
                         <div data-uk-grid="">
                             <div className="uk-width-1-6">
                                 <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">

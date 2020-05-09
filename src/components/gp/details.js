@@ -8,6 +8,7 @@ import GPFastestLaps from './fastest-laps';
 import GPStartingGrid from './starting-grid';
 import GPPitStops from './pit-stops';
 import GPV11n from './v11n';
+import GPHighlights from './highlights';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCalendar} from '@fortawesome/free-regular-svg-icons';
 import {faMapMarkerAlt, faPlayCircle} from '@fortawesome/free-solid-svg-icons';
@@ -134,6 +135,7 @@ export default function GPDetails({match}) {
                                     <li><a href="/">Starting Grid</a></li>
                                     <li><a href="/">Fastest Laps</a></li>
                                     <li><a href="/">Pit Stop Summary</a></li>
+                                    <li><a href="/">Highlights</a></li>
                                 </ul>
 
                                 {Laps.length > 0 && (
@@ -170,6 +172,9 @@ export default function GPDetails({match}) {
                                     </li>
                                     <li>
                                         <GPPitStops race={race}/>
+                                    </li>
+                                    <li>
+                                        <GPHighlights race={race}/>
                                     </li>
                                 </ul>
                             </div>

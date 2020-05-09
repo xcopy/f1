@@ -2,9 +2,11 @@ import React, {useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faClock} from '@fortawesome/free-regular-svg-icons';
-import
-    {faPlay, faPause, faForward, faFastForward, faFastBackward, faTrafficLight, faFlagCheckered}
-from '@fortawesome/free-solid-svg-icons';
+import {
+    faPlay, faPause, faRedo,
+    faForward, faFastForward, faFastBackward,
+    faTrafficLight, faFlagCheckered
+} from '@fortawesome/free-solid-svg-icons';
 import './v11n.scss';
 import moment from 'moment';
 import {normalizeResults} from '../../helpers';
@@ -47,45 +49,35 @@ function GPV11n({race}) {
             ['Faster', defaultDelay - 250, faFastForward]
         ];
 
-    const
-        [delay, setDelay] = useState(defaultDelay),
-        [grid, setGrid] = useState({order: 0, number: 0}),
-        [currentLap, setCurrentLap] = useState(1),
-        [lapsCount, setLapsCount] = useState(0),
-        [limit, setLimit] = useState(0),
-        [lights, setLights] = useState([]),
-        [showLights, setShowLights] = useState(false),
-        [raceStarted, setRaceStarted] = useState(false),
-        [racePaused, setRacePaused] = useState(false),
-        [laps, setLaps] = useState([]),
-        [drivers, setDrivers] = useState({});
-
     const circuitEl = useRef(null);
 
-    useEffect(() => {
-        const
-            modalEl = document.getElementById('modal'),
-            listener = () => {
-                setLimit(Math.floor(circuitEl.current['offsetWidth'] / lapWidth));
-            };
+    const
+        [delay, setDelay] = useState(defaultDelay),
+        [grid, setGrid] = useState({
+            order: 0,
+            number: 0
+        }),
+        [drivers, setDrivers] = useState({}),
 
-        modalEl.addEventListener('shown', listener);
+        [laps, setLaps] = useState([]),
+        [currentLap, setCurrentLap] = useState(1),
+        [lapsCount, setLapsCount] = useState(0),
+        [lapsShown, setLapsShown] = useState(0),
 
-        return () => {
-            modalEl.removeEventListener('shown', listener);
-        };
-    });
+        [lights, setLights] = useState([]),
+        [showLights, setShowLights] = useState(false),
 
-    useEffect(() => {
-        const
-            {Results, Laps: laps$} = race,
-            results = normalizeResults(race),
-            drivers$ = {};
+        [raceStarted, setRaceStarted] = useState(false),
+        [racePaused, setRacePaused] = useState(false),
+        [raceFinished, setRaceFinished] = useState(false);
 
-        laps$.forEach((lap, i) => {
+    function init() {
+        let {Results, Laps} = race;
+
+        Results = normalizeResults(race);
+
+        Laps.forEach((lap, i) => {
             const {Timings} = lap;
-
-            lap.order = i + 1;
 
             Timings.forEach(timing => {
                 const
@@ -98,35 +90,71 @@ function GPV11n({race}) {
                 timing.code = code;
                 timing.number = number;
             });
+
+            lap.order = i + 1;
+
+            setLaps(prevState => {
+                prevState[i] = lap;
+                return prevState;
+            });
         });
 
-        results
-            .forEach(result => {
-                const
-                    {
-                        grid,
-                        Driver: {code},
-                        Constructor: {constructorId: team}
-                    } = result,
-                    css = {
-                        width: lapWidth - (grid - 1),
-                        top: (grid - 1) * driverHeight
-                    };
+        Results.forEach(result => {
+            const {
+                grid,
+                Driver: {code},
+                Constructor: {constructorId: team}
+            } = result, css = {
+                width: lapWidth - (grid - 1),
+                top: (grid - 1) * driverHeight
+                // transition duration goes after start
+            };
 
-                drivers$[code] = {
-                    team,
-                    css,
-                    fastestLap: false,
-                    pit: false,
-                    time: false
+            setDrivers(prevState => {
+                return {
+                    ...prevState,
+                    [code]: {
+                        team,
+                        css,
+                        fastestLap: false,
+                        pit: false,
+                        time: false
+                    }
                 };
             });
+        });
 
-        setLapsCount(laps$.length);
-        setLaps(laps$);
-        setDrivers(drivers$);
-    }, [race]);
+        setDelay(defaultDelay);
+        setGrid({
+            order: 0,
+            number: 0
+        });
+        setCurrentLap(1);
+        setLapsCount(Laps.length);
+        setRaceStarted(false);
+        setRacePaused(false);
+        setRaceFinished(false);
+    }
 
+    // INIT
+    useEffect(init, [race]);
+
+    // LAPS SHOWN
+    useEffect(() => {
+        const
+            modalEl = document.getElementById('modal'),
+            listener = () => {
+                setLapsShown(Math.floor(circuitEl.current['offsetWidth'] / lapWidth));
+            };
+
+        modalEl.addEventListener('shown', listener);
+
+        return () => {
+            modalEl.removeEventListener('shown', listener);
+        };
+    });
+
+    // LIGHTS
     useEffect(() => {
         let intervalId = null;
 
@@ -156,12 +184,13 @@ function GPV11n({race}) {
         return () => clearInterval(intervalId);
     }, [showLights, lapsCount, lights, delay]);
 
+    // RACE
     useEffect(() => {
         let intervalId = null;
 
         const
             {Results, PitStops} = race,
-            step = Math.round(lapWidth * (limit - 2) / lapsCount),
+            step = Math.round(lapWidth * (lapsShown - 2) / lapsCount),
             retiredDrivers = [];
 
         if (raceStarted && !racePaused) {
@@ -182,7 +211,7 @@ function GPV11n({race}) {
 
                     // console.log(`--- LAP ${currentLap} ---`);
 
-                    if (currentLap <= lapsCount - limit + 1) {
+                    if (currentLap <= lapsCount - lapsShown + 1) {
                         setLaps(prevState => {
                             const lap = prevState[currentLap - 1];
 
@@ -237,7 +266,7 @@ function GPV11n({race}) {
                                 width = retired
                                     ? isFinalLap ? lapWidth : 0
                                     : isFinalLap
-                                        ? (limit - (xLaps ? xLaps[1] : 0) - 1) * lapWidth
+                                        ? (lapsShown - (xLaps ? xLaps[1] : 0) - 1) * lapWidth
                                         : prevWidth + step - offset,
                                 top = retired
                                     ? 'auto'
@@ -272,6 +301,7 @@ function GPV11n({race}) {
                     });
 
                     setCurrentLap(currentLap + 1);
+                    setRaceFinished(currentLap === lapsCount);
                 } else {
                     setCurrentLap(lapsCount);
                     setRaceStarted(false);
@@ -282,14 +312,23 @@ function GPV11n({race}) {
         }
 
         return () => clearInterval(intervalId);
-    }, [race, raceStarted, racePaused, currentLap, limit, lapsCount, laps, delay]);
+    }, [
+        race,
+        raceStarted,
+        racePaused,
+        laps,
+        currentLap,
+        lapsShown,
+        lapsCount,
+        delay
+    ]);
 
     return (
         <div data-uk-grid="" className="uk-grid-small">
             <div className="uk-width-expand">
                 <div id="visualization">
                     <div ref={circuitEl} id="circuit" style={{
-                        // width: (lapWidth * limit) + lapWidth,
+                        // width: (lapWidth * lapsShown) + lapWidth,
                         height: (Object.keys(drivers).length * driverHeight) + driverHeight
                     }}>
                         <div id="lights" className={showLights ? '' : 'uk-hidden'}>
@@ -358,7 +397,7 @@ function GPV11n({race}) {
 
                 <div className="uk-margin-top">
                     {showLights || (
-                        raceStarted || (
+                        raceStarted || raceFinished || (
                             <Button
                                 title="Start"
                                 onClick={() => setShowLights(true)}>
@@ -385,6 +424,14 @@ function GPV11n({race}) {
                                 </Button>
                             )}
                         </>
+                    )}
+
+                    {raceFinished && (
+                        <Button
+                            title="Reset"
+                            onClick={() => init()}>
+                            <FontAwesomeIcon icon={faRedo}/>
+                        </Button>
                     )}
                 </div>
             </div>

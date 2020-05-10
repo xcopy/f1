@@ -6,10 +6,10 @@ LinkDriver.propTypes = {
     driver: PropTypes.object.isRequired
 };
 
-export default function LinkDriver({driver}) {
+export default function LinkDriver({driver, children}) {
     const {driverId, givenName, familyName} = driver;
 
     return (
-        <Link to={`/drivers/${driverId}`}>{givenName} {familyName}</Link>
+        <Link to={`/drivers/${driverId}`}>{children || `${givenName} ${familyName}`}</Link>
     );
 };

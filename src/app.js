@@ -6,6 +6,7 @@ import SeasonResults from './components/season/results';
 import SeasonDrivers from './components/season/drivers';
 import SeasonTeams from './components/season/teams';
 import GPDetails from './components/gp/details';
+import Drivers from './components/drivers';
 
 import 'uikit/dist/css/uikit.min.css';
 import UIkit from 'uikit';
@@ -43,6 +44,8 @@ function App() {
 
                     return <Redirect to={`/${year}/results`}/>;
                 }}/>
+
+                <Route exact path="/drivers" component={Drivers}/>
 
                 <Redirect exact from="/" to={`/${currentYear}/results`}/>
 

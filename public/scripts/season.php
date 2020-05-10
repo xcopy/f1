@@ -1,20 +1,7 @@
 #!/usr/bin/php
 <?php
 
-function request($url) {
-    $url = 'https://ergast.com/api/f1/'.$url.'.json?limit=100';
-
-    /*var_dump($url);*/
-
-    $h = curl_init($url);
-
-    curl_setopt_array($h, [
-        CURLOPT_HEADER => false,
-        CURLOPT_RETURNTRANSFER => true
-    ]);
-
-    return curl_exec($h);
-}
+require 'request.php';
 
 ['y' => $year] = getopt('y:');
 
@@ -22,7 +9,7 @@ fwrite(STDOUT, "--- {$year} ---\n");
 
 $season = request($year.'/results/1');
 $races = json_decode($season)->MRData->RaceTable->Races;
-$baseDir = './api/f1/'.$year;
+$baseDir = '../api/f1/'.$year;
 
 @mkdir($baseDir.'/results', 0755, true);
 

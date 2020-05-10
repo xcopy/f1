@@ -154,7 +154,7 @@ function GPV11n({race}) {
                 const
                     {duration} = pitStop,
                     durations = arr.map(e => parseFloat(e.duration));
-                return duration === Math.min(...durations).toString();
+                return duration === Math.min(...durations).toFixed(3);
             });
             const {Driver, Constructor} = Results.find(r => r.Driver.driverId === driverId);
             return {lap, duration, Driver, Constructor};

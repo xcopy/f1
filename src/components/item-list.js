@@ -1,9 +1,10 @@
 import React, {Fragment, useEffect, useState} from 'react';
+import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEllipsisH} from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 
-function List({letter, items, props, filter = ''}) {
+function List({letter, items, props, onClick, filter = ''}) {
     const
         regexp = new RegExp(`(${filter})`, 'ig'),
         replace = '<span style="background-color: #FFFF33">$1</span>';
@@ -26,14 +27,19 @@ function List({letter, items, props, filter = ''}) {
 
                 return (
                     <dd key={`item-${i}`} className={visible ? '' : 'uk-hidden'}>
-                        {props.map((prop, j) => {
-                            return (
-                                <Fragment key={j}>
-                                    <span dangerouslySetInnerHTML={{__html: obj[prop]}}/>
-                                    {j === props.length - 1 ? '' : ', '}
-                                </Fragment>
-                            );
-                        })}
+                        <a href="/" onClick={(e) => {
+                            e.preventDefault();
+                            onClick(item);
+                        }}>
+                            {props.map((prop, j) => {
+                                return (
+                                    <Fragment key={j}>
+                                        <span dangerouslySetInnerHTML={{__html: obj[prop]}}/>
+                                        {j === props.length - 1 ? '' : ', '}
+                                    </Fragment>
+                                );
+                            })}
+                        </a>
                     </dd>
                 );
             })}
@@ -41,7 +47,7 @@ function List({letter, items, props, filter = ''}) {
     );
 }
 
-export default function ItemList({heading, items, props}) {
+export default function ItemList({heading, items, props, onClick}) {
     const
         [data, setData] = useState({}),
         [modalContent, setModalContent] = useState([]),
@@ -122,7 +128,7 @@ export default function ItemList({heading, items, props}) {
     let visibleCards = 0;
 
     return (
-        <div className="uk-padding-small">
+        <>
             <div data-uk-grid="" className="uk-grid-small uk-flex uk-flex-middle">
                 <div className="uk-width-3-5">
                     <h1 className="uk-text-uppercase">{heading}</h1>
@@ -157,7 +163,7 @@ export default function ItemList({heading, items, props}) {
                     return showCard > 0 ? (
                         <div key={letter} className="uk-width-1-5">
                             <div className="uk-card uk-card-default uk-card-body">
-                                <List {...{letter, items: arr, props, filter}}/>
+                                <List {...{letter, items: arr, props, onClick, filter}}/>
 
                                 {itemsCount > visibleItemsCount && (
                                     <button
@@ -192,7 +198,7 @@ export default function ItemList({heading, items, props}) {
                                 </div>
                                 <div className="uk-modal-body">
                                     <div className="uk-column-1-3">
-                                        <List {...{items: arr, props}}/>
+                                        <List {...{items: arr, props, onClick}}/>
                                     </div>
                                 </div>
                             </>
@@ -200,6 +206,13 @@ export default function ItemList({heading, items, props}) {
                     })()}
                 </div>
             </div>
-        </div>
+        </>
     );
 }
+
+ItemList.propTypes = {
+    heading: PropTypes.string.isRequired,
+    items: PropTypes.array.isRequired,
+    props: PropTypes.array.isRequired,
+    onClick: PropTypes.func.isRequired
+};

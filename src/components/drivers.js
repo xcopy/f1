@@ -4,29 +4,34 @@ import LinkDriver from './link/driver';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faEllipsisH} from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
-import styled from 'styled-components';
 
-const NameSpan = styled.span`
-    &.hl {
-        background-color: yellow;
-    }
-`;
+function List({letter, drivers, filter = ''}) {
+    const
+        regexp = new RegExp(`(${filter})`, 'ig'),
+        replace = '<span style="background-color: #FFFF33">$1</span>';
 
-function List({letter, drivers}) {
     return (
         <dl className="uk-margin-remove">
-            {letter && (
-                <dt className="uk-text-large">{letter}</dt>
-            )}
+            {letter && <dt className="uk-text-large">{letter}</dt>}
             {drivers.map(driver => {
-                const {driverId, familyName, givenName, visible} = driver;
+                let {driverId, familyName, givenName, visible} = driver;
+
+                if (filter) {
+                    familyName = regexp.test(familyName)
+                        ? familyName.replace(regexp, replace)
+                        : familyName;
+
+                    givenName = regexp.test(givenName)
+                        ? givenName.replace(regexp, replace)
+                        : givenName
+                }
 
                 return (
                     <dd key={driverId} className={visible ? '' : 'uk-hidden'}>
                         <LinkDriver driver={driver}>
-                            <NameSpan>{familyName}</NameSpan>,
+                            <span dangerouslySetInnerHTML={{__html: familyName}}/>,
                             {' '}
-                            <NameSpan>{givenName}</NameSpan>
+                            <span dangerouslySetInnerHTML={{__html: givenName}}/>
                         </LinkDriver>
                     </dd>
                 );
@@ -108,18 +113,11 @@ export default function Drivers() {
                 toggleDrivers(drivers, false);
 
                 drivers.forEach((driver, i) => {
-                    const
-                        {givenName, familyName} = driver,
-                        str1 = givenName.toLowerCase().includes(filter$),
-                        str2 = familyName.toLowerCase().includes(filter$);
-                        // , regexp = new RegExp(filter$, 'ig');
+                    const {givenName, familyName} = driver;
 
                     driver.visible = filter$
-                        ? str1 || str2
+                        ? givenName.toLowerCase().includes(filter$) || familyName.toLowerCase().includes(filter$)
                         : i < 9;
-
-                    // str1 && (driver.givenName = givenName.replace(regexp, '+'));
-                    // str2 && (driver.familyName = familyName.replace(regexp, '-'));
                 });
 
                 state[letter] = drivers;
@@ -169,7 +167,7 @@ export default function Drivers() {
                             return showCard > 0 ? (
                                 <div key={letter} className="uk-width-1-5">
                                     <div className="uk-card uk-card-default uk-card-body">
-                                        <List letter={letter} drivers={drivers}/>
+                                        <List letter={letter} drivers={drivers} filter={filter}/>
                                         {driversCount > visibleDriversCount && (
                                             <button
                                                 onClick={() => showAllDrivers(letter)}

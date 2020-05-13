@@ -1,6 +1,8 @@
 import React from 'react';
 import {Switch, Route, Redirect} from 'react-router-dom';
+import styled from 'styled-components';
 import Navbar from './components/navbar';
+import Footer from './components/footer';
 import SeasonLayout, {minYear, currentYear} from './components/season/layout';
 import SeasonResults from './components/season/results';
 import SeasonDrivers from './components/season/drivers';
@@ -25,37 +27,54 @@ const SeasonRouteWrapper = ({component: Component, ...rest}) => {
     );
 }
 
+const Layout = styled.div`
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    main {
+        flex-grow: 1;
+    }
+`;
+
 function App() {
     return (
-        <>
-            <Navbar/>
+        <Layout>
+            <header>
+                <Navbar/>
+            </header>
 
-            <Switch>
-                <SeasonRouteWrapper exact path="/:year(\d+)/results" component={SeasonResults}/>
-                <SeasonRouteWrapper exact path="/:year(\d+)/results/:round(\d+)" component={GPDetails}/>
+            <main>
+                <Switch>
+                    <SeasonRouteWrapper exact path="/:year(\d+)/results" component={SeasonResults}/>
+                    <SeasonRouteWrapper exact path="/:year(\d+)/results/:round(\d+)" component={GPDetails}/>
 
-                <SeasonRouteWrapper path="/:year(\d+)/drivers" component={SeasonDrivers}/>
-                <SeasonRouteWrapper path="/:year(\d+)/teams" component={SeasonTeams}/>
+                    <SeasonRouteWrapper path="/:year(\d+)/drivers" component={SeasonDrivers}/>
+                    <SeasonRouteWrapper path="/:year(\d+)/teams" component={SeasonTeams}/>
 
-                <Route exact path="/:year(\d+)" render={({match}) => {
-                    let {params: {year}} = match;
+                    <Route exact path="/:year(\d+)" render={({match}) => {
+                        let {params: {year}} = match;
 
-                    // must be 1950 >= year =< 2020
-                    (year < minYear || year > currentYear) && (year = currentYear);
+                        // must be 1950 >= year =< 2020
+                        (year < minYear || year > currentYear) && (year = currentYear);
 
-                    return <Redirect to={`/${year}/results`}/>;
-                }}/>
+                        return <Redirect to={`/${year}/results`}/>;
+                    }}/>
 
-                <Route exact path="/drivers" component={DriverList}/>
-                <Route exact path="/drivers/:id(\w+)" component={DriverDetails}/>
+                    <Route exact path="/drivers" component={DriverList}/>
+                    <Route exact path="/drivers/:id(\w+)" component={DriverDetails}/>
 
-                <Redirect exact from="/" to={`/${currentYear}/results`}/>
+                    <Redirect exact from="/" to={`/${currentYear}/results`}/>
 
-                <Route render={() => (
-                    <h1 className="uk-margin-medium uk-text-center">Page not found. Sorry.</h1>
-                )}/>
-            </Switch>
-        </>
+                    <Route render={() => (
+                        <h1 className="uk-padding-small uk-margin-remove uk-text-center">Page not found. Sorry.</h1>
+                    )}/>
+                </Switch>
+            </main>
+
+            <footer>
+                <Footer/>
+            </footer>
+        </Layout>
     );
 }
 

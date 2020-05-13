@@ -14,7 +14,7 @@ const SeasonResultsTable = ({busy, data, match}) => {
     return (
         <>
             <h1 className="uk-text-uppercase">{year} Race Results</h1>
-            {busy ? <div data-uk-spinner=""/> : (() => {
+            {busy ? <span data-uk-spinner=""/> : (() => {
                 const {RaceTable: {Races}} = data;
 
                 const tableColumns = [

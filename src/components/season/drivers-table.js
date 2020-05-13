@@ -14,7 +14,7 @@ const SeasonDriversTable = ({busy, data, match}) => {
     return (
         <>
             <h1 className="uk-text-uppercase">{year} Driver Standings</h1>
-            {busy ? <div data-uk-spinner=""/> : (() => {
+            {busy ? <span data-uk-spinner=""/> : (() => {
                 const {
                     StandingsTable: {
                         StandingsLists: [

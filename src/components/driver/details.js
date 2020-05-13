@@ -1,52 +1,84 @@
 import React, {useEffect, useState} from 'react';
 import API from '../../API';
+import Alert from '../alert';
+import withWikiData from '../with-wiki-data';
 
-export default function DriverDetails({match}) {
+const DriverDetails = ({match, onReady, wiki}) => {
     const
-        {params: {id}} = match,
         [busy, setBusy] = useState(true),
         [driver, setDriver] = useState();
 
     useEffect(() => {
-        API.get('drivers').then(response => {
-            const {data: {DriverTable: {Drivers}}} = response;
+        let isMounted = true;
+        const {params: {id}} = match;
 
-            setDriver(Drivers.find(driver => {
-                const {driverId} = driver;
-                return driverId === id;
-            }));
-            setBusy(false);
+        API.get('drivers').then(response => {
+            const
+                {data: {DriverTable: {Drivers}}} = response,
+                Driver = Drivers.find(driver => {
+                    const {driverId} = driver;
+                    return driverId === id;
+                });
+
+            if (isMounted) {
+                if (Driver) {
+                    setDriver(Driver);
+                    onReady(Driver.url).then(() => setBusy(false));
+                } else {
+                    setBusy(false);
+                }
+            }
         });
-    }, [id]);
+
+        return () => {
+            isMounted = false;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div className="uk-padding-small">
             {busy ? <span data-uk-spinner=""/> : driver ? (() => {
-                const {familyName, givenName} = driver;
+                const {url, familyName, givenName} = driver;
 
                 return (
                     <>
                         <h1 className="uk-text-uppercase">{givenName} {familyName}</h1>
-                        <div data-uk-grid="" className="uk-grid-small">
-                            <div>
-                                <div className="uk-card uk-card-default uk-card-body">
-                                    <h3>Championships</h3>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="uk-card uk-card-default uk-card-body">
-                                    <h3>Wins</h3>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="uk-card uk-card-default uk-card-body">
-                                    <h3>Podiums</h3>
-                                </div>
-                            </div>
-                        </div>
+                        <hr className="uk-divider-icon"/>
+                        {wiki && (() => {
+                            const {title, extract_html: html, thumbnail: {source: src} = {}} = wiki;
+
+                            return (
+                                <>
+                                    <div data-uk-grid="" className="uk-grid-small">
+                                        {src && (
+                                            <div className="uk-width-auto">
+                                                <a href={url} title={title}>
+                                                    <img data-src={src} data-uk-img="" alt={title}/>
+                                                </a>
+                                            </div>
+                                        )}
+
+                                        {html && (
+                                            <div
+                                                className="uk-width-expand"
+                                                dangerouslySetInnerHTML={{__html: html}}
+                                            />
+                                        )}
+
+                                        <div className={`uk-width-${html && src ? '1-3' : 'expand'}`}>
+                                            todo
+                                        </div>
+                                    </div>
+                                    <hr className="uk-divider-icon"/>
+                                </>
+                            );
+                        })()}
                     </>
                 );
-            })() : <div className="uk-text-center">Driver not found</div>}
+            })() : <Alert>Driver not found.</Alert>}
         </div>
     );
 }
+
+export default withWikiData(DriverDetails);

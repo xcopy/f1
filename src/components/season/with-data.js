@@ -2,20 +2,16 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import API from '../../API';
 
-const seasonWithData = (WrappedComponent, url) => {
+export default function seasonWithData(WrappedComponent) {
     return class extends Component {
-        constructor(props) {
-            super(props);
-
-            this.state = {
-                busy: true,
-                data: {}
-            };
+        state = {
+            busy: true,
+            data: {}
         }
 
         cancelSource = axios.CancelToken.source();
 
-        componentDidMount() {
+        fetchData(url) {
             API.get(url, {
                 cancelToken: this.cancelSource.token
             }).then(response => {
@@ -35,9 +31,13 @@ const seasonWithData = (WrappedComponent, url) => {
             // 1. local state: busy, data
             // 2. route props of the wrapped component: history, location, match
             // as it's props
-            return <WrappedComponent {...this.state} {...this.props}/>;
+            return (
+                <WrappedComponent
+                    {...this.state}
+                    {...this.props}
+                    onReady={(url) => this.fetchData(url)}
+                />
+            );
         }
     }
-};
-
-export default seasonWithData;
+}

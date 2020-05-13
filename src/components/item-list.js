@@ -1,10 +1,10 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faEllipsisH} from '@fortawesome/free-solid-svg-icons';
+import {faExpandAlt, faCompressAlt} from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 
-function List({letter, items, props, onClick, filter = ''}) {
+function List({letter, array, props, onClick, filter = ''}) {
     const
         regexp = new RegExp(`(${filter})`, 'ig'),
         replace = '<span style="background-color: #FFFF33">$1</span>';
@@ -13,7 +13,7 @@ function List({letter, items, props, onClick, filter = ''}) {
         <dl className="uk-margin-remove">
             {letter && <dt className="uk-text-large">{letter}</dt>}
 
-            {items.map((item, i) => {
+            {array.map((item, i) => {
                 const {visible} = item;
                 const obj = {...item};
 
@@ -50,7 +50,6 @@ function List({letter, items, props, onClick, filter = ''}) {
 export default function ItemList({heading, items, props, onClick}) {
     const
         [data, setData] = useState({}),
-        [modalContent, setModalContent] = useState([]),
         [filter, setFilter] = useState('');
 
     useEffect(() => {
@@ -60,38 +59,42 @@ export default function ItemList({heading, items, props, onClick}) {
             const state = {};
 
             letters.forEach(letter => {
-                const arr = items.filter(item => {
+                const array = items.filter(item => {
                     const {[props[0]]: str} = item;
                     return str.charAt(0) === letter;
                 });
 
-                arr.sort();
+                array.sort();
 
-                state[letter] = arr.map((item, i) => {
-                    item.visible = i < 9;
-                    return item;
-                });
+                state[letter] = {
+                    expanded: false,
+                    items: array.map((item, i) => {
+                        item.visible = i < 9;
+                        return item;
+                    })
+                };
             });
 
             return state;
         });
     }, [items, props]);
 
-    function toggleItems(arr, visible = true) {
-        arr.forEach(item => {
+    function toggleItems(array, visible = true) {
+        array.forEach(item => {
             item.visible = visible;
         });
     }
 
-    function showAllItems(letter) {
-        const arr = _.cloneDeep(data[letter]);
-
-        toggleItems(arr);
-
-        setModalContent([
-            letter,
-            arr
-        ]);
+    function toggleCard(letter, toggle = true) {
+        setData(prevState => {
+            return {
+                ...prevState,
+                [letter]: {
+                    ...prevState[letter],
+                    expanded: toggle
+                }
+            };
+        });
     }
 
     function handleSearch(e) {
@@ -103,11 +106,11 @@ export default function ItemList({heading, items, props, onClick}) {
             const state = {};
 
             Object.keys(prevState).forEach(letter => {
-                const arr = _.cloneDeep(prevState[letter]);
+                const {expanded, items: array} = _.cloneDeep(prevState[letter]);
 
-                toggleItems(arr, false);
+                toggleItems(array, false);
 
-                arr.forEach((item, i) => {
+                array.forEach((item, i) => {
                     let found = 0;
 
                     props.forEach(prop => {
@@ -118,7 +121,10 @@ export default function ItemList({heading, items, props, onClick}) {
                     item.visible = f ? found > 0 : i < 9;
                 });
 
-                state[letter] = arr;
+                state[letter] = {
+                    expanded,
+                    items: array
+                };
             });
 
             return state;
@@ -153,27 +159,27 @@ export default function ItemList({heading, items, props, onClick}) {
                 className="uk-grid-small uk-grid-match">
                 {Object.keys(data).map(letter => {
                     const
-                        arr = data[letter],
-                        itemsCount = arr.length,
-                        visibleItemsCount = arr.filter(item => item.visible).length,
+                        {expanded, items: array} = data[letter],
+                        visibleItemsCount = array.filter(item => item.visible).length,
                         showCard = visibleItemsCount > 0;
 
                     visibleCards += Number(showCard);
 
                     return showCard > 0 ? (
-                        <div key={letter} className="uk-width-1-5">
+                        <div key={letter} className={`uk-width-1-${expanded ? 1 : 5}`}>
                             <div className="uk-card uk-card-default uk-card-body">
-                                <List {...{letter, items: arr, props, onClick, filter}}/>
-
-                                {itemsCount > visibleItemsCount && (
-                                    <button
-                                        onClick={() => showAllItems(letter)}
-                                        data-uk-toggle="target: #modal"
-                                        title={`Show all ${itemsCount}`}
-                                        className="uk-button uk-button-link">
-                                        <FontAwesomeIcon icon={faEllipsisH}/>
-                                    </button>
+                                {array.length > visibleItemsCount && (
+                                    <div className="uk-card-badge">
+                                        <button
+                                            onClick={() => toggleCard(letter, !expanded)}
+                                            title={expanded ? 'Collapse' : 'Expand'}
+                                            className="uk-button uk-button-link">
+                                            <FontAwesomeIcon icon={expanded ? faCompressAlt : faExpandAlt}/>
+                                        </button>
+                                    </div>
                                 )}
+
+                                <List {...{letter, array, props, onClick, filter}}/>
                             </div>
                         </div>
                     ) : null;
@@ -185,27 +191,6 @@ export default function ItemList({heading, items, props, onClick}) {
                     No matching results found for <b>&laquo;{filter}&raquo;</b>
                 </div>
             ) : null}
-
-            <div id="modal" data-uk-modal="">
-                <div data-uk-overflow-auto="" className="uk-modal-dialog">
-                    {(() => {
-                        const [letter, arr = []] = modalContent;
-
-                        return (
-                            <>
-                                <div className="uk-modal-header">
-                                    <h2 className="uk-modal-title">{letter}</h2>
-                                </div>
-                                <div className="uk-modal-body">
-                                    <div className="uk-column-1-3">
-                                        <List {...{items: arr, props, onClick}}/>
-                                    </div>
-                                </div>
-                            </>
-                        );
-                    })()}
-                </div>
-            </div>
         </>
     );
 }

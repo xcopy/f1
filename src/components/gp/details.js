@@ -13,20 +13,16 @@ import GPHighlights from './highlights';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCalendar} from '@fortawesome/free-regular-svg-icons';
 import {faMapMarkerAlt, faPlayCircle} from '@fortawesome/free-solid-svg-icons';
-import _ from 'lodash';
+import withWikiData from '../with-wiki-data';
 
-export default function GPDetails({match}) {
+const GPDetails = ({match, onReady, wiki}) => {
     const
         {params: {year, round}} = match,
         [busy, setBusy] = useState(true),
-        [race, setRace] = useState(null),
-        [wiki, setWiki] = useState(null);
+        [race, setRace] = useState(null);
 
     useEffect(() => {
         let isMounted = true;
-
-        setRace(null);
-        setBusy(true);
 
         const basePath = `${year}/${round}`;
 
@@ -52,30 +48,14 @@ export default function GPDetails({match}) {
                 obj && objects.push(obj);
             });
 
-            let state = {};
-
-            if (isMounted && objects.length) {
-                state = Object.assign({}, ...objects);
-                setRace(state);
-            }
-
-            return state;
-        }).then((state) => {
-            if (!_.isEmpty(state)) {
-                const
-                    {url} = state,
-                    {pathname} = new URL(url),
-                    [, , path] = pathname.split('/');
-
-                axios.get(`https://en.wikipedia.org/api/rest_v1/page/summary/${path}`)
-                    .then(response => {
-                        const {data} = response;
-
-                        setWiki(data);
-                        setBusy(false);
-                    });
-            } else {
-                setBusy(false);
+            if (isMounted) {
+                if (objects.length) {
+                    const Race = Object.assign({}, ...objects);
+                    setRace(Race);
+                    onReady(Race.url).then(() => setBusy(false));
+                } else {
+                    setBusy(false);
+                }
             }
         }).catch((/*error*/) => {
             // const {response: {status}} = error;
@@ -85,6 +65,7 @@ export default function GPDetails({match}) {
         return () => {
             isMounted = false;
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [year, round]);
 
     return (
@@ -117,17 +98,18 @@ export default function GPDetails({match}) {
                         </div>
                         <hr className="uk-divider-icon"/>
                         {wiki && (() => {
-                            const {extract_html, thumbnail: {source}} = wiki;
+                            const {extract_html: html, thumbnail: {source: src}} = wiki;
 
                             return (
                                 <>
                                     <div data-uk-grid="" className="uk-grid-small">
-                                        <div className="uk-width-expand">
-                                            <div dangerouslySetInnerHTML={{__html: extract_html}}/>
-                                        </div>
+                                        <div
+                                            className="uk-width-expand"
+                                            dangerouslySetInnerHTML={{__html: html}}
+                                        />
                                         <div className="uk-width-auto">
-                                            <a href={url} title={raceName}>
-                                                <img data-src={source} data-uk-img="" alt={circuitName}/>
+                                            <a href={url} title={circuitName}>
+                                                <img data-src={src} data-uk-img="" alt={circuitName}/>
                                             </a>
                                         </div>
                                     </div>
@@ -193,3 +175,5 @@ export default function GPDetails({match}) {
         </>
     );
 };
+
+export default withWikiData(GPDetails);

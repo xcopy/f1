@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Alert from '../alert';
 
 const highlightsArr = [
     {s: 2019, r: 1, id: 'NdD8gEGj0to'}
@@ -13,7 +14,11 @@ export default function GPHighlights({race}) {
     }) || {};
 
     if (!ytVideoId) {
-        return <div className="uk-text-center">There are no highlights to display</div>;
+        return (
+            <div style={{minHeight: 500}}>
+                <Alert>There are no highlights to display.</Alert>
+            </div>
+        );
     }
 
     return (

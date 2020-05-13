@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import API from '../../API';
+import Alert from '../alert';
 import Moment from 'react-moment';
 import GPRaceResult from './race-result';
 import GPQualifying from './qualifying';
@@ -12,11 +13,11 @@ import GPHighlights from './highlights';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCalendar} from '@fortawesome/free-regular-svg-icons';
 import {faMapMarkerAlt, faPlayCircle} from '@fortawesome/free-solid-svg-icons';
+import _ from 'lodash';
 
 export default function GPDetails({match}) {
-    const {params: {year, round}} = match;
-
     const
+        {params: {year, round}} = match,
         [busy, setBusy] = useState(true),
         [race, setRace] = useState(null),
         [wiki, setWiki] = useState(null);
@@ -51,27 +52,34 @@ export default function GPDetails({match}) {
                 obj && objects.push(obj);
             });
 
-            const race$ = Object.assign({}, ...objects);
+            let state = {};
 
-            if (isMounted) {
-                objects.length && setRace(race$);
-                // setBusy(false);
+            if (isMounted && objects.length) {
+                state = Object.assign({}, ...objects);
+                setRace(state);
             }
 
-            return race$;
-        }).then((race$) => {
-            const
-                {url} = race$,
-                {pathname} = new URL(url),
-                [,,path] = pathname.split('/');
+            return state;
+        }).then((state) => {
+            if (!_.isEmpty(state)) {
+                const
+                    {url} = state,
+                    {pathname} = new URL(url),
+                    [, , path] = pathname.split('/');
 
-            axios.get(`https://en.wikipedia.org/api/rest_v1/page/summary/${path}`)
-                .then(response => {
-                    const {data} = response;
+                axios.get(`https://en.wikipedia.org/api/rest_v1/page/summary/${path}`)
+                    .then(response => {
+                        const {data} = response;
 
-                    setWiki(data);
-                    setBusy(false);
-                });
+                        setWiki(data);
+                        setBusy(false);
+                    });
+            } else {
+                setBusy(false);
+            }
+        }).catch((/*error*/) => {
+            // const {response: {status}} = error;
+            setBusy(false);
         });
 
         return () => {
@@ -81,9 +89,9 @@ export default function GPDetails({match}) {
 
     return (
         <>
-            {busy ? <div data-uk-spinner=""/> : (() => {
+            {busy ? <span data-uk-spinner=""/> : (() => {
                 if (!race) {
-                    return 'There are no results to display';
+                    return <Alert/>;
                 }
 
                 const {

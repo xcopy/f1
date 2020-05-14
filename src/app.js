@@ -10,6 +10,7 @@ import SeasonTeams from './components/season/teams';
 import GPDetails from './components/gp/details';
 import DriverList from './components/driver/list';
 import DriverDetails from './components/driver/details';
+import TeamList from './components/team/list';
 
 import 'uikit/dist/css/uikit.min.css';
 import UIkit from 'uikit';
@@ -59,6 +60,8 @@ function App() {
 
                         return <Redirect to={`/${year}/results`}/>;
                     }}/>
+
+                    <Route exact path="/teams" component={TeamList}/>
 
                     <Route exact path="/drivers" component={DriverList}/>
                     <Route exact path="/drivers/:id([a-z-_]+)" component={DriverDetails}/>

@@ -96,44 +96,54 @@ export default function ItemList({heading, items, props, onClick}) {
 
                     return showCard > 0 ? (
                         <div key={letter} className="uk-width-1-5">
-                            <div className="uk-card uk-card-default uk-card-body">
-                                <dl className="uk-margin-remove uk-overflow-auto" style={{maxHeight: 300}}>
-                                    <dt className="uk-text-large">{letter}</dt>
+                            <div className="uk-card uk-card-default">
+                                <div className="uk-card-header">
+                                    <span className="uk-text-large">{letter}</span>
+                                    <small>({array.length})</small>
+                                </div>
+                                <div className="uk-card-body">
+                                    <dl className="uk-margin-remove uk-overflow-auto" style={{maxHeight: 240}}>
+                                        {array.map((item, i) => {
+                                            const {visible} = item;
+                                            const item$ = {...item};
 
-                                    {array.map((item, i) => {
-                                        const {visible} = item;
-                                        const item$ = {...item};
+                                            filter && props.forEach(prop => {
+                                                const {[prop]: str} = item$;
 
-                                        filter && props.forEach(prop => {
-                                            const {[prop]: str} = item$;
+                                                // just replace string value(s)
+                                                // equivalent to:
+                                                // item.prop = test ? item.prop.replace(...) : item.prop
+                                                item$[prop] = regexp.test(str)
+                                                    ? str.replace(regexp, replace)
+                                                    : str;
+                                            });
 
-                                            // just replace string value(s)
-                                            // equivalent to:
-                                            // item.prop = test ? item.prop.replace(...) : item.prop
-                                            item$[prop] = regexp.test(str)
-                                                ? str.replace(regexp, replace)
-                                                : str;
-                                        });
-
-                                        return (
-                                            <dd key={`item-${i}`} className={visible ? '' : 'uk-hidden'}>
-                                                <a href="/" onClick={(e) => {
-                                                    e.preventDefault();
-                                                    onClick(item);
-                                                }}>
-                                                    {props.map((prop, j) => {
-                                                        return (
-                                                            <Fragment key={j}>
-                                                                <span dangerouslySetInnerHTML={{__html: item$[prop]}}/>
-                                                                {j === props.length - 1 ? '' : ', '}
-                                                            </Fragment>
-                                                        );
-                                                    })}
-                                                </a>
-                                            </dd>
-                                        );
-                                    })}
-                                </dl>
+                                            return (
+                                                <dd
+                                                    key={`item-${i}`}
+                                                    className={`uk-text-truncate${visible ? '' : ' uk-hidden'}`}>
+                                                    <a
+                                                        href="/"
+                                                        title={props.map(prop => item[prop]).join(', ')}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            onClick(item);
+                                                        }}
+                                                    >
+                                                        {props.map((prop, j) => {
+                                                            return (
+                                                                <Fragment key={j}>
+                                                                    <span dangerouslySetInnerHTML={{__html: item$[prop]}}/>
+                                                                    {j === props.length - 1 ? '' : ', '}
+                                                                </Fragment>
+                                                            );
+                                                        })}
+                                                    </a>
+                                                </dd>
+                                            );
+                                        })}
+                                    </dl>
+                                </div>
                             </div>
                         </div>
                     ) : null;

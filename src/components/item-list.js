@@ -194,7 +194,7 @@ export default function ItemList({heading, items, props, onClick}) {
             <div id="modal" data-uk-modal="">
                 <div data-uk-overflow-auto="" className="uk-modal-dialog">
                     {(() => {
-                        const [letter, array] = modalData;
+                        const [letter, array = []] = modalData;
 
                         return (
                             <>

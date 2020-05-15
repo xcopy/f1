@@ -68,16 +68,15 @@ const SeasonResults = ({busy, data, match, onReady}) => {
                     lapsCell,
                     timeCell
                 ];
-                const tableData = [];
 
-                Races.forEach(race => {
+                const tableData = Races.map(race => {
                     const {round, date, raceName, Circuit, Results: [results]} = race;
                     const {laps, Driver, Constructor, Time} = results;
 
-                    tableData.push({
+                    return {
                         round, date, raceName, laps,
                         Circuit, Driver, Constructor, Time
-                    });
+                    };
                 });
 
                 return <DataTable keyField="round" columns={tableColumns} data={tableData}/>;

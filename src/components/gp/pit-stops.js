@@ -8,7 +8,7 @@ import DataTable, {
 } from '../data-table';
 
 export default function GPPitStops({race}) {
-    const data = [];
+    const {Results, PitStops} = race;
     const columns = [
         {
             name: 'Stops',
@@ -30,21 +30,18 @@ export default function GPPitStops({race}) {
             selector: 'duration'
         }
     ];
-
-    const {Results, PitStops} = race;
-
-    PitStops.forEach(pitStop => {
+    const data = PitStops.map(pitStop => {
         const {stop, lap, time, duration, driverId} = pitStop;
         const {number, Driver, Constructor} = Results.find(result => {
             const {Driver: {driverId: id}} = result;
             return id === driverId;
         });
 
-        data.push({
+        return {
             id: `${driverId}-${lap}`,
             stop, lap, duration, number,
             Driver, Constructor, Time: {time}
-        });
+        };
     });
 
     return <DataTable {...{columns, data}}/>

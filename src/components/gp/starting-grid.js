@@ -10,7 +10,6 @@ import DataTable, {
 import {normalizeResults} from '../../helpers';
 
 export default function GPStartingGrid({race}) {
-    const data = [];
     const columns = [
         positionCell,
         numberCell,
@@ -23,8 +22,8 @@ export default function GPStartingGrid({race}) {
         {QualifyingResults} = race,
         results = normalizeResults(race);
 
-    results
-        .forEach(result => {
+    const data = results
+        .map(result => {
             const {
                 grid,
                 number,
@@ -37,14 +36,14 @@ export default function GPStartingGrid({race}) {
                 return driverId$ === driverId;
             }) || {};
 
-            data.push({
+            return {
                 position: grid, number,
                 Driver, Constructor,
                 Time: {
                     time: Q3 || Q2 || Q1
                 },
                 driverId
-            });
+            };
         });
 
     return <DataTable keyField="driverId" {...{columns, data}}/>;

@@ -15,16 +15,13 @@ export default function ItemList({heading, items, props, onClick}) {
             const state = {};
 
             letters.forEach(letter => {
-                const array = items.filter(item => {
+                state[letter] = items.filter(item => {
                     const {[props[0]]: str} = item;
+
+                    item.visible = true;
+
                     return str.charAt(0) === letter;
                 });
-
-                array.sort();
-
-                array.forEach(item => item.visible = true);
-
-                state[letter] = array;
             });
 
             return state;

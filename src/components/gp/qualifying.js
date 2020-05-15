@@ -8,7 +8,7 @@ import DataTable, {
 } from '../data-table';
 
 export default function GPQualifying({race}) {
-    const data = [];
+    const {QualifyingResults} = race;
     const columns = [
         positionCell,
         numberCell,
@@ -18,19 +18,16 @@ export default function GPQualifying({race}) {
         {name: 'Q2', selector: 'Q2'},
         {name: 'Q3', selector: 'Q3'}
     ];
-
-    const {QualifyingResults} = race;
-
-    QualifyingResults.forEach(result => {
+    const data = QualifyingResults.map(result => {
         const {number, position, Driver, Constructor, Q1, Q2, Q3} = result;
         const {driverId} = Driver;
 
-        data.push({
+        return {
             number, position,
             Driver, Constructor,
             Q1, Q2, Q3,
             driverId
-        });
+        };
     });
 
     return <DataTable keyField="driverId" {...{columns, data}}/>

@@ -37,16 +37,15 @@ const SeasonDrivers = ({busy, data, match, onReady}) => {
                     winsCell,
                     pointsCell
                 ];
-                const tableData = [];
+                const tableData = DriverStandings.map(standings => {
+                    const
+                        {position, wins, points, Driver, Constructors} = standings,
+                        {nationality} = Driver;
 
-                DriverStandings.forEach(standings => {
-                    const {position, wins, points, Driver, Constructors} = standings;
-                    const {nationality} = Driver;
-
-                    tableData.push({
+                    return {
                         position, wins, points, nationality,
                         Driver, Constructors
-                    });
+                    };
                 })
 
                 return <DataTable keyField="position" columns={tableColumns} data={tableData}/>;

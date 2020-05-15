@@ -9,7 +9,7 @@ import DataTable, {
 } from '../data-table';
 
 export default function GPFastestLaps({race}) {
-    const data = [];
+    const {Results} = race;
     const columns = [
         positionCell,
         numberCell,
@@ -25,20 +25,14 @@ export default function GPFastestLaps({race}) {
             selector: 'speed'
         }
     ];
-
-    const {Results} = race;
-    const results = Results.filter(result => {
-        const {FastestLap} = result;
-        return FastestLap;
-    });
-
-    results
+    const data = Results
+        .filter(result => result.FastestLap)
         .sort((next, current) => {
             const {FastestLap: {rank: rank1}} = next;
             const {FastestLap: {rank: rank2}} = current;
             return rank1 - rank2;
         })
-        .forEach(result => {
+        .map(result => {
             const {
                 number,
                 Driver,
@@ -52,12 +46,12 @@ export default function GPFastestLaps({race}) {
             } = result;
             const {driverId} = Driver;
 
-            data.push({
+            return {
                 position: rank,
                 number, lap, speed,
                 Driver, Constructor, Time,
                 driverId
-            });
+            };
         });
 
     return <DataTable keyField="driverId" {...{columns, data}}/>

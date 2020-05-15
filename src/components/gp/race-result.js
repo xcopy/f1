@@ -11,7 +11,7 @@ import DataTable, {
 } from '../data-table';
 
 export default function GPRaceResult({race}) {
-    const data = [];
+    const {Results: results} = race;
     const columns = [
         positionCell,
         numberCell,
@@ -21,10 +21,7 @@ export default function GPRaceResult({race}) {
         timeCell,
         pointsCell
     ];
-
-    const {Results: results} = race;
-
-    results.forEach(result => {
+    const data = results.map(result => {
         const {
             positionText,
             number,
@@ -37,11 +34,11 @@ export default function GPRaceResult({race}) {
         } = result;
         const {driverId} = Driver;
 
-        data.push({
+        return {
             positionText, number, laps, points, status,
             Driver, Constructor, Time,
             driverId
-        });
+        };
     });
 
     return <DataTable keyField="driverId" {...{columns, data}}/>

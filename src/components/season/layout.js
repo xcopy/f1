@@ -3,6 +3,7 @@ import {NavLink} from 'react-router-dom';
 import {generatePath} from 'react-router';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faList, faUser, faCar} from '@fortawesome/free-solid-svg-icons';
+import _ from 'lodash';
 
 export const minYear = 2016;
 export const currentYear = new Date().getFullYear();
@@ -24,12 +25,7 @@ export default class SeasonLayout extends Component {
     render() {
         const {match, children} = this.props;
         const {params: {year}} = match;
-        const years = [];
-
-        for (let y = currentYear; y >= minYear; y--) {
-            years.push(y.toString());
-        }
-
+        const years = _.range(currentYear, minYear - 1, -1);
         const links = {
             results: [faList, 'Results'],
             drivers: [faUser, 'Drivers'],

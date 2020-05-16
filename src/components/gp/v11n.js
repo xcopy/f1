@@ -8,8 +8,7 @@ import {
     faTrafficLight, faFlagCheckered
 } from '@fortawesome/free-solid-svg-icons';
 import './v11n.scss';
-import moment from 'moment';
-import {normalizeResults} from '../../helpers';
+import {normalizeResults, timeToMs} from '../../helpers';
 import LinkDriver from '../link/driver';
 import LinkTeam from '../link/team';
 
@@ -150,14 +149,19 @@ function GPV11n({race}) {
             return parseInt(rank) === 1;
         }));
         setFastestPitStop(() => {
-            const {driverId, lap, duration} = PitStops.find((pitStop, i, arr) => {
-                const
-                    {duration} = pitStop,
-                    durations = arr.map(e => parseFloat(e.duration));
-                return duration === Math.min(...durations).toFixed(3);
-            });
-            const {Driver, Constructor} = Results.find(r => r.Driver.driverId === driverId);
-            return {lap, duration, Driver, Constructor};
+            const
+                {driverId, lap, duration} = PitStops.find((el, i, arr) => {
+                    const times = arr.map(({duration}) => timeToMs(duration));
+                    return timeToMs(el.duration) === Math.min(...times);
+                }),
+                {Driver, Constructor} = Results.find(({Driver}) => Driver.driverId === driverId);
+
+            return {
+                lap,
+                duration,
+                Driver,
+                Constructor
+            };
         });
         setBusy(false);
     }
@@ -229,10 +233,7 @@ function GPV11n({race}) {
                             return currentLap === parseInt(number);
                         }),
                         // get all actual times (ms)
-                        times = Timings.map(t => {
-                            const {time} = t;
-                            return moment.duration(`0:${time}`).as('ms');
-                        }),
+                        times = Timings.map(({time}) => timeToMs(time)),
                         fastestTime = Math.min(...times); // ms
 
                     // console.log(`--- LAP ${currentLap} ---`);
@@ -257,7 +258,7 @@ function GPV11n({race}) {
                                 Time
                             } = r,
                             {
-                                time = null,
+                                time = '',
                                 position = 0
                             } = {...Timings.find(t => code === t.code)},
                             ps = PitStops.find(p => {
@@ -273,9 +274,7 @@ function GPV11n({race}) {
                                 : (xLaps ? pos : -1),
                             // calc time gap
                             retired = order === -1,
-                            ms = retired
-                                ? 0
-                                : moment.duration(`0:${time}`).as('ms'),
+                            ms = retired ? 0 : timeToMs(time),
                             timeDiff = ms - fastestTime,
                             // calc the range gap between drivers based on the time gap
                             offset = timeDiff === 0

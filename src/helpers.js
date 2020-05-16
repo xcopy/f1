@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 function isZero(r) {
     const {grid} = r;
     return parseInt(grid) === 0;
@@ -31,4 +33,19 @@ export function normalizeResults(race) {
     return Results
         .filter(r => !isZero(r))
         .concat(Results.filter(r => isZero(r)));
+}
+
+/**
+ * @param {string} timeString
+ * @returns {number} milliseconds
+ */
+export function timeToMs(timeString) {
+    let [hms, ms] = timeString.split('.');
+    const parts = hms.split(':');
+
+    for (let i = 0; i < 3 - parts.length; i++) {
+        hms = '0:' + hms;
+    }
+
+    return moment.duration(`${hms}.${ms}`).as('ms');
 }

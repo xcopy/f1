@@ -123,6 +123,7 @@ $lapWidth: 100px;
               "alfa": (#9B0000),
               "sauber": (#9B0000),
               "williams": (#C7E2F5, #000),
+              "manor": (#0079DF)
             );
 
             @each $name, $colors in $teams {

@@ -87,11 +87,8 @@ function GPV11n({race}) {
 
             Timings.forEach(timing => {
                 const
-                    {driverId: $driverId} = timing,
-                    {number, Driver: {code}} = Results.find(result => {
-                        const {Driver: {driverId}} = result;
-                        return $driverId === driverId;
-                    });
+                    {driverId: id} = timing,
+                    {number, Driver: {code}} = Results.find(({Driver: {driverId}}) => id === driverId);
 
                 timing.code = code;
                 timing.number = number;
@@ -140,14 +137,8 @@ function GPV11n({race}) {
         setRaceStarted(false);
         setRacePaused(false);
         setRaceFinished(false);
-        setWinner(Results.find(r => {
-            const {position} = r;
-            return parseInt(position) === 1;
-        }));
-        setFastestLap(Results.find(r => {
-            const {FastestLap: {rank}} = r;
-            return parseInt(rank) === 1;
-        }));
+        setWinner(Results.find(({position}) => parseInt(position) === 1));
+        setFastestLap(Results.find(({FastestLap: {rank}}) => parseInt(rank) === 1));
         setFastestPitStop(() => {
             const
                 {driverId, lap, duration} = PitStops.find((el, i, arr) => {
@@ -228,10 +219,7 @@ function GPV11n({race}) {
                 if (currentLap <= lapsCount) {
                     const
                         isFinalLap = currentLap === lapsCount,
-                        {Timings} = laps.find(lap => {
-                            const {number} = lap;
-                            return currentLap === parseInt(number);
-                        }),
+                        {Timings} = laps.find(({number}) => currentLap === parseInt(number)),
                         // get all actual times (ms)
                         times = Timings.map(({time}) => timeToMs(time)),
                         fastestTime = Math.min(...times); // ms
@@ -261,10 +249,7 @@ function GPV11n({race}) {
                                 time = '',
                                 position = 0
                             } = {...Timings.find(t => code === t.code)},
-                            ps = PitStops.find(p => {
-                                const {lap, driverId: driverId$} = p;
-                                return currentLap === parseInt(lap) && driverId === driverId$;
-                            }),
+                            ps = PitStops.find(({lap, driverId: id}) => currentLap === parseInt(lap) && driverId === id),
                             xLaps = status.match(/\+(\d+)/),
                             // driver is:
                             order = position

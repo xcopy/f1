@@ -32,10 +32,7 @@ export default function GPPitStops({race}) {
     ];
     const data = PitStops.map(pitStop => {
         const {stop, lap, time, duration, driverId} = pitStop;
-        const {number, Driver, Constructor} = Results.find(result => {
-            const {Driver: {driverId: id}} = result;
-            return id === driverId;
-        });
+        const {number, Driver, Constructor} = Results.find(({Driver: {driverId: id}}) => id === driverId);
 
         return {
             id: `${driverId}-${lap}`,

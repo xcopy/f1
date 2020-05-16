@@ -15,10 +15,7 @@ const DriverDetails = ({match, onReady, wiki}) => {
         API.get('drivers').then(response => {
             const
                 {data: {DriverTable: {Drivers}}} = response,
-                Driver = Drivers.find(driver => {
-                    const {driverId} = driver;
-                    return driverId === id;
-                });
+                Driver = Drivers.find(({driverId}) => driverId === id);
 
             if (isMounted) {
                 if (Driver) {

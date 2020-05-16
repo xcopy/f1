@@ -23,14 +23,13 @@ export default class SeasonLayout extends Component {
     }
 
     render() {
-        const {match, children} = this.props;
-        const {params: {year}} = match;
+        const {match: {params: {year}}, children} = this.props;
         const years = _.range(currentYear, minYear - 1, -1);
-        const links = {
-            results: [faList, 'Results'],
-            drivers: [faUser, 'Drivers'],
-            teams: [faCar, 'Teams']
-        };
+        const links = [
+            ['results', faList],
+            ['drivers', faUser],
+            ['teams', faCar]
+        ];
 
         return (
             <>
@@ -46,17 +45,13 @@ export default class SeasonLayout extends Component {
                         </div>
 
                         <div className="uk-width-auto">
-                            {Object.keys(links).map(key => {
-                                const [icon, label] = links[key];
-
-                                return (
-                                    <NavLink to={`/${year}/${key}`} key={key}
-                                        className="uk-button uk-button-default"
-                                        activeClassName="uk-button-primary">
-                                        <FontAwesomeIcon icon={icon}/>{' '}{label}
-                                    </NavLink>
-                                )
-                            })}
+                            {links.map(([label, icon]) =>
+                                <NavLink to={`/${year}/${label}`} key={label}
+                                    className="uk-button uk-button-default"
+                                    activeClassName="uk-button-primary">
+                                    <FontAwesomeIcon icon={icon}/>{' '}{label}
+                                </NavLink>
+                            )}
                         </div>
                     </div>
                 </div>

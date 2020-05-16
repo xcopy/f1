@@ -13,7 +13,7 @@ export function normalizeResults(race) {
         const
             {grid} = r,
             // need to re-calculate after update
-            grids = Results.map(r => parseInt(r.grid));
+            grids = Results.map(({grid}) => parseInt(grid));
 
         if (parseInt(grid) === 0) {
             r.grid = (Math.max(...grids) + 1).toString();

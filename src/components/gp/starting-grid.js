@@ -31,10 +31,7 @@ export default function GPStartingGrid({race}) {
                 Constructor
             } = result;
             const {driverId} = Driver;
-            const {Q1, Q2, Q3} = QualifyingResults.find(r => {
-                const {Driver: {driverId: driverId$}} = r;
-                return driverId$ === driverId;
-            }) || {};
+            const {Q1, Q2, Q3} = QualifyingResults.find(({Driver: {driverId: id}}) => id === driverId) || {};
 
             return {
                 position: grid, number,

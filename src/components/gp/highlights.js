@@ -8,10 +8,7 @@ const highlightsArr = [
 
 export default function GPHighlights({race}) {
     const {season, round, raceName} = race;
-    const {id: ytVideoId} = highlightsArr.find(h => {
-        const {s, r} = h;
-        return parseInt(season) === s && parseInt(round) === r;
-    }) || {};
+    const {id: ytVideoId} = highlightsArr.find(({s, r}) => parseInt(season) === s && parseInt(round) === r) || {};
 
     if (!ytVideoId) {
         return (

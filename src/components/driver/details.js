@@ -1,7 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import API from '../../API';
 import Alert from '../alert';
+import Moment from 'react-moment';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faWikipediaW} from '@fortawesome/free-brands-svg-icons';
 import withWikiData from '../with-wiki-data';
+import DriverAchievements from './achievements';
 
 const DriverDetails = ({match, onReady, wiki}) => {
     const
@@ -36,7 +40,7 @@ const DriverDetails = ({match, onReady, wiki}) => {
     return (
         <div className="uk-padding-small">
             {busy ? <span data-uk-spinner=""/> : driver ? (() => {
-                const {url, familyName, givenName} = driver;
+                const {url, familyName, givenName, nationality, dateOfBirth} = driver;
 
                 return (
                     <>
@@ -47,24 +51,47 @@ const DriverDetails = ({match, onReady, wiki}) => {
 
                             return (
                                 <>
-                                    <div data-uk-grid="" className="uk-grid-small">
+                                    <div
+                                        data-uk-grid=""
+                                        data-uk-height-match="target: > div > .uk-card"
+                                        className="uk-grid-small">
                                         {src && (
                                             <div className="uk-width-auto">
-                                                <a href={url} title={title}>
-                                                    <img data-src={src} data-uk-img="" alt={title}/>
-                                                </a>
+                                                <div className="uk-card uk-card-default uk-card-body">
+                                                    <a href={url} title={title}>
+                                                        <img data-src={src} data-uk-img="" alt={title}/>
+                                                    </a>
+                                                </div>
                                             </div>
                                         )}
 
-                                        {html && (
-                                            <div
-                                                className="uk-width-expand"
-                                                dangerouslySetInnerHTML={{__html: html}}
-                                            />
-                                        )}
+                                        <div className="uk-width-expand">
+                                            <div className="uk-card uk-card-default uk-card-body">
+                                                <div>
+                                                    <b>Born:</b>
+                                                    {' '}
+                                                    <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
+                                                </div>
+                                                <div className="uk-margin-bottom">
+                                                    <b>Nationality:</b>
+                                                    {' '}
+                                                    {nationality}
+                                                </div>
+                                                {html && (
+                                                    <>
+                                                        <div dangerouslySetInnerHTML={{__html: html}}/>
+                                                        <FontAwesomeIcon icon={faWikipediaW}/>
+                                                        {' '}
+                                                        <a href={url} target="_blank" rel="noopener noreferrer">Read more</a>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
 
                                         <div className={`uk-width-${html && src ? '1-3' : 'expand'}`}>
-                                            todo
+                                            <div className="uk-card uk-card-default uk-card-body">
+                                                <DriverAchievements/>
+                                            </div>
                                         </div>
                                     </div>
                                     <hr className="uk-divider-icon"/>

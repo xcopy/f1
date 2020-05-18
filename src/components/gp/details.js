@@ -13,9 +13,9 @@ import GPV11n from './v11n';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCalendar} from '@fortawesome/free-regular-svg-icons';
 import {faMapMarkerAlt, faPlayCircle} from '@fortawesome/free-solid-svg-icons';
-import withWikiData from '../with-wiki-data';
+import Wiki from '../wiki';
 
-const GPDetails = ({match, onReady, wiki}) => {
+const GPDetails = ({match}) => {
     const
         {params: {year, round}} = match,
         [busy, setBusy] = useState(true),
@@ -49,13 +49,8 @@ const GPDetails = ({match, onReady, wiki}) => {
             });
 
             if (isMounted) {
-                if (objects.length) {
-                    const Race = Object.assign({}, ...objects);
-                    setRace(Race);
-                    onReady(Race.url).then(() => setBusy(false));
-                } else {
-                    setBusy(false);
-                }
+                objects.length && setRace(Object.assign({}, ...objects));
+                setBusy(false);
             }
         }).catch((/*error*/) => {
             // const {response: {status}} = error;
@@ -97,26 +92,8 @@ const GPDetails = ({match, onReady, wiki}) => {
                             {circuitName} / {locality}, {country}
                         </div>
                         <hr className="uk-divider-icon"/>
-                        {wiki && (() => {
-                            const {extract_html: html, thumbnail: {source: src}} = wiki;
-
-                            return (
-                                <>
-                                    <div data-uk-grid="" className="uk-grid-small">
-                                        <div
-                                            className="uk-width-expand"
-                                            dangerouslySetInnerHTML={{__html: html}}
-                                        />
-                                        <div className="uk-width-auto">
-                                            <a href={url} title={circuitName}>
-                                                <img data-src={src} data-uk-img="" alt={circuitName}/>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <hr className="uk-divider-icon"/>
-                                </>
-                            );
-                        })()}
+                        <Wiki url={url}/>
+                        <hr className="uk-divider-icon"/>
                         <div data-uk-grid="">
                             <div className="uk-width-1-6">
                                 <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
@@ -172,4 +149,4 @@ const GPDetails = ({match, onReady, wiki}) => {
     );
 };
 
-export default withWikiData(GPDetails);
+export default GPDetails;

@@ -64,7 +64,7 @@ function App() {
                     <Route exact path="/teams" component={TeamList}/>
 
                     <Route exact path="/drivers" component={DriverList}/>
-                    <Route exact path="/drivers/:id([a-z-_]+)" component={DriverDetails}/>
+                    <Route exact path="/drivers/:driverId([a-z0-9-_]+)" component={DriverDetails}/>
 
                     <Redirect exact from="/" to={`/${currentYear}/results`}/>
 

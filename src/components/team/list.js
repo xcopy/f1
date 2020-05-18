@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 // import {useHistory} from 'react-router-dom';
-import API from '../../API';
+import {localApi} from '../../API';
 import ItemList from '../item-list';
 
 export default function TeamList() {
@@ -12,7 +12,7 @@ export default function TeamList() {
     useEffect(() => {
         let isMounted = true;
 
-        API.get('constructors').then(response => {
+        localApi.get('constructors').then(response => {
             const {data: {ConstructorTable: {Constructors: Teams}}} = response;
 
             if (isMounted) {

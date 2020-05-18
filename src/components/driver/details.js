@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import API from '../../API';
+import {localApi} from '../../API';
 import Alert from '../alert';
 import Moment from 'react-moment';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -16,7 +16,7 @@ const DriverDetails = ({match, onReady, wiki}) => {
         let isMounted = true;
         const {params: {id}} = match;
 
-        API.get('drivers').then(response => {
+        localApi.get('drivers').then(response => {
             const
                 {data: {DriverTable: {Drivers}}} = response,
                 Driver = Drivers.find(({driverId}) => driverId === id);

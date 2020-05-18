@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom';
-import API from '../../API';
+import {localApi} from '../../API';
 import ItemList from '../item-list';
 
 export default function DriverList() {
@@ -12,7 +12,7 @@ export default function DriverList() {
     useEffect(() => {
         let isMounted = true;
 
-        API.get('drivers').then(response => {
+        localApi.get('drivers').then(response => {
             const {data: {DriverTable: {Drivers}}} = response;
 
             if (isMounted) {

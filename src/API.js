@@ -1,23 +1,26 @@
 import axios from 'axios';
 
-// const host = process.env.NODE_ENV === 'development' ? 'localhost:3000' : 'ergast.com';
+const axiosInstances = [
+    axios.create({baseURL: '/api/f1/'}),
+    axios.create({baseURL: 'https://ergast.com/api/f1/'})
+];
 
-const axiosInstance = axios.create({
-    baseURL: '/api/f1/'
-    // baseURL: `https://${host}/api/f1/`,
-    // timeout: 2000
+axiosInstances.forEach(instance => {
+    instance.interceptors.request.use((config) => {
+        config.params = {limit: 1000};
+
+        config.url = `${config.url}.json`;
+
+        return config;
+    });
+
+    instance.interceptors.response.use((response) => {
+        const {data: {MRData}} = response;
+
+        response.data = MRData;
+
+        return response;
+    });
 });
 
-axiosInstance.interceptors.request.use((config) => {
-    config.params = {limit: 100};
-    config.url = `${config.url}.json`;
-    return config;
-});
-
-axiosInstance.interceptors.response.use((response) => {
-    const {MRData} = response.data;
-    response.data = MRData;
-    return response;
-});
-
-export default axiosInstance;
+export const [localApi, remoteApi] = axiosInstances;

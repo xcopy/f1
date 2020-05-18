@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-import API from '../../API';
+import {localApi} from '../../API';
 import Alert from '../alert';
 import Moment from 'react-moment';
 import GPRaceResult from './race-result';
@@ -24,15 +24,15 @@ const GPDetails = ({match, onReady, wiki}) => {
     useEffect(() => {
         let isMounted = true;
 
-        const basePath = `${year}/${round}`;
+        const path = `${year}/${round}`;
 
         axios.all([
             // the first 3 are always there
-            API.get(`${basePath}/results`),
-            API.get(`${basePath}/qualifying`),
-            API.get(`${basePath}/pitstops`),
+            localApi.get(`${path}/results`),
+            localApi.get(`${path}/qualifying`),
+            localApi.get(`${path}/pitstops`),
             // except the laps
-            API.get(`${basePath}/laps`).catch(() => null)
+            localApi.get(`${path}/laps`).catch(() => null)
         ]).then(responses => {
             const objects = [];
 

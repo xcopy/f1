@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import API from '../../API';
+import {localApi} from '../../API';
 
 export default function seasonWithData(WrappedComponent) {
     return class extends Component {
@@ -12,7 +12,7 @@ export default function seasonWithData(WrappedComponent) {
         cancelSource = axios.CancelToken.source();
 
         fetchData(url) {
-            API.get(url, {
+            localApi.get(url, {
                 cancelToken: this.cancelSource.token
             }).then(response => {
                 this.setState({

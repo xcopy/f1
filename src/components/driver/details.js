@@ -3,14 +3,14 @@ import axios from 'axios';
 import {localApi, remoteApi} from '../../API';
 import _ from 'lodash';
 import Moment from 'react-moment';
-import DataTable, {positionCell, pointsCell, winsCell, teamCell} from '../data-table';
 import Spinner from '../spinner';
 import Alert from '../alert';
 import Wiki from '../wiki';
 import LinkTeam from '../link/team';
 import DriverRecords from './records';
+import DriverStandings from './standings';
 
-const DriverDetails = ({match}) => {
+export default function DriverDetails({match}) {
     const
         [busy, setBusy] = useState(true),
         [data, setData] = useState({});
@@ -139,38 +139,7 @@ const DriverDetails = ({match}) => {
                                 </div>
                             </div>
                             <hr className="uk-divider-icon"/>
-                            {Standings ? (() => {
-                                const columns = [{
-                                    name: 'Season',
-                                    selector: 'season',
-                                    center: true,
-                                    grow: 0
-                                }, {
-                                    name: 'Rounds',
-                                    center: true,
-                                    selector: 'round'
-                                }, teamCell, positionCell, winsCell, pointsCell];
-
-                                columns.forEach(column => Object.assign(column, {sortable: true}));
-
-                                const data = Standings.map(standing => {
-                                    const {
-                                        season, round,
-                                        DriverStandings: [{position, points, wins, Constructors}]
-                                    } = standing;
-
-                                    return {
-                                        season,
-                                        round,
-                                        Constructors,
-                                        position: parseInt(position),
-                                        wins: parseInt(wins),
-                                        points: parseInt(points)
-                                    };
-                                });
-
-                                return <DataTable keyField="season" {...{columns, data}}/>;
-                            })() : <Spinner/>}
+                            {Standings ? <DriverStandings standings={Standings}/> : <Spinner/>}
                         </>
                     );
                 })() : <Alert>Driver not found.</Alert>;
@@ -178,5 +147,3 @@ const DriverDetails = ({match}) => {
         </div>
     );
 }
-
-export default DriverDetails;

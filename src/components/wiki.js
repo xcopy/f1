@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faWikipediaW} from '@fortawesome/free-brands-svg-icons';
+import Spinner from './spinner';
 
 class Wiki extends Component {
     state = {
@@ -48,7 +49,7 @@ class Wiki extends Component {
                     <h3 className="uk-card-title">Summary</h3>
                 </div>
                 <div className="uk-card-body">
-                    {busy ? <span data-uk-spinner=""/> : (() => {
+                    {busy ? <Spinner/> : (() => {
                         const {
                             title,
                             extract_html: html,
@@ -71,7 +72,9 @@ class Wiki extends Component {
                                             <a href={url} target="_blank" rel="noopener noreferrer">Read more</a>
                                         </>
                                     )}
-                                    {children}
+                                    <div>
+                                        {children}
+                                    </div>
                                 </div>
                             </div>
                         );

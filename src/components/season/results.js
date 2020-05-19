@@ -8,6 +8,7 @@ import DataTable, {
     timeCell
 } from '../data-table';
 import seasonWithData from './with-data';
+import Spinner from '../spinner';
 
 const SeasonResults = ({busy, data, match, onReady}) => {
     const {params: {year}} = match;
@@ -20,7 +21,7 @@ const SeasonResults = ({busy, data, match, onReady}) => {
     return (
         <>
             <h1 className="uk-text-uppercase">{year} Race Results</h1>
-            {busy ? <span data-uk-spinner=""/> : (() => {
+            {busy ? <Spinner/> : (() => {
                 const {RaceTable: {Races}} = data;
 
                 const tableColumns = [

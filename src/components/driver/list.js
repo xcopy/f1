@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import {localApi} from '../../API';
 import ItemList from '../item-list';
+import Spinner from '../spinner';
 
 export default function DriverList() {
     const
@@ -28,7 +29,7 @@ export default function DriverList() {
 
     return (
         <div className="uk-padding-small">
-            {busy ? <span data-uk-spinner=""/> : (
+            {busy ? <Spinner/> : (
                 <ItemList
                     heading="Drivers"
                     items={drivers}

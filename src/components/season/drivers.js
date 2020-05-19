@@ -8,6 +8,7 @@ import DataTable, {
     pointsCell
 } from '../data-table';
 import seasonWithData from './with-data';
+import Spinner from '../spinner';
 
 const SeasonDrivers = ({busy, data, match, onReady}) => {
     const {params: {year}} = match;
@@ -20,7 +21,7 @@ const SeasonDrivers = ({busy, data, match, onReady}) => {
     return (
         <>
             <h1 className="uk-text-uppercase">{year} Driver Standings</h1>
-            {busy ? <span data-uk-spinner=""/> : (() => {
+            {busy ? <Spinner/> : (() => {
                 const {
                     StandingsTable: {
                         StandingsLists: [

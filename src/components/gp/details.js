@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import {localApi} from '../../API';
+import Spinner from '../spinner';
 import Alert from '../alert';
 import Moment from 'react-moment';
 import GPRaceResult from './race-result';
@@ -65,7 +66,7 @@ const GPDetails = ({match}) => {
 
     return (
         <>
-            {busy ? <span data-uk-spinner=""/> : (() => {
+            {busy ? <Spinner/> : (() => {
                 if (!race) {
                     return <Alert/>;
                 }

@@ -72,7 +72,7 @@ class Wiki extends Component {
                                             <a href={url} target="_blank" rel="noopener noreferrer">Read more</a>
                                         </>
                                     )}
-                                    <div>
+                                    <div className="uk-margin-top">
                                         {children}
                                     </div>
                                 </div>

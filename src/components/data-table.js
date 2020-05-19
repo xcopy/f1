@@ -52,6 +52,7 @@ export const positionCell = {
     })(),
     center: true,
     grow: 0,
+    selector: 'position',
     cell: row => {
         const {positionText, position} = row;
         return positionText || position;

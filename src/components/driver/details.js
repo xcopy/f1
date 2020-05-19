@@ -3,10 +3,12 @@ import axios from 'axios';
 import {localApi, remoteApi} from '../../API';
 import _ from 'lodash';
 import Moment from 'react-moment';
+import DataTable, {positionCell, pointsCell, winsCell, teamCell} from '../data-table';
+import Spinner from '../spinner';
 import Alert from '../alert';
 import Wiki from '../wiki';
 import LinkTeam from '../link/team';
-import DriverAchievements from './achievements';
+import DriverRecords from './records';
 
 const DriverDetails = ({match}) => {
     const
@@ -16,34 +18,38 @@ const DriverDetails = ({match}) => {
     useEffect(() => {
         let isMounted = true;
         const {params: {driverId}} = match;
+        const api = new URLSearchParams(document.location.search).get('dev')
+            ? localApi
+            : remoteApi;
+        const path = `drivers/${driverId}`;
 
-        axios.all([
-            // localApi.get(`drivers/${driverId}`),
-            // localApi.get(`drivers/${driverId}/driverStandings`)
-            remoteApi.get(`drivers/${driverId}`),
-            remoteApi.get(`drivers/${driverId}/driverStandings`)
-        ]).then(axios.spread((D, S) => {
-            const {
-                data: {
-                    DriverTable: {
-                        Drivers: [Driver]
-                    }
-                }
-            } = D;
-            const {
-                data: {
-                    StandingsTable: {
-                        StandingsLists: Standings
-                    }
-                }
-            } = S;
+        api.get(`${path}`).then(response => {
+            const {data: {DriverTable: {Drivers: [Driver]}}} = response;
 
             if (isMounted) {
-                Driver && setData({
-                    driver: Driver,
-                    standings: Standings
-                });
+                setData({Driver});
                 setBusy(false);
+            }
+        });
+
+        axios.all([
+            api.get(`${path}/driverStandings`),
+            api.get(`${path}/qualifying/1`),
+            api.get(`${path}/results`)
+        ]).then(axios.spread((S, Q, R) => {
+            const {data: {StandingsTable: {StandingsLists: Standings}}} = S;
+            const {data: {RaceTable: {Races: QualifyingResults}}} = Q;
+            const {data: {RaceTable: {Races: Results}}} = R;
+
+            if (isMounted) {
+                setData(prevState => {
+                    return {
+                        ...prevState,
+                        Standings,
+                        QualifyingResults,
+                        Results
+                    };
+                });
             }
         }));
 
@@ -54,21 +60,21 @@ const DriverDetails = ({match}) => {
     }, []);
 
     function getSeasonsList() {
-        const {standings} = data;
+        const {Standings} = data;
 
         return (
             <>
-                {standings.length}
+                {Standings.length}
                 {' '}
-                ({standings.map(({season}) => season).join(', ')})
+                ({Standings.map(({season}) => season).join(', ')})
             </>
         );
     }
 
     function getTeamsList() {
-        const {standings} = data;
+        const {Standings} = data;
 
-        let constructors = standings.map(standing => {
+        let constructors = Standings.map(standing => {
             const {
                 DriverStandings: [{Constructors}]
             } = standing;
@@ -90,11 +96,11 @@ const DriverDetails = ({match}) => {
 
     return (
         <div className="uk-padding-small">
-            {busy ? <span data-uk-spinner=""/> : (() => {
-                const {driver} = data;
+            {busy ? <Spinner/> : (() => {
+                const {Driver, Standings} = data;
 
-                return driver ? (() => {
-                    const {url, familyName, givenName, nationality, dateOfBirth} = driver;
+                return Driver ? (() => {
+                    const {url, familyName, givenName, nationality, dateOfBirth} = Driver;
 
                     return (
                         <>
@@ -106,17 +112,19 @@ const DriverDetails = ({match}) => {
                                 className="uk-grid-small">
                                 <div className="uk-width-3-4">
                                     <Wiki url={url}>
-                                        <ul className="uk-list">
-                                            <li>
-                                                Born <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>, {nationality}
-                                            </li>
-                                            <li>
-                                                <b>Seasons:</b> {getSeasonsList()}
-                                            </li>
-                                            <li>
-                                                <b>Teams:</b> {getTeamsList()}
-                                            </li>
-                                        </ul>
+                                        {Standings ? (
+                                            <ul className="uk-list uk-margin-remove">
+                                                <li>
+                                                    Born <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>, {nationality}
+                                                </li>
+                                                <li>
+                                                    <b>Seasons:</b> {getSeasonsList()}
+                                                </li>
+                                                <li>
+                                                    <b>Teams:</b> {getTeamsList()}
+                                                </li>
+                                            </ul>
+                                        ) : <Spinner/>}
                                     </Wiki>
                                 </div>
                                 <div className="uk-width-1-4">
@@ -125,14 +133,44 @@ const DriverDetails = ({match}) => {
                                             <h3 className="uk-card-title">Records</h3>
                                         </div>
                                         <div className="uk-card-body">
-                                            <DriverAchievements data={data}/>
-                                            <div className="uk-text-muted uk-margin-top">(Records in progress)</div>
+                                            {Standings ? <DriverRecords data={data}/> : <Spinner/>}
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <hr className="uk-divider-icon"/>
-                            <div className="uk-text-muted uk-text-center">(Results in progress)</div>
+                            {Standings ? (() => {
+                                const columns = [{
+                                    name: 'Season',
+                                    selector: 'season',
+                                    center: true,
+                                    grow: 0
+                                }, {
+                                    name: 'Rounds',
+                                    center: true,
+                                    selector: 'round'
+                                }, teamCell, positionCell, winsCell, pointsCell];
+
+                                columns.forEach(column => Object.assign(column, {sortable: true}));
+
+                                const data = Standings.map(standing => {
+                                    const {
+                                        season, round,
+                                        DriverStandings: [{position, points, wins, Constructors}]
+                                    } = standing;
+
+                                    return {
+                                        season,
+                                        round,
+                                        Constructors,
+                                        position: parseInt(position),
+                                        wins: parseInt(wins),
+                                        points: parseInt(points)
+                                    };
+                                });
+
+                                return <DataTable keyField="season" {...{columns, data}}/>;
+                            })() : <Spinner/>}
                         </>
                     );
                 })() : <Alert>Driver not found.</Alert>;

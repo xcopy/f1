@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import DataTable, {pointsCell, positionCell, teamCell, winsCell} from '../data-table';
+import DataTable, {pointsCell, teamCell, winsCell} from '../data-table';
+import {faTrophy} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 
 export default function DriverStandings({standings}) {
     const columns = [
@@ -16,9 +18,19 @@ export default function DriverStandings({standings}) {
             selector: 'round'
         },
         teamCell,
-        positionCell,
         winsCell,
-        pointsCell
+        pointsCell,
+        {
+            name: 'Pos',
+            selector: 'position',
+            center: true,
+            grow: 0,
+            cell: ({position}) => {
+                return position === 1 ? (
+                    <FontAwesomeIcon icon={faTrophy} style={{color: '#FFD700'}}/>
+                ) : position;
+            }
+        }
     ];
 
     columns.forEach(column => Object.assign(column, {sortable: true}));

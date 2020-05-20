@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default function DriverRecords({data}) {
-    const {Standings, QualifyingResults, Results} = data;
+    const {Standings, QualifyingResults, Races} = data;
     const reducer = (total, num) => total + num;
     const rows = [
         ['Championships', getTitlesCount()],
@@ -35,15 +35,15 @@ export default function DriverRecords({data}) {
     }
 
     function getPodiumsCount() {
-        return Results.filter(result => {
-            const {Results: [{position}]} = result;
+        return Races.filter(race => {
+            const {Results: [{position}]} = race;
             return parseInt(position) <= 3;
         }).length;
     }
 
     function getFastestLapsCount() {
-        return Results.filter(result => {
-            const {Results: [{FastestLap: {rank} = {}}]} = result;
+        return Races.filter(race => {
+            const {Results: [{FastestLap: {rank} = {}}]} = race;
             return parseInt(rank) === 1;
         }).length;
     }

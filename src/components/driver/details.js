@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {localApi, remoteApi} from '../../API';
 import _ from 'lodash';
@@ -6,9 +6,10 @@ import Moment from 'react-moment';
 import Spinner from '../spinner';
 import Alert from '../alert';
 import Wiki from '../wiki';
-import LinkTeam from '../link/team';
+import DriverTeams from './teams';
 import DriverRecords from './records';
 import DriverStandings from './standings';
+import DriverResults from './results';
 
 export default function DriverDetails({match}) {
     const
@@ -39,7 +40,7 @@ export default function DriverDetails({match}) {
         ]).then(axios.spread((S, Q, R) => {
             const {data: {StandingsTable: {StandingsLists: Standings}}} = S;
             const {data: {RaceTable: {Races: QualifyingResults}}} = Q;
-            const {data: {RaceTable: {Races: Results}}} = R;
+            const {data: {RaceTable: {Races}}} = R;
 
             if (isMounted) {
                 setData(prevState => {
@@ -47,7 +48,7 @@ export default function DriverDetails({match}) {
                         ...prevState,
                         Standings,
                         QualifyingResults,
-                        Results
+                        Races
                     };
                 });
             }
@@ -74,30 +75,20 @@ export default function DriverDetails({match}) {
     function getTeamsList() {
         const {Standings} = data;
 
-        let constructors = Standings.map(standing => {
-            const {
-                DriverStandings: [{Constructors}]
-            } = standing;
-
+        let teams = Standings.map(standing => {
+            const {DriverStandings: [{Constructors}]} = standing;
             return Constructors;
         }).flat();
 
-        constructors = _.uniqWith(constructors, _.isEqual);
+        teams = _.uniqWith(teams, _.isEqual);
 
-        return constructors.map((constructor, i) => {
-            return (
-                <Fragment key={i}>
-                    <LinkTeam constructor={constructor}/>
-                    {i === constructors.length - 1 ? '' : ', '}
-                </Fragment>
-            );
-        });
+        return <DriverTeams teams={teams}/>;
     }
 
     return (
         <div className="uk-padding-small">
             {busy ? <Spinner/> : (() => {
-                const {Driver, Standings} = data;
+                const {Driver, Standings, Races} = data;
 
                 return Driver ? (() => {
                     const {url, familyName, givenName, nationality, dateOfBirth} = Driver;
@@ -139,7 +130,34 @@ export default function DriverDetails({match}) {
                                 </div>
                             </div>
                             <hr className="uk-divider-icon"/>
-                            {Standings ? <DriverStandings standings={Standings}/> : <Spinner/>}
+                            {Standings ? (
+                                <div data-uk-grid="" className="uk-grid-small">
+                                    <div className="uk-width-1-6">
+                                        <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
+                                            <li><a href="/">Standings</a></li>
+                                            {Standings.map(({season}) =>
+                                                <li key={season}><a href="/">Season {season}</a></li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                    <div className="uk-width-5-6">
+                                        <ul id="contents" className="uk-switcher">
+                                            <li>
+                                                <DriverStandings standings={Standings}/>
+                                            </li>
+                                            {Standings.map(({season: s}) => {
+                                                const races = Races.filter(({season}) => season === s);
+
+                                                return (
+                                                    <li key={s}>
+                                                        <DriverResults races={races}/>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
+                                </div>
+                            ) : <Spinner/>}
                         </>
                     );
                 })() : <Alert>Driver not found.</Alert>;

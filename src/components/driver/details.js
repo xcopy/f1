@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
+import localforage from 'localforage';
 import {localApi, remoteApi} from '../../API';
 import _ from 'lodash';
 import Moment from 'react-moment';
@@ -18,41 +19,59 @@ export default function DriverDetails({match}) {
 
     useEffect(() => {
         let isMounted = true;
-        const {params: {driverId}} = match;
-        const api = new URLSearchParams(document.location.search).get('dev')
-            ? localApi
-            : remoteApi;
-        const path = `drivers/${driverId}`;
 
-        api.get(`${path}`).then(response => {
-            const {data: {DriverTable: {Drivers: [Driver]}}} = response;
+        const
+            {params: {driverId}} = match,
+            key = `drivers/${driverId}`;
 
-            if (isMounted) {
-                setData({Driver});
-                setBusy(false);
-            }
-        });
+        localforage.keys().then(keys => {
+            if (keys.indexOf(key) < 0) {
+                localApi.get('drivers').then(response => {
+                    const
+                        {data: {DriverTable: {Drivers}}} = response,
+                        Driver = Drivers.find(({driverId: id}) => driverId === id);
 
-        axios.all([
-            api.get(`${path}/driverStandings`),
-            api.get(`${path}/qualifying/1`),
-            api.get(`${path}/results`)
-        ]).then(axios.spread((S, Q, R) => {
-            const {data: {StandingsTable: {StandingsLists: Standings}}} = S;
-            const {data: {RaceTable: {Races: QualifyingResults}}} = Q;
-            const {data: {RaceTable: {Races}}} = R;
+                    if (isMounted) {
+                        setData({Driver});
+                        setBusy(false);
+                    }
 
-            if (isMounted) {
-                setData(prevState => {
-                    return {
-                        ...prevState,
-                        Standings,
-                        QualifyingResults,
-                        Races
-                    };
+                    return Driver;
+                }).then(Driver => {
+                    Driver && axios.all([
+                        remoteApi.get(`${key}/driverStandings`),
+                        remoteApi.get(`${key}/qualifying/1`),
+                        remoteApi.get(`${key}/results`)
+                    ]).then(axios.spread((S, Q, R) => {
+                        const {data: {StandingsTable: {StandingsLists: Standings}}} = S;
+                        const {data: {RaceTable: {Races: QualifyingResults}}} = Q;
+                        const {data: {RaceTable: {Races}}} = R;
+
+                        if (isMounted) {
+                            setData(prevState => {
+                                const state = {
+                                    ...prevState,
+                                    Standings,
+                                    QualifyingResults,
+                                    Races
+                                };
+
+                                localforage.setItem(key, state).then(null);
+
+                                return state;
+                            });
+                        }
+                    }));
+                })
+            } else {
+                localforage.getItem(key).then(response => {
+                    if (isMounted) {
+                        setData(response);
+                        setBusy(false);
+                    }
                 });
             }
-        }));
+        });
 
         return () => {
             isMounted = false;

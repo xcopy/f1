@@ -1,7 +1,9 @@
 import React from 'react';
+import moment from 'moment';
+import {Link} from 'react-router-dom';
 import ReactDataTable, {createTheme} from 'react-data-table-component';
 import LinkDriver from './link/driver';
-import LinkTeam from './link/team';
+import DriverTeams from './driver/teams';
 
 const textColor = '#666';
 const cellPadding = '16px 12px';
@@ -37,14 +39,55 @@ createTheme('uk-table', {
     }
 });
 
-const DataTable = props => (
-    <ReactDataTable
+export default function DataTable(props) {
+    return <ReactDataTable
         {...props}
         noHeader={true}
         striped={true}
         theme="uk-table"
         customStyles={customStyles}/>
-);
+}
+
+export const roundCell = {
+    name: 'Round',
+    selector: 'round',
+    center: true,
+    grow: 0
+};
+
+export const dateCell = {
+    name: 'Date',
+    selector: 'date',
+    format: ({date}) => moment(date).format('DD MMM YYYY')
+};
+
+export const raceCell = {
+    name: 'Grand Prix',
+    selector: 'raceName',
+    cell: ({season, round, raceName}) => (
+        <Link to={`/${season}/results/${round}`}>{raceName}</Link>
+    )
+};
+
+export const locationCell = {
+    name: 'Location',
+    grow: 2,
+    cell: row => {
+        const {
+            Circuit: {
+                circuitName,
+                Location: {country, locality}
+            }
+        } = row;
+
+        return (
+            <div>
+                <div>{circuitName}</div>
+                <div>{locality}, {country}</div>
+            </div>
+        );
+    }
+}
 
 export const positionCell = {
     name: (() => {
@@ -53,10 +96,7 @@ export const positionCell = {
     center: true,
     grow: 0,
     selector: 'position',
-    cell: row => {
-        const {positionText, position} = row;
-        return positionText || position;
-    }
+    cell: ({positionText, position}) => positionText || position
 };
 
 export const numberCell = {
@@ -75,27 +115,18 @@ export const nationalityCell = {
 
 export const driverCell = {
     name: 'Driver',
-    cell: row => {
-        const {Driver} = row;
-        return <LinkDriver driver={Driver}/>;
-    }
+    cell: ({Driver}) => (
+        <LinkDriver driver={Driver}/>
+    )
 };
 
 export const teamCell = {
     name: 'Car',
-    cell: row => {
-        const {Constructor, Constructors} = row;
-        const constructors = Constructors || [Constructor];
-
-        return (
-            <div>
-                {constructors.map((constructor, i) => (
-                    <div key={i}>
-                        <LinkTeam constructor={constructor}/>
-                    </div>
-                ))}
-            </div>
-        );
+    cell: ({Constructor, Constructors}) => (
+        <DriverTeams teams={Constructors || [Constructor]}/>
+    ),
+    style: {
+        display: 'block'
     }
 };
 
@@ -107,10 +138,7 @@ export const lapsCell = {
 
 export const timeCell = {
     name: 'Time',
-    cell: row => {
-        const {Time, status} = row;
-        return Time?.time || status || '--:--';
-    }
+    cell: ({Time, status}) => Time?.time || status || '--:--'
 };
 
 export const winsCell = {
@@ -128,4 +156,3 @@ export const pointsCell = {
     }
 };
 
-export default DataTable;

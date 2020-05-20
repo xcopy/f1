@@ -95,7 +95,7 @@ const GPDetails = ({match}) => {
                         <hr className="uk-divider-icon"/>
                         <Wiki url={url}/>
                         <hr className="uk-divider-icon"/>
-                        <div data-uk-grid="">
+                        <div data-uk-grid="" className="uk-grid-small">
                             <div className="uk-width-1-6">
                                 <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
                                     <li><a href="/">Race Result</a></li>

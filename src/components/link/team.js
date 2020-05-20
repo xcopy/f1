@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
 
 LinkTeam.propTypes = {
-    constructor: PropTypes.object.isRequired
+    team: PropTypes.object.isRequired
 };
 
-export default function LinkTeam({constructor}) {
-    const {constructorId, name} = constructor;
+export default function LinkTeam({team}) {
+    const {constructorId, name} = team;
 
     return (
         <Link to={`/teams/${constructorId}`}>{name}</Link>

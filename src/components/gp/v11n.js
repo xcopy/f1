@@ -459,17 +459,17 @@ function GPV11n({race}) {
                             <dt>Winner:</dt>
                             <dd>
                                 <div>#{number} <LinkDriver driver={D1}/></div>
-                                <LinkTeam constructor={C1}/>
+                                <LinkTeam team={C1}/>
                             </dd>
                             <dt>Fastest Lap:</dt>
                             <dd>
                                 <div>{time}, Lap #{lap1}</div>
-                                <LinkDriver driver={D2}/>, <LinkTeam constructor={C2}/>
+                                <LinkDriver driver={D2}/>, <LinkTeam team={C2}/>
                             </dd>
                             <dt>Fastest Pit Stop:</dt>
                             <dd>
                                 <div>{duration}s, Lap #{lap2}</div>
-                                <LinkDriver driver={D3}/>, <LinkTeam constructor={C3}/>
+                                <LinkDriver driver={D3}/>, <LinkTeam team={C3}/>
                             </dd>
                         </dl>
                     );

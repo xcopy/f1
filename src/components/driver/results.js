@@ -23,10 +23,10 @@ export default function DriverResults({races}) {
 
     const data = races.map(race => {
         const {season, round, date, raceName, Results} = race;
-        const {position, positionText, points, Constructor, Time} = Results[0];
+        const {positionText, points, Constructor, Time} = Results[0];
 
         return {
-            position, positionText, season, round, date, raceName, points,
+            positionText, season, round, date, raceName, points,
             Constructor, Time
         };
     });

@@ -96,7 +96,18 @@ export const positionCell = {
     center: true,
     grow: 0,
     selector: 'position',
-    cell: ({positionText, position}) => positionText || position
+    cell: ({positionText, position}) => {
+        const
+            pos = parseInt(positionText || position),
+            isRetired = isNaN(pos),
+            isPodium = !isRetired && pos >= 1 && pos <= 3;
+
+        return (
+            <span className={isRetired ? 'uk-text-danger' : (isPodium ? 'uk-text-success' : '')}>
+                {positionText || position}
+            </span>
+        );
+    }
 };
 
 export const numberCell = {

@@ -8,7 +8,7 @@ import {
     faTrafficLight, faFlagCheckered
 } from '@fortawesome/free-solid-svg-icons';
 import './v11n.scss';
-import {normalizeResults, timeToMs} from '../../helpers';
+import {normalizeResults, timeToMs, range} from '../../helpers';
 import LinkDriver from '../link/driver';
 import LinkTeam from '../link/team';
 
@@ -346,7 +346,7 @@ function GPV11n({race}) {
                         height: (Object.keys(drivers).length * driverHeight) + driverHeight
                     }}>
                         <div id="lights" className={showLights ? '' : 'uk-hidden'}>
-                            {[...Array(5).keys()].map(i => {
+                            {range(5).map(i => {
                                 const key = i + 1;
 
                                 return (

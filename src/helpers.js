@@ -36,6 +36,15 @@ export function normalizeResults(race) {
 }
 
 /**
+ * Converts time string to ms
+ *
+ * Examples:
+ * "0.234"     ->     234
+ * "1.234"     ->    1234
+ * "1:1.234"   ->   61234
+ * "1:1:1.234" -> 3661234
+ * etc.
+ *
  * @param {string} timeString
  * @returns {number} milliseconds
  */
@@ -49,3 +58,19 @@ export function timeToMs(timeString) {
 
     return moment.duration(`${hms}.${ms}`).as('ms');
 }
+
+/**
+ * Returns array of consecutive numbers
+ *
+ * @param {number} start
+ * @param {number|null} end
+ * @returns {array}
+ */
+export const range = (start, end = null) => {
+    let x = end ? start : 1;
+    let y = end || start;
+
+    return Array.from(function* () {
+        while (x <= y) yield x++;
+    }());
+};

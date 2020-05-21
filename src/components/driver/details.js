@@ -7,6 +7,7 @@ import Moment from 'react-moment';
 import Spinner from '../spinner';
 import Alert from '../alert';
 import Wiki from '../wiki';
+import {yearsToStr} from '../../helpers';
 import DriverTeams from './teams';
 import DriverRecords from './records';
 import DriverStandings from './standings';
@@ -80,15 +81,11 @@ export default function DriverDetails({match}) {
     }, []);
 
     function getSeasonsList() {
-        const {Standings} = data;
+        const
+            {Standings} = data,
+            years = Standings.map(({season}) => parseInt(season));
 
-        return (
-            <>
-                {Standings.length}
-                {' '}
-                ({Standings.map(({season}) => season).join(', ')})
-            </>
-        );
+        return `${years.length} (${yearsToStr(years)})`;
     }
 
     function getTeamsList() {
@@ -125,12 +122,13 @@ export default function DriverDetails({match}) {
                                         {Standings ? (
                                             <ul className="uk-list uk-margin-remove">
                                                 <li>
-                                                    Born <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>, {nationality}
+                                                    <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>,
+                                                    <br/>
+                                                    <b>Nationality:</b> {nationality}
                                                 </li>
                                                 <li>
                                                     <b>Seasons:</b> {getSeasonsList()}
-                                                </li>
-                                                <li>
+                                                    <br/>
                                                     <b>Teams:</b> {getTeamsList()}
                                                 </li>
                                             </ul>

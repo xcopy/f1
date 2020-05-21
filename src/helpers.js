@@ -1,4 +1,5 @@
 import moment from 'moment';
+import _ from 'lodash';
 
 function isZero(r) {
     const {grid} = r;
@@ -74,3 +75,43 @@ export const range = (start, end = null) => {
         while (x <= y) yield x++;
     }());
 };
+
+/**
+ * Converts array of seasons (years) to string
+ *
+ * Examples:
+ * [2001] -> "2001"
+ * [2001, 2010] -> "2001, 2010"
+ * [2001, 2002, 2003] -> "2001-2003"
+ * [2001, 2005, 2006, 2007] -> "2001, 2005-2007"
+ *
+ * @param {array} years
+ * @returns {string}
+ */
+export function yearsToStr(years) {
+    const
+        minYear = Math.min(...years),
+        maxYear = Math.max(...years),
+        diff = _.difference(range(minYear, maxYear), years);
+
+    let ranges = [];
+
+    diff.unshift(minYear - 1);
+    diff.push(maxYear + 1);
+
+    for (let i = 0; i < diff.length; i++) {
+        const
+            curr = diff[i], next = diff[i + 1],
+            sum = curr + 1, sub = next - 1;
+
+        if (next && sub >= sum) {
+            ranges[i] = [sum, sub]
+                .filter((v, i, a) => a.indexOf(v) === i);
+        }
+    }
+
+    return ranges
+        .filter(Boolean) // remove empty elements
+        .map(a => a.join('–'))
+        .join(', ');
+}

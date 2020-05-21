@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default function DriverRecords({data}) {
-    const {Standings, QualifyingResults, Races} = data;
+    const {Standings, Races} = data;
     const reducer = (total, num) => total + num;
     const rows = [
         ['Championships', getTitlesCount()],
-        ['Entries', getEntriesCount()],
-        ['Pole positions', QualifyingResults.length],
+        ['Entries', Races.length],
+        ['Pole positions', getPolePositionsCount()],
         ['Wins', getTotalCountOf('wins')],
         ['Podiums', getPodiumsCount()],
         ['Career points', getTotalCountOf('points')],
@@ -21,10 +21,11 @@ export default function DriverRecords({data}) {
         }).length;
     }
 
-    function getEntriesCount() {
-        return Standings
-            .map(({round}) => parseInt(round))
-            .reduce(reducer);
+    function getPolePositionsCount() {
+        return Races.filter(race => {
+            const {Results: [{grid}]} = race;
+            return parseInt(grid) === 1;
+        }).length;
     }
 
     function getTotalCountOf(prop) {

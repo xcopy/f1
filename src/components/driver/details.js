@@ -76,8 +76,7 @@ export default function DriverDetails({match}) {
         return () => {
             isMounted = false;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [match]);
 
     function getSeasonsList() {
         const
@@ -119,18 +118,18 @@ export default function DriverDetails({match}) {
                                 <div className="uk-width-3-4">
                                     <Wiki url={url}>
                                         {Standings ? (
-                                            <ul className="uk-list uk-margin-remove">
-                                                <li>
-                                                    <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>,
+                                            <div data-uk-grid="" className="uk-grid-small">
+                                                <div>
+                                                    <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
                                                     <br/>
                                                     <b>Nationality:</b> {nationality}
-                                                </li>
-                                                <li>
+                                                </div>
+                                                <div>
                                                     <b>Seasons:</b> {getSeasonsList()}
                                                     <br/>
                                                     <b>Teams:</b> {getTeamsList()}
-                                                </li>
-                                            </ul>
+                                                </div>
+                                            </div>
                                         ) : <Spinner/>}
                                     </Wiki>
                                 </div>
@@ -159,9 +158,13 @@ export default function DriverDetails({match}) {
                                 <div data-uk-grid="" className="uk-grid-small">
                                     <div className="uk-width-1-6">
                                         <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
-                                            <li><a href="/">Standings</a></li>
+                                            <li>
+                                                <a href="/">Standings</a>
+                                            </li>
                                             {Standings.map(({season}) =>
-                                                <li key={season}><a href="/">Season {season}</a></li>
+                                                <li key={season}>
+                                                    <a href="/">Season {season}</a>
+                                                </li>
                                             )}
                                         </ul>
                                     </div>

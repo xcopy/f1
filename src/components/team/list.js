@@ -2,12 +2,10 @@ import React, {useEffect, useState} from 'react';
 // import {useHistory} from 'react-router-dom';
 import {localApi} from '../../API';
 import ItemList from '../item-list';
-import Spinner from '../spinner';
 
 export default function TeamList() {
     const
         // history = useHistory(),
-        [busy, setBusy] = useState(true),
         [teams, setTeams] = useState([]);
 
     useEffect(() => {
@@ -15,11 +13,7 @@ export default function TeamList() {
 
         localApi.get('constructors').then(response => {
             const {data: {ConstructorTable: {Constructors: Teams}}} = response;
-
-            if (isMounted) {
-                setTeams(Teams);
-                setBusy(false);
-            }
+            isMounted && setTeams(Teams);
         });
 
         return () => {
@@ -27,17 +21,11 @@ export default function TeamList() {
         };
     }, []);
 
-    return (
-        <div className="uk-padding-small">
-            {busy ? <Spinner/> : (
-                <ItemList
-                    heading="Teams"
-                    items={teams}
-                    keys={['name']}
-                    // todo
-                    onClick={(team) => console.log(team)}
-                />
-            )}
-        </div>
-    );
+    return <ItemList
+        heading="Teams"
+        items={teams}
+        keys={['name']}
+        // todo
+        onClick={(team) => console.log(team)}
+    />;
 }

@@ -1,17 +1,24 @@
 import React, {Fragment, useEffect, useState} from 'react';
+import {renderToString} from 'react-dom/server';
 import PropTypes from 'prop-types';
+import styled from 'styled-components';
+import Spinner from './spinner';
+
+const Highlight = styled.span`
+    background-color: #FFFF33;
+    font-weight: bold;
+`;
 
 export default function ItemList({heading, items, keys, onClick}) {
     const
         [data, setData] = useState(null),
         [filter, setFilter] = useState(''),
-        regexp = new RegExp(`(${filter})`, 'ig'),
-        replace = '<span style="background-color: #FFFF33">$1</span>';
+        regexp = new RegExp(`(${filter})`, 'ig');
 
     useEffect(() => {
         const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
-        setData(() => {
+        items.length && setData(() => {
             const state = {};
 
             letters.forEach(letter => {
@@ -29,7 +36,7 @@ export default function ItemList({heading, items, keys, onClick}) {
     }, [items, keys]);
 
     function handleSearch(e) {
-        const f = (e.target.value || '').trim().toLowerCase();
+        const f = (e?.target.value || '').trim().toLowerCase();
 
         setFilter(f);
 
@@ -59,101 +66,122 @@ export default function ItemList({heading, items, keys, onClick}) {
 
     let visibleCards = 0;
 
-    return data ? (
-        <>
-            <div data-uk-grid="" className="uk-grid-small uk-flex uk-flex-middle">
-                <div className="uk-width-3-5">
-                    <h1 className="uk-text-uppercase">{heading}</h1>
-                </div>
-                <div className="uk-width-expand">
-                    <form
-                        onSubmit={(e) => {e.preventDefault()}}
-                        className="uk-search uk-search-default uk-width-1-1">
-                        <span data-uk-search-icon=""/>
-                        <input
-                            onChange={(e) => handleSearch(e)}
-                            value={filter}
-                            type="search"
-                            className="uk-search-input"
-                            placeholder="Search..."/>
-                    </form>
-                </div>
-            </div>
-            <div
-                data-uk-grid=""
-                data-uk-height-match="target: > div > .uk-card; row: false"
-                className="uk-grid-small uk-grid-match">
-                {Object.keys(data).map(letter => {
-                    const
-                        array = data[letter],
-                        visibleItemsCount = array.filter(item => item.visible).length,
-                        showCard = visibleItemsCount > 0;
-
-                    visibleCards += Number(showCard);
-
-                    return showCard > 0 ? (
-                        <div key={letter} className="uk-width-1-5">
-                            <div className="uk-card uk-card-default">
-                                <div className="uk-card-header">
-                                    <span className="uk-text-large">{letter}</span>
-                                    <small>({array.length})</small>
-                                </div>
-                                <div className="uk-card-body">
-                                    <dl className="uk-margin-remove uk-overflow-auto" style={{maxHeight: 240}}>
-                                        {array.map((item, i) => {
-                                            const {visible} = item;
-                                            const item$ = {...item};
-
-                                            filter && keys.forEach(key => {
-                                                const {[key]: str} = item$;
-
-                                                // just replace string value(s)
-                                                // equivalent to:
-                                                // item.prop = test ? item.prop.replace(...) : item.prop
-                                                item$[key] = regexp.test(str)
-                                                    ? str.replace(regexp, replace)
-                                                    : str;
-                                            });
-
-                                            return (
-                                                <dd
-                                                    key={`item-${i}`}
-                                                    className={`uk-text-truncate${visible ? '' : ' uk-hidden'}`}>
-                                                    <a
-                                                        href="/"
-                                                        title={keys.map(key => item[key]).join(', ')}
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            onClick(item);
-                                                        }}
-                                                    >
-                                                        {keys.map((key, j) => {
-                                                            return (
-                                                                <Fragment key={j}>
-                                                                    <span dangerouslySetInnerHTML={{__html: item$[key]}}/>
-                                                                    {j === keys.length - 1 ? '' : ', '}
-                                                                </Fragment>
-                                                            );
-                                                        })}
-                                                    </a>
-                                                </dd>
-                                            );
-                                        })}
-                                    </dl>
-                                </div>
-                            </div>
+    return (
+        <div className="uk-padding-small">
+            {data ? (
+                <>
+                    <div data-uk-grid="" className="uk-grid-small uk-flex uk-flex-middle">
+                        <div className="uk-width-3-5">
+                            <h1 className="uk-text-uppercase">{heading}</h1>
                         </div>
-                    ) : null;
-                })}
-            </div>
+                        <div className="uk-width-expand">
+                            <form
+                                onSubmit={(e) => {e.preventDefault()}}
+                                className="uk-search uk-search-default uk-width-1-1">
+                                <div>
+                                    <span className="uk-form-icon" data-uk-icon="icon: search"/>
+                                    <input
+                                        onChange={(e) => handleSearch(e)}
+                                        value={filter}
+                                        type="search"
+                                        className="uk-input"
+                                        placeholder="Search..."
+                                    />
+                                    {filter && (
+                                        <a
+                                            href="/"
+                                            className="uk-form-icon uk-form-icon-flip"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleSearch()
+                                            }}>
+                                            <span data-uk-icon="icon: close"/>
+                                        </a>
+                                    )}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div
+                        data-uk-grid=""
+                        data-uk-height-match="target: > div > .uk-card; row: false"
+                        className="uk-grid-small uk-grid-match">
+                        {Object.keys(data).map(letter => {
+                            const
+                                itemsArray = data[letter],
+                                visibleItemsCount = itemsArray.filter(item => item.visible).length,
+                                showCard = visibleItemsCount > 0;
 
-            {visibleCards === 0 ? (
-                <div className="uk-text-center uk-margin-medium">
-                    No matching results found for <b>&laquo;{filter}&raquo;</b>
-                </div>
-            ) : null}
-        </>
-    ) : null;
+                            visibleCards += Number(showCard);
+
+                            return showCard > 0 ? (
+                                <div key={letter} className="uk-width-1-5">
+                                    <div className="uk-card uk-card-default">
+                                        <div className="uk-card-header">
+                                            <span className="uk-text-large">{letter}</span>
+                                            <small>({itemsArray.length})</small>
+                                        </div>
+                                        <div className="uk-card-body">
+                                            <dl className="uk-margin-remove uk-overflow-auto" style={{maxHeight: 240}}>
+                                                {itemsArray.map((item, i) => {
+                                                    const {visible} = item;
+                                                    const item$ = {...item};
+
+                                                    filter && keys.forEach(key => {
+                                                        const {[key]: str} = item$;
+
+                                                        // just replace string value(s)
+                                                        // equivalent to:
+                                                        // item.prop = test ? item.prop.replace(...) : item.prop
+                                                        item$[key] = regexp.test(str)
+                                                            ? str.replace(
+                                                                regexp,
+                                                                renderToString(<Highlight>$1</Highlight>)
+                                                            )
+                                                            : str;
+                                                    });
+
+                                                    return (
+                                                        <dd
+                                                            key={`item-${i}`}
+                                                            className={`uk-text-truncate${visible ? '' : ' uk-hidden'}`}>
+                                                            <a
+                                                                href="/"
+                                                                title={keys.map(key => item[key]).join(', ')}
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    onClick(item);
+                                                                }}
+                                                            >
+                                                                {keys.map((key, j) => {
+                                                                    return (
+                                                                        <Fragment key={j}>
+                                                                            <span dangerouslySetInnerHTML={{__html: item$[key]}}/>
+                                                                            {j === keys.length - 1 ? '' : ', '}
+                                                                        </Fragment>
+                                                                    );
+                                                                })}
+                                                            </a>
+                                                        </dd>
+                                                    );
+                                                })}
+                                            </dl>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : null;
+                        })}
+                    </div>
+
+                    {visibleCards === 0 && (
+                        <div className="uk-text-center uk-margin-medium">
+                            No matching results found for <b>&laquo;{filter}&raquo;</b>
+                        </div>
+                    )}
+                </>
+            ) : <Spinner/>}
+        </div>
+    );
 }
 
 ItemList.propTypes = {

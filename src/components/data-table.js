@@ -41,11 +41,12 @@ createTheme('uk-table', {
 
 export default function DataTable(props) {
     return <ReactDataTable
-        {...props}
         noHeader={true}
         striped={true}
         theme="uk-table"
-        customStyles={customStyles}/>
+        customStyles={customStyles}
+        {...props}
+    />
 }
 
 export const roundCell = {

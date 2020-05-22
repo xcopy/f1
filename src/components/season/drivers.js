@@ -22,34 +22,23 @@ const SeasonDrivers = ({busy, data, match, onReady}) => {
         <>
             <h1 className="uk-text-uppercase">{year} Driver Standings</h1>
             {busy ? <Spinner/> : (() => {
-                const {
-                    StandingsTable: {
-                        StandingsLists: [
-                            StandingsList = {}
-                        ]
-                    }
-                } = data;
-                const {DriverStandings = []} = StandingsList;
-                const tableColumns = [
-                    positionCell,
-                    driverCell,
-                    nationalityCell,
-                    teamCell,
-                    winsCell,
-                    pointsCell
-                ];
-                const tableData = DriverStandings.map(standings => {
-                    const
-                        {position, wins, points, Driver, Constructors} = standings,
-                        {nationality} = Driver;
+                const
+                    {StandingsTable: {StandingsLists: [StandingsList = {}]}} = data,
+                    {DriverStandings: tableData = []} = StandingsList,
+                    tableColumns = [
+                        positionCell,
+                        driverCell,
+                        nationalityCell,
+                        teamCell,
+                        winsCell,
+                        pointsCell
+                    ];
 
-                    return {
-                        position, wins, points, nationality,
-                        Driver, Constructors
-                    };
-                })
-
-                return <DataTable keyField="position" columns={tableColumns} data={tableData}/>;
+                return <DataTable
+                    keyField="position"
+                    columns={tableColumns}
+                    data={tableData}
+                />;
             })()}
         </>
     );

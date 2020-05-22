@@ -122,7 +122,7 @@ export const numberCell = {
 
 export const nationalityCell = {
     name: 'Nationality',
-    selector: 'nationality'
+    cell: ({Driver, Constructor}) => (Driver || Constructor).nationality
 };
 
 export const driverCell = {
@@ -137,9 +137,12 @@ export const teamCell = {
     cell: ({Constructor, Constructors}) => (
         <DriverTeams teams={Constructors || [Constructor]}/>
     ),
-    style: {
-        display: 'block'
-    }
+    conditionalCellStyles: [{
+        when: row => row.Constructors,
+        style: {
+            display: 'block'
+        }
+    }]
 };
 
 export const lapsCell = {

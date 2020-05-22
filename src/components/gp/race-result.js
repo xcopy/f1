@@ -10,8 +10,7 @@ import DataTable, {
     timeCell
 } from '../data-table';
 
-export default function GPRaceResult({race}) {
-    const {Results: results} = race;
+export default function GPRaceResult({race: {Results}}) {
     const columns = [
         positionCell,
         numberCell,
@@ -20,25 +19,12 @@ export default function GPRaceResult({race}) {
         lapsCell,
         timeCell,
         pointsCell
-    ];
-    const data = results.map(result => {
-        const {
-            positionText,
-            number,
-            laps,
-            points,
-            status,
-            Driver,
-            Constructor,
-            Time
-        } = result;
-        const {driverId} = Driver;
+    ], data = Results.map(result => {
+        const {Driver: {driverId}} = result;
 
-        return {
-            positionText, number, laps, points, status,
-            Driver, Constructor, Time,
-            driverId
-        };
+        result.driverId = driverId;
+
+        return result;
     });
 
     return <DataTable keyField="driverId" {...{columns, data}}/>

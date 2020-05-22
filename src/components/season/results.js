@@ -25,7 +25,6 @@ const SeasonResults = ({busy, data, match, onReady}) => {
             <h1 className="uk-text-uppercase">{year} Race Results</h1>
             {busy ? <Spinner/> : (() => {
                 const {RaceTable: {Races}} = data;
-
                 const tableColumns = [
                     roundCell,
                     dateCell,
@@ -36,18 +35,16 @@ const SeasonResults = ({busy, data, match, onReady}) => {
                     lapsCell,
                     timeCell
                 ];
-
                 const tableData = Races.map(race => {
-                    const {season, round, date, raceName, Circuit, Results} = race;
-                    const {laps, Driver, Constructor, Time} = Results[0];
-
-                    return {
-                        season, round, date, raceName, laps,
-                        Circuit, Driver, Constructor, Time
-                    };
+                    const {Results: [result]} = race;
+                    return Object.assign({}, race, result);
                 });
 
-                return <DataTable keyField="round" columns={tableColumns} data={tableData}/>;
+                return <DataTable
+                    keyField="round"
+                    columns={tableColumns}
+                    data={tableData}
+                />;
             })()}
         </>
     );

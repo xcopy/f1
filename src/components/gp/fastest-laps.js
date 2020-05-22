@@ -8,8 +8,7 @@ import DataTable, {
     timeCell
 } from '../data-table';
 
-export default function GPFastestLaps({race}) {
-    const {Results} = race;
+export default function GPFastestLaps({race: {Results}}) {
     const columns = [
         positionCell,
         numberCell,
@@ -24,8 +23,7 @@ export default function GPFastestLaps({race}) {
             name: 'Avg Speed (kph)',
             selector: 'speed'
         }
-    ];
-    const data = Results
+    ], data = Results
         .filter(result => result.FastestLap)
         .sort((next, current) => {
             const {FastestLap: {rank: rank1}} = next;

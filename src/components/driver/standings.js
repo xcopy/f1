@@ -33,8 +33,6 @@ export default function DriverStandings({standings}) {
         }
     ];
 
-    columns.forEach(column => Object.assign(column, {sortable: true}));
-
     const data = standings.map(standing => {
         const {
             season, round,
@@ -45,9 +43,9 @@ export default function DriverStandings({standings}) {
             season,
             round,
             Constructors,
-            position: parseInt(position),
-            wins: parseInt(wins),
-            points: parseInt(points)
+            position,
+            wins,
+            points
         };
     });
 

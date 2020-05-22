@@ -163,6 +163,7 @@ export const pointsCell = {
     name: 'Points',
     selector: 'points',
     center: true,
+    grow: 0,
     style: {
         fontWeight: 'bold'
     }

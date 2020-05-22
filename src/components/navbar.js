@@ -6,7 +6,7 @@ import {faGithub} from '@fortawesome/free-brands-svg-icons';
 
 export default function Navbar() {
     return (
-        <nav className="uk-navbar-container" data-uk-navbar="">
+        <nav className="uk-background-secondary" data-uk-navbar="">
             <div className="uk-navbar-left">
                 <a href="/" className="uk-navbar-item uk-logo">
                     <img src={logo} alt="" style={{height: 20}} data-uk-img=""/>

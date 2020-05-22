@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 // import {useHistory} from 'react-router-dom';
 import {localApi} from '../../API';
 import ItemList from '../item-list';
+import UIkit from 'uikit';
 
 export default function TeamList() {
     const
@@ -25,7 +26,11 @@ export default function TeamList() {
         heading="Teams"
         items={teams}
         keys={['name']}
-        // todo
-        onClick={(team) => console.log(team)}
+        onClick={(/*team*/) => {
+            UIkit.notification({
+                message: 'Team details coming soon. Sorry.',
+                status: 'primary'
+            });
+        }}
     />;
 }

@@ -33,7 +33,7 @@ export default function TeamList() {
                 <ItemList
                     heading="Teams"
                     items={teams}
-                    props={['name']}
+                    keys={['name']}
                     // todo
                     onClick={(team) => console.log(team)}
                 />

@@ -1,7 +1,7 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 
-export default function ItemList({heading, items, props, onClick}) {
+export default function ItemList({heading, items, keys, onClick}) {
     const
         [data, setData] = useState(null),
         [filter, setFilter] = useState(''),
@@ -16,7 +16,7 @@ export default function ItemList({heading, items, props, onClick}) {
 
             letters.forEach(letter => {
                 state[letter] = items.filter(item => {
-                    const {[props[0]]: str} = item;
+                    const {[keys[0]]: str} = item;
 
                     item.visible = true;
 
@@ -26,7 +26,7 @@ export default function ItemList({heading, items, props, onClick}) {
 
             return state;
         });
-    }, [items, props]);
+    }, [items, keys]);
 
     function handleSearch(e) {
         const f = (e.target.value || '').trim().toLowerCase();
@@ -42,8 +42,8 @@ export default function ItemList({heading, items, props, onClick}) {
                 array.forEach(item => {
                     let found = 0;
 
-                    props.forEach(prop => {
-                        const {[prop]: str} = item;
+                    keys.forEach(key => {
+                        const {[key]: str} = item;
                         found += Number(str.toLowerCase().includes(f));
                     });
 
@@ -104,13 +104,13 @@ export default function ItemList({heading, items, props, onClick}) {
                                             const {visible} = item;
                                             const item$ = {...item};
 
-                                            filter && props.forEach(prop => {
-                                                const {[prop]: str} = item$;
+                                            filter && keys.forEach(key => {
+                                                const {[key]: str} = item$;
 
                                                 // just replace string value(s)
                                                 // equivalent to:
                                                 // item.prop = test ? item.prop.replace(...) : item.prop
-                                                item$[prop] = regexp.test(str)
+                                                item$[key] = regexp.test(str)
                                                     ? str.replace(regexp, replace)
                                                     : str;
                                             });
@@ -121,17 +121,17 @@ export default function ItemList({heading, items, props, onClick}) {
                                                     className={`uk-text-truncate${visible ? '' : ' uk-hidden'}`}>
                                                     <a
                                                         href="/"
-                                                        title={props.map(prop => item[prop]).join(', ')}
+                                                        title={keys.map(key => item[key]).join(', ')}
                                                         onClick={(e) => {
                                                             e.preventDefault();
                                                             onClick(item);
                                                         }}
                                                     >
-                                                        {props.map((prop, j) => {
+                                                        {keys.map((key, j) => {
                                                             return (
                                                                 <Fragment key={j}>
-                                                                    <span dangerouslySetInnerHTML={{__html: item$[prop]}}/>
-                                                                    {j === props.length - 1 ? '' : ', '}
+                                                                    <span dangerouslySetInnerHTML={{__html: item$[key]}}/>
+                                                                    {j === keys.length - 1 ? '' : ', '}
                                                                 </Fragment>
                                                             );
                                                         })}
@@ -159,6 +159,6 @@ export default function ItemList({heading, items, props, onClick}) {
 ItemList.propTypes = {
     heading: PropTypes.string.isRequired,
     items: PropTypes.array.isRequired,
-    props: PropTypes.array.isRequired,
+    keys: PropTypes.array.isRequired,
     onClick: PropTypes.func.isRequired
 };

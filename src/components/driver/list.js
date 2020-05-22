@@ -33,7 +33,7 @@ export default function DriverList() {
                 <ItemList
                     heading="Drivers"
                     items={drivers}
-                    props={['familyName', 'givenName']}
+                    keys={['familyName', 'givenName']}
                     onClick={(driver) => history.push(`/drivers/${driver.driverId}`)}
                 />
             )}

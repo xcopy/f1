@@ -53,14 +53,22 @@ class Wiki extends Component {
                         const {
                             title,
                             extract_html: html,
-                            thumbnail: {source: src} = {}
+                            originalimage: {source: imageSrc} = {},
+                            thumbnail: {source: thumbSrc} = {}
                         } = data;
 
                         return (
                             <div data-uk-grid="" className="uk-grid-small">
-                                {src && (
+                                {imageSrc && (
                                     <div className="uk-width-auto">
-                                        <img data-src={src} data-uk-img="" alt={title}/>
+                                        <a href={`#modal`} data-uk-toggle="">
+                                            <img data-src={thumbSrc} data-uk-img="" alt={title}/>
+                                        </a>
+                                        <div id="modal" className="uk-flex-top" data-uk-modal="">
+                                            <div className="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+                                                <img data-src={imageSrc} data-uk-img="" alt={title}/>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                                 <div className="uk-width-expand">

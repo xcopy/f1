@@ -8,8 +8,6 @@ import Spinner from '../spinner';
 import Alert from '../alert';
 import Wiki from '../wiki';
 import {yearsToStr} from '../../helpers';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faInfoCircle} from '@fortawesome/free-solid-svg-icons';
 import DriverTeams from './teams';
 import DriverRecords from './records';
 import DriverStandings from './standings';
@@ -139,16 +137,7 @@ export default function DriverDetails({match}) {
                                             <h3 className="uk-card-title">Records</h3>
                                         </div>
                                         <div className="uk-card-body">
-                                            {Standings ? (
-                                                <>
-                                                    <DriverRecords data={data}/>
-                                                    <div className="uk-text-muted uk-margin-top">
-                                                        <FontAwesomeIcon icon={faInfoCircle}/>
-                                                        {' '}
-                                                        Some items may be inaccurate.
-                                                    </div>
-                                                </>
-                                            ) : <Spinner/>}
+                                            {Standings ? <DriverRecords data={data}/> : <Spinner/>}
                                         </div>
                                     </div>
                                 </div>

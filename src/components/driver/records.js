@@ -1,5 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faInfoCircle} from '@fortawesome/free-solid-svg-icons';
 
 export default function DriverRecords({data}) {
     const {Standings, Races} = data;
@@ -62,6 +64,10 @@ export default function DriverRecords({data}) {
                     <div className="uk-text-bold">{qty}</div>
                 </div>
             )}
+
+            <div className="uk-text-muted uk-margin-top">
+                <FontAwesomeIcon icon={faInfoCircle}/> Some items may be inaccurate.
+            </div>
         </>
     );
 }

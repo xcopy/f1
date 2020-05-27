@@ -25,10 +25,12 @@ export default function DriverStandings({standings}) {
             selector: 'position',
             center: true,
             grow: 0,
-            cell: ({position}) => {
-                return position === 1 ? (
+            cell: ({position, positionText}) => {
+                const pos = parseInt(positionText || position);
+
+                return pos === 1 ? (
                     <FontAwesomeIcon icon={faTrophy} style={{color: '#FFD700'}}/>
-                ) : position;
+                ) : pos;
             }
         }
     ];
@@ -36,7 +38,7 @@ export default function DriverStandings({standings}) {
     const data = standings.map(standing => {
         const {
             season, round,
-            DriverStandings: [{position, points, wins, Constructors}]
+            DriverStandings: [{position, positionText, points, wins, Constructors}]
         } = standing;
 
         return {
@@ -44,6 +46,7 @@ export default function DriverStandings({standings}) {
             round,
             Constructors,
             position,
+            positionText,
             wins,
             points
         };

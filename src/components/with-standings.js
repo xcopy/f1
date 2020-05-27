@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
+import axios from 'axios';
 import localforage from 'localforage';
 import _ from 'lodash';
 import {localApi, remoteApi} from '../API';
+import Alert from './alert';
 import DriverResults from './driver/results';
 import DriverStandings from './driver/standings';
 import Spinner from './spinner';
@@ -15,6 +17,8 @@ export default function withStandings(WrappedComponent) {
                 Races: {}
             }
         };
+
+        cancelSource = axios.CancelToken.source();
 
         fetchData(input) {
             const
@@ -44,7 +48,9 @@ export default function withStandings(WrappedComponent) {
                         return Entity;
                     }).then(Entity => {
                         if (Entity) {
-                            remoteApi.get(`${key}/${model}Standings`).then(response => {
+                            remoteApi.get(`${key}/${model}Standings`, {
+                                cancelToken: this.cancelSource.token
+                            }).then(response => {
                                 const {data: {StandingsTable: {StandingsLists: Standings}}} = response;
 
                                 this.setState(prevState => {
@@ -76,8 +82,12 @@ export default function withStandings(WrappedComponent) {
             });
         }
 
+        componentWillUnmount() {
+            this.cancelSource.cancel('Request cancelled');
+        }
+
         render() {
-            const {data: {Standings, Races}} = this.state;
+            const {data: {Constructor, Driver, Standings, Races}} = this.state;
 
             return (
                 <div className="uk-padding-small">
@@ -87,42 +97,46 @@ export default function withStandings(WrappedComponent) {
                         onReady={(input) => this.fetchData(input)}
                     />
 
-                    <hr className="uk-divider-icon"/>
+                    {Constructor || Driver ? (
+                        <>
+                            <hr className="uk-divider-icon"/>
 
-                    {Standings.length ? (
-                        <div data-uk-grid="" className="uk-grid-small">
-                            <div className="uk-width-1-6">
-                                <div>
-                                    <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
-                                        <li>
-                                            <a href="/">Standings</a>
-                                        </li>
-                                        {Standings.map(({season}) =>
-                                            <li key={season}>
-                                                <a href="/">Season {season}</a>
+                            {Standings.length ? (
+                                <div data-uk-grid="" className="uk-grid-small">
+                                    <div className="uk-width-1-6">
+                                        <div>
+                                            <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
+                                                <li>
+                                                    <a href="/">Standings</a>
+                                                </li>
+                                                {Standings.map(({season}) =>
+                                                    <li key={season}>
+                                                        <a href="/">Season {season}</a>
+                                                    </li>
+                                                )}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div className="uk-width-5-6">
+                                        <ul id="contents" className="uk-switcher">
+                                            <li>
+                                                <DriverStandings standings={Standings}/>
                                             </li>
-                                        )}
-                                    </ul>
+                                            {Standings.map(({season}) => {
+                                                return (
+                                                    <li key={season}>
+                                                        {Races[season] ? (
+                                                            <DriverResults races={Races[season]}/>
+                                                        ) : <Spinner/>}
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="uk-width-5-6">
-                                <ul id="contents" className="uk-switcher">
-                                    <li>
-                                        <DriverStandings standings={Standings}/>
-                                    </li>
-                                    {Standings.map(({season}) => {
-                                        return (
-                                            <li key={season}>
-                                                {Races[season] ? (
-                                                    <DriverResults races={Races[season]}/>
-                                                ) : <Spinner/>}
-                                            </li>
-                                        );
-                                    })}
-                                </ul>
-                            </div>
-                        </div>
-                    ) : <Spinner/>}
+                            ) : <Spinner/>}
+                        </>
+                    ) : null}
                 </div>
             );
         }

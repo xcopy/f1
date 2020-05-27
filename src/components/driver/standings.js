@@ -38,17 +38,22 @@ export default function DriverStandings({standings}) {
     const data = standings.map(standing => {
         const {
             season, round,
-            DriverStandings: [{position, positionText, points, wins, Constructors}]
+            DriverStandings, ConstructorStandings
         } = standing;
+        const [{
+            position, positionText, points, wins,
+            Constructor, Constructors
+        }] = (DriverStandings || ConstructorStandings);
 
         return {
             season,
             round,
-            Constructors,
             position,
             positionText,
             wins,
-            points
+            points,
+            Constructor,
+            Constructors,
         };
     });
 

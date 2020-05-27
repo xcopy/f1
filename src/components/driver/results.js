@@ -21,13 +21,13 @@ export default function DriverResults({races}) {
     return (
         <div
             data-uk-grid=""
-            data-uk-height-match="target: > div > .uk-card; row: false"
+            data-uk-height-match="target: > div > .uk-card; row: true"
             className="uk-grid-small">
-            {races.map(race => {
+            {races.map((race, i) => {
                 const {round, date, raceName, Results: data} = race;
 
                 return (
-                    <div key={raceName} className="uk-width-1-2">
+                    <div key={`${i}-${round}-${raceName}`} className="uk-width-1-2">
                         <div className="uk-card uk-card-default">
                             <div className="uk-card-header">
                                 <h3 className="uk-card-title uk-margin-remove">{raceName}</h3>

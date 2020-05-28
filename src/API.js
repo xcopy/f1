@@ -7,11 +7,16 @@ const axiosInstances = [
 
 axiosInstances.forEach(instance => {
     instance.interceptors.request.use((config) => {
-        config.params = {limit: 1000};
+        const {params, url} = config;
 
-        config.url = `${config.url}.json`;
-
-        return config;
+        return {
+            ...config,
+            url: `${url}.json`,
+            params: {
+                limit: 1000,
+                ...params
+            }
+        };
     });
 
     instance.interceptors.response.use((response) => {

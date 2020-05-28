@@ -46,6 +46,7 @@ export default function DriverStandings({standings}) {
         }] = (DriverStandings || ConstructorStandings);
 
         return {
+            id: `${season}-standing`,
             season,
             round,
             position,
@@ -57,7 +58,7 @@ export default function DriverStandings({standings}) {
         };
     });
 
-    return <DataTable keyField="season" {...{columns, data}}/>;
+    return <DataTable {...{columns, data}}/>;
 }
 
 DriverStandings.propTypes = {

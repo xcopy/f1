@@ -11,6 +11,7 @@ import GPDetails from './components/gp/details';
 import DriverList from './components/driver/list';
 import DriverDetails from './components/driver/details';
 import TeamList from './components/team/list';
+import TeamDetails from './components/team/details';
 
 import 'uikit/dist/css/uikit.min.css';
 import UIkit from 'uikit';
@@ -62,6 +63,7 @@ function App() {
                     }}/>
 
                     <Route exact path="/teams" component={TeamList}/>
+                    <Route exact path="/teams/:teamId([a-z0-9-_]+)" component={TeamDetails}/>
 
                     <Route exact path="/drivers" component={DriverList}/>
                     <Route exact path="/drivers/:driverId([a-z0-9-_]+)" component={DriverDetails}/>

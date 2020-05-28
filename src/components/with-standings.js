@@ -11,10 +11,17 @@ import Spinner from './spinner';
 export default function withStandings(WrappedComponent) {
     return class extends Component {
         state = {
-            busy: true,
-            data: {
-                Standings: [],
-                Races: {}
+            Constructor: {
+                busy: true
+                // data: null
+            },
+            Driver: {
+                busy: true
+                // data: null
+            },
+            Standings: {
+                busy: true,
+                data: []
             }
         };
 
@@ -28,56 +35,44 @@ export default function withStandings(WrappedComponent) {
 
             localforage.keys().then(keys => {
                 if (keys.indexOf(key) < 0) {
-                    localApi.get(`${model}s`).then(response => {
+                    localApi.get(`${model}s`).then(({data}) => {
                         const
-                            Collection = _.get(response.data, `${Model}Table.${Model}s`),
-                            Entity = Collection.find(e => e[`${model}Id`] === id);
+                            // get array of Drivers/Constructors
+                            Array = _.get(data, `${Model}Table.${Model}s`),
+                            // and find Driver/Constructor by id
+                            Entity = Array.find(e => e[`${model}Id`] === id);
 
-                        this.setState(prevState => {
-                            const {data} = prevState;
-
-                            return {
-                                data: {
-                                    ...data,
-                                    [Model]: Entity
-                                },
-                                busy: false
-                            };
+                        this.setState({
+                            [Model]: {
+                                busy: false,
+                                data: Entity
+                            }
                         });
 
                         return Entity;
                     }).then(Entity => {
-                        if (Entity) {
-                            remoteApi.get(`${key}/${model}Standings`, {
-                                cancelToken: this.cancelSource.token
-                            }).then(response => {
-                                const {data: {StandingsTable: {StandingsLists: Standings}}} = response;
+                        Entity && remoteApi.get(`${key}/${model}Standings`, {
+                            cancelToken: this.cancelSource.token
+                        }).then(response => {
+                            const {data: {StandingsTable: {StandingsLists: Standings}}} = response;
 
-                                this.setState(prevState => {
-                                    let {data} = prevState;
+                            this.setState(prevState => {
+                                const state = {
+                                    ...prevState,
+                                    Standings: {
+                                        busy: false,
+                                        data: Standings
+                                    }
+                                };
 
-                                    data = {
-                                        ...data,
-                                        Standings
-                                    };
+                                localforage.setItem(key, state).then(null);
 
-                                    localforage.setItem(key, data).then(null);
-
-                                    return {
-                                        ...prevState,
-                                        data
-                                    };
-                                });
+                                return state;
                             });
-                        }
-                    });
-                } else {
-                    localforage.getItem(key).then(data => {
-                        this.setState({
-                            data,
-                            busy: false
                         });
                     });
+                } else {
+                    localforage.getItem(key).then(state => this.setState(state));
                 }
             });
         }
@@ -87,7 +82,11 @@ export default function withStandings(WrappedComponent) {
         }
 
         render() {
-            const {data: {Constructor, Driver, Standings, Races}} = this.state;
+            const {
+                Constructor: {data: team} = {},
+                Driver: {data: driver} = {},
+                Standings: {busy, data: standings}
+            } = this.state;
 
             return (
                 <div className="uk-padding-small">
@@ -97,11 +96,11 @@ export default function withStandings(WrappedComponent) {
                         onReady={(input) => this.fetchData(input)}
                     />
 
-                    {Constructor || Driver ? (
+                    {team || driver ? (
                         <>
                             <hr className="uk-divider-icon"/>
 
-                            {Standings.length ? (
+                            {busy ? <Spinner text="Loading standings..."/> : (standings.length > 0 ? (
                                 <div data-uk-grid="" className="uk-grid-small">
                                     <div className="uk-width-1-6">
                                         <div>
@@ -109,7 +108,7 @@ export default function withStandings(WrappedComponent) {
                                                 <li>
                                                     <a href="/">Standings</a>
                                                 </li>
-                                                {Standings.map(({season}) =>
+                                                {standings.map(({season}) =>
                                                     <li key={season}>
                                                         <a href="/">Season {season}</a>
                                                     </li>
@@ -120,13 +119,13 @@ export default function withStandings(WrappedComponent) {
                                     <div className="uk-width-5-6">
                                         <ul id="contents" className="uk-switcher">
                                             <li>
-                                                <DriverStandings standings={Standings}/>
+                                                <DriverStandings standings={standings}/>
                                             </li>
-                                            {Standings.map(({season}) => {
+                                            {standings.map(({season, races}) => {
                                                 return (
                                                     <li key={season}>
-                                                        {Races[season] ? (
-                                                            <DriverResults races={Races[season]}/>
+                                                        {races ? (
+                                                            <DriverResults races={races}/>
                                                         ) : <Spinner/>}
                                                     </li>
                                                 );
@@ -134,7 +133,7 @@ export default function withStandings(WrappedComponent) {
                                         </ul>
                                     </div>
                                 </div>
-                            ) : <Spinner/>}
+                            ) : <Alert/>)}
                         </>
                     ) : null}
                 </div>

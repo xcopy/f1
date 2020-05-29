@@ -123,9 +123,10 @@ export default function ItemList({heading, items, keys, onClick}) {
                                         </div>
                                         <div className="uk-card-body">
                                             <dl className="uk-margin-remove uk-overflow-auto" style={{maxHeight: 240}}>
-                                                {itemsArray.map((item, i) => {
-                                                    const {visible} = item;
+                                                {itemsArray.map(item => {
+                                                    const {driverId, constructorId, visible} = item;
                                                     const item$ = {...item};
+                                                    const id = driverId || constructorId;
 
                                                     filter && keys.forEach(key => {
                                                         const {[key]: str} = item$;
@@ -143,7 +144,7 @@ export default function ItemList({heading, items, keys, onClick}) {
 
                                                     return (
                                                         <dd
-                                                            key={`item-${i}`}
+                                                            key={`item-${id}`}
                                                             className={`uk-text-truncate${visible ? '' : ' uk-hidden'}`}>
                                                             <a
                                                                 href="/"
@@ -155,7 +156,7 @@ export default function ItemList({heading, items, keys, onClick}) {
                                                             >
                                                                 {keys.map((key, j) => {
                                                                     return (
-                                                                        <Fragment key={j}>
+                                                                        <Fragment key={`${key}-${id}`}>
                                                                             <span dangerouslySetInnerHTML={{__html: item$[key]}}/>
                                                                             {j === keys.length - 1 ? '' : ', '}
                                                                         </Fragment>

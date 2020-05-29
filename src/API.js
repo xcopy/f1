@@ -2,12 +2,14 @@ import axios from 'axios';
 import localforage from 'localforage';
 import {setup} from 'axios-cache-adapter';
 
+const LIMIT = 1000;
+
 const axiosInstances = [
     axios.create({baseURL: '/api/f1/'}),
     setup({
         baseURL: 'https://ergast.com/api/f1/',
         cache: {
-            maxAge: 60 * 60 * 1000,
+            maxAge: 24 * 60 * 60 * 1000, // 24 hrs
             exclude: {
                 query: false
             },
@@ -27,7 +29,7 @@ axiosInstances.forEach(instance => {
             ...config,
             url: `${url}.json`,
             params: {
-                limit: 1000,
+                limit: LIMIT,
                 ...params
             }
         };
@@ -43,4 +45,5 @@ axiosInstances.forEach(instance => {
     });
 });
 
+export {LIMIT};
 export const [localApi, remoteApi] = axiosInstances;

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
 import _ from 'lodash';
-import {localApi, remoteApi} from '../API';
+import {LIMIT, localApi, remoteApi} from '../API';
 import Alert from './alert';
 import Spinner from './spinner';
 import DriverResults from './driver/results';
@@ -22,7 +22,10 @@ export default function withStandings(WrappedComponent) {
                 busy: true,
                 data: []
             },
-            Races: []
+            Races: {
+                busy: true,
+                data: []
+            }
         };
 
         cancelSource = axios.CancelToken.source();
@@ -49,12 +52,19 @@ export default function withStandings(WrappedComponent) {
 
                 return Entity;
             }).then(Entity => {
-                Entity && remoteApi.get(`${key}/${model}Standings`, {
+                const config = {
                     cancelToken: this.cancelSource.token
-                }).then(async (response) => {
-                    const {data: {StandingsTable: {StandingsLists: Standings}}} = response;
-                    const length = await remoteApi.cache.length();
-                    console.log(length);
+                };
+
+                Entity && axios.all([
+                    remoteApi.get(`${key}/${model}Standings`, config),
+                    remoteApi.get(`${key}/results`, config)
+                ]).then(responses => {
+                    const
+                        [S, R] = responses,
+                        {data: {StandingsTable: {StandingsLists: Standings}}} = S,
+                        {data: {total, RaceTable: {Races}}} = R, // get first page of races
+                        pages = Math.ceil(total / LIMIT) - 1; // find rest pages of races
 
                     this.setState(prevState => {
                         return {
@@ -62,9 +72,38 @@ export default function withStandings(WrappedComponent) {
                             Standings: {
                                 busy: false,
                                 data: Standings
+                            },
+                            Races: {
+                                busy: pages > 0,
+                                data: Races
                             }
                         };
                     });
+
+                    return pages;
+                }).then(pages => {
+                    if (pages > 0) {
+                        for (let i = 1; i <= pages; i++) {
+                            remoteApi.get(`${key}/results`, {
+                                ...config,
+                                params: {offset: i * LIMIT}
+                            }).then(response => {
+                                const {data: {RaceTable: {Races: races}}} = response;
+
+                                this.setState(prevState => {
+                                    const {Races: {data}} = prevState;
+
+                                    return {
+                                        ...prevState,
+                                        Races: {
+                                            busy: i < pages,
+                                            data: data.concat(races)
+                                        }
+                                    };
+                                });
+                            });
+                        }
+                    }
                 });
             });
         }
@@ -75,10 +114,10 @@ export default function withStandings(WrappedComponent) {
 
         render() {
             const {
-                Constructor: {data: team} = {},
-                Driver: {data: driver} = {},
-                Standings: {busy, data: standings},
-                Races
+                Constructor: {data: Constructor} = {},
+                Driver: {data: Driver} = {},
+                Standings: {busy, data: Standings},
+                Races: {data: Races}
             } = this.state;
 
             return (
@@ -89,11 +128,11 @@ export default function withStandings(WrappedComponent) {
                         onReady={(input) => this.fetchData(input)}
                     />
 
-                    {team || driver ? (
+                    {Constructor || Driver ? (
                         <>
                             <hr className="uk-divider-icon"/>
 
-                            {busy ? <Spinner text="Loading standings..."/> : (standings.length > 0 ? (
+                            {busy ? <Spinner text="Loading standings..."/> : (Standings.length > 0 ? (
                                 <div data-uk-grid="" className="uk-grid-small">
                                     <div className="uk-width-1-6">
                                         <div>
@@ -101,7 +140,7 @@ export default function withStandings(WrappedComponent) {
                                                 <li>
                                                     <a href="/">Standings</a>
                                                 </li>
-                                                {standings.map(({season}) =>
+                                                {Standings.map(({season}) =>
                                                     <li key={`${season}-season`}>
                                                         <a href="/">Season {season}</a>
                                                     </li>
@@ -112,9 +151,9 @@ export default function withStandings(WrappedComponent) {
                                     <div className="uk-width-5-6">
                                         <ul id="contents" className="uk-switcher">
                                             <li>
-                                                <DriverStandings standings={standings}/>
+                                                <DriverStandings standings={Standings}/>
                                             </li>
-                                            {standings.map(({season}) => {
+                                            {Standings.map(({season}) => {
                                                 const races = Races.filter(({season: s}) => s === season);
 
                                                 return (

@@ -14,6 +14,7 @@ function DriverDetails(props) {
         match: {params: {driverId}},
         Driver,
         Standings,
+        Races,
         onReady
     } = props;
 
@@ -86,7 +87,7 @@ function DriverDetails(props) {
                                         </Wiki>
                                     </div>
                                     <div className="uk-width-1-4">
-                                        <DriverRecords standings={Standings}/>
+                                        <DriverRecords standings={Standings} races={Races}/>
                                     </div>
                                 </div>
                             </>

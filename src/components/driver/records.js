@@ -4,13 +4,14 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../spinner';
 
-export default function DriverRecords({standings}) {
-    const Races = []; // todo
-    const {busy, data} = standings;
-    const reducer = (total, num) => total + num;
+export default function DriverRecords({standings, races}) {
+    const
+        {busy: loadingStandings, data: Standings} = standings,
+        {busy: loadingRaces, data: Races} = races,
+        reducer = (total, num) => total + num;
 
     function getTitlesCount() {
-        return data.filter(standing => {
+        return Standings.filter(standing => {
             const {DriverStandings: [{position}]} = standing;
             return parseInt(position) === 1;
         }).length;
@@ -24,7 +25,7 @@ export default function DriverRecords({standings}) {
     }
 
     function getTotalCountOf(prop) {
-        return data.map(standing => {
+        return Standings.map(standing => {
             const {DriverStandings: [obj]} = standing;
             return parseInt(obj[prop]);
         }).reduce(reducer);
@@ -50,24 +51,24 @@ export default function DriverRecords({standings}) {
                 <h3 className="uk-card-title">Records</h3>
             </div>
             <div className="uk-card-body">
-                {busy ? <Spinner text="Loading records..."/> : (() => {
+                {loadingStandings ? <Spinner text="Loading records..."/> : (() => {
                     const rows = [
-                        ['Championships', getTitlesCount()],
-                        // ['Entries', Races.length],
-                        // ['Pole positions', getPolePositionsCount()],
-                        ['Wins', getTotalCountOf('wins')],
-                        // ['Podiums', getPodiumsCount()],
-                        ['Career points', getTotalCountOf('points')],
-                        // ['Fastest Laps', getFastestLapsCount()]
+                        ['Championships', getTitlesCount(), loadingStandings],
+                        ['Entries', Races.length, loadingRaces],
+                        ['Pole positions', getPolePositionsCount(), loadingRaces],
+                        ['Wins', getTotalCountOf('wins'), loadingStandings],
+                        ['Podiums', getPodiumsCount(), loadingRaces],
+                        ['Career points', getTotalCountOf('points'), loadingStandings],
+                        ['Fastest Laps', getFastestLapsCount(), loadingRaces]
                     ];
 
                     return (
                         <>
-                            {rows.map(([label, qty]) =>
+                            {rows.map(([label, qty, hidden]) =>
                                 <div
                                     key={label}
                                     data-uk-grid=""
-                                    className="uk-grid-small">
+                                    className={`uk-grid-small${hidden ? ' uk-hidden' : ''}`}>
                                     <div className="uk-width-expand" data-uk-leader="">
                                         {label}
                                     </div>
@@ -87,5 +88,6 @@ export default function DriverRecords({standings}) {
 }
 
 DriverRecords.propTypes = {
-    standings: PropTypes.object.isRequired
+    standings: PropTypes.object.isRequired,
+    races: PropTypes.object.isRequired
 };

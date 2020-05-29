@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import localforage from 'localforage';
 import _ from 'lodash';
 import {localApi, remoteApi} from '../API';
 import Alert from './alert';
@@ -34,47 +33,39 @@ export default function withStandings(WrappedComponent) {
                 model = Model.toLowerCase(),
                 key = `${model}s/${id}`;
 
-            localforage.keys().then(keys => {
-                if (keys.indexOf(key) < 0) {
-                    localApi.get(`${model}s`).then(({data}) => {
-                        const
-                            // get array of Drivers/Constructors
-                            Array = _.get(data, `${Model}Table.${Model}s`),
-                            // and find Driver/Constructor by id
-                            Entity = Array.find(e => e[`${model}Id`] === id);
+            localApi.get(`${model}s`).then(({data}) => {
+                const
+                    // get array of Drivers/Constructors
+                    Array = _.get(data, `${Model}Table.${Model}s`),
+                    // and find Driver/Constructor by id
+                    Entity = Array.find(e => e[`${model}Id`] === id);
 
-                        this.setState({
-                            [Model]: {
+                this.setState({
+                    [Model]: {
+                        busy: false,
+                        data: Entity
+                    }
+                });
+
+                return Entity;
+            }).then(Entity => {
+                Entity && remoteApi.get(`${key}/${model}Standings`, {
+                    cancelToken: this.cancelSource.token
+                }).then(async (response) => {
+                    const {data: {StandingsTable: {StandingsLists: Standings}}} = response;
+                    const length = await remoteApi.cache.length();
+                    console.log(length);
+
+                    this.setState(prevState => {
+                        return {
+                            ...prevState,
+                            Standings: {
                                 busy: false,
-                                data: Entity
+                                data: Standings
                             }
-                        });
-
-                        return Entity;
-                    }).then(Entity => {
-                        Entity && remoteApi.get(`${key}/${model}Standings`, {
-                            cancelToken: this.cancelSource.token
-                        }).then(response => {
-                            const {data: {StandingsTable: {StandingsLists: Standings}}} = response;
-
-                            this.setState(prevState => {
-                                const state = {
-                                    ...prevState,
-                                    Standings: {
-                                        busy: false,
-                                        data: Standings
-                                    }
-                                };
-
-                                localforage.setItem(key, state).then(null);
-
-                                return state;
-                            });
-                        });
+                        };
                     });
-                } else {
-                    localforage.getItem(key).then(state => this.setState(state));
-                }
+                });
             });
         }
 

@@ -4,9 +4,9 @@ import localforage from 'localforage';
 import _ from 'lodash';
 import {localApi, remoteApi} from '../API';
 import Alert from './alert';
+import Spinner from './spinner';
 import DriverResults from './driver/results';
 import DriverStandings from './driver/standings';
-import Spinner from './spinner';
 
 export default function withStandings(WrappedComponent) {
     return class extends Component {
@@ -22,7 +22,8 @@ export default function withStandings(WrappedComponent) {
             Standings: {
                 busy: true,
                 data: []
-            }
+            },
+            Races: []
         };
 
         cancelSource = axios.CancelToken.source();
@@ -85,7 +86,8 @@ export default function withStandings(WrappedComponent) {
             const {
                 Constructor: {data: team} = {},
                 Driver: {data: driver} = {},
-                Standings: {busy, data: standings}
+                Standings: {busy, data: standings},
+                Races
             } = this.state;
 
             return (
@@ -109,7 +111,7 @@ export default function withStandings(WrappedComponent) {
                                                     <a href="/">Standings</a>
                                                 </li>
                                                 {standings.map(({season}) =>
-                                                    <li key={season}>
+                                                    <li key={`${season}-season`}>
                                                         <a href="/">Season {season}</a>
                                                     </li>
                                                 )}
@@ -121,10 +123,12 @@ export default function withStandings(WrappedComponent) {
                                             <li>
                                                 <DriverStandings standings={standings}/>
                                             </li>
-                                            {standings.map(({season, races}) => {
+                                            {standings.map(({season}) => {
+                                                const races = Races.filter(({season: s}) => s === season);
+
                                                 return (
-                                                    <li key={season}>
-                                                        {races ? (
+                                                    <li key={`${season}-races`}>
+                                                        {races.length ? (
                                                             <DriverResults races={races}/>
                                                         ) : <Spinner/>}
                                                     </li>

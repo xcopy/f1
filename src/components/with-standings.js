@@ -6,6 +6,7 @@ import Alert from './alert';
 import Spinner from './spinner';
 import DriverResults from './driver/results';
 import DriverStandings from './driver/standings';
+import {normalizeRaces} from '../helpers';
 
 export default function withStandings(WrappedComponent) {
     return class extends Component {
@@ -116,9 +117,14 @@ export default function withStandings(WrappedComponent) {
             const {
                 Constructor: {data: Constructor} = {},
                 Driver: {data: Driver} = {},
-                Standings: {busy, data: Standings},
-                Races: {data: Races}
+                Standings: {busy: loadingStandings, data: Standings},
+                Races: {busy: loadingRaces}
             } = this.state;
+
+            let {Races: {data: Races}} = this.state;
+
+            // merge duplicate races with different results
+            loadingRaces || (Races = normalizeRaces(Races));
 
             return (
                 <div className="uk-padding-small">
@@ -132,7 +138,7 @@ export default function withStandings(WrappedComponent) {
                         <>
                             <hr className="uk-divider-icon"/>
 
-                            {busy ? <Spinner text="Loading standings..."/> : (Standings.length > 0 ? (
+                            {loadingStandings ? <Spinner text="Loading standings..."/> : (Standings.length > 0 ? (
                                 <div data-uk-grid="" className="uk-grid-small">
                                     <div className="uk-width-1-6">
                                         <div>
@@ -153,7 +159,7 @@ export default function withStandings(WrappedComponent) {
                                             <li>
                                                 <DriverStandings standings={Standings}/>
                                             </li>
-                                            {Standings.map(({season}) => {
+                                            {loadingRaces || Standings.map(({season}) => {
                                                 const races = Races.filter(({season: s}) => s === season);
 
                                                 return (

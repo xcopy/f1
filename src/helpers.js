@@ -37,6 +37,33 @@ export function normalizeResults(race) {
 }
 
 /**
+ * @param {array} races
+ * @returns {array}
+ */
+export function normalizeRaces(races = []) {
+    const arr = [];
+
+    // merge duplicate races with different results
+    races.forEach(race => {
+        const
+            {season, round} = race,
+            find = arr.find(({season: s, round: r}) => {
+                return s === season && r === round;
+            }),
+            i = arr.indexOf(find);
+
+        if (find) {
+            const {Results: r1} = find, {Results: r2} = race;
+            arr[i] = {...find, Results: r1.concat(r2)}; // merge results for the one race
+        } else {
+            arr.push(race);
+        }
+    });
+
+    return arr;
+}
+
+/**
  * Converts time string to ms
  *
  * Examples:

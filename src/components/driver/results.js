@@ -25,9 +25,15 @@ export default function DriverResults({races}) {
             className="uk-grid-small">
             {races.map(race => {
                 const {season, round, date, raceName, Results: data} = race;
+                const key = `${season}-${round}-results`;
+
+                data.forEach(row => {
+                    const {Driver: {driverId}} = row;
+                    row.id = `${key}-${driverId}`;
+                });
 
                 return (
-                    <div key={`${season}-${round}-results`} className="uk-width-1-2">
+                    <div key={key} className="uk-width-1-2">
                         <div className="uk-card uk-card-default">
                             <div className="uk-card-header">
                                 <h3 className="uk-card-title uk-margin-remove">{raceName}</h3>
@@ -36,7 +42,7 @@ export default function DriverResults({races}) {
                                 </small>
                             </div>
                             <div className="uk-card-body">
-                                <DataTable keyField="round" {...{columns, data}}/>
+                                <DataTable {...{columns, data}}/>
                             </div>
                         </div>
                     </div>

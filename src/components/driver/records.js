@@ -12,7 +12,8 @@ export default function DriverRecords({standings, races}) {
 
     function getTitlesCount() {
         return Standings.filter(standing => {
-            const {DriverStandings: [{position}]} = standing;
+            const {DriverStandings, ConstructorStandings} = standing;
+            const [{position}] = (DriverStandings || ConstructorStandings);
             return parseInt(position) === 1;
         }).length;
     }
@@ -26,7 +27,8 @@ export default function DriverRecords({standings, races}) {
 
     function getTotalCountOf(prop) {
         return Standings.map(standing => {
-            const {DriverStandings: [obj]} = standing;
+            const {DriverStandings, ConstructorStandings} = standing;
+            const [obj] = (DriverStandings || ConstructorStandings);
             return parseInt(obj[prop]);
         }).reduce(reducer);
     }
@@ -51,24 +53,24 @@ export default function DriverRecords({standings, races}) {
                 <h3 className="uk-card-title">Records</h3>
             </div>
             <div className="uk-card-body">
-                {loadingStandings ? <Spinner text="Loading records..."/> : (() => {
+                {loadingStandings && loadingRaces ? <Spinner text="Loading records..."/> : (() => {
                     const rows = [
-                        ['Championships', getTitlesCount(), loadingStandings],
-                        ['Entries', Races.length, loadingRaces],
-                        ['Pole positions', getPolePositionsCount(), loadingRaces],
-                        ['Wins', getTotalCountOf('wins'), loadingStandings],
-                        ['Podiums', getPodiumsCount(), loadingRaces],
-                        ['Career points', getTotalCountOf('points'), loadingStandings],
-                        ['Fastest Laps', getFastestLapsCount(), loadingRaces]
+                        ['Championships', getTitlesCount()],
+                        ['Entries', Races.length],
+                        ['Pole positions', getPolePositionsCount()],
+                        ['Wins', getTotalCountOf('wins')],
+                        ['Podiums', getPodiumsCount()],
+                        ['Points', getTotalCountOf('points')],
+                        ['Fastest Laps', getFastestLapsCount()]
                     ];
 
                     return (
                         <>
-                            {rows.map(([label, qty, hidden]) =>
+                            {rows.map(([label, qty]) =>
                                 <div
                                     key={label}
                                     data-uk-grid=""
-                                    className={`uk-grid-small${hidden ? ' uk-hidden' : ''}`}>
+                                    className="uk-grid-small">
                                     <div className="uk-width-expand" data-uk-leader="">
                                         {label}
                                     </div>

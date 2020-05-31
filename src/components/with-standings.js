@@ -141,18 +141,16 @@ export default function withStandings(WrappedComponent) {
                             {loadingStandings ? <Spinner text="Loading standings..."/> : (Standings.length > 0 ? (
                                 <div data-uk-grid="" className="uk-grid-small">
                                     <div className="uk-width-1-6">
-                                        <div>
-                                            <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
-                                                <li>
-                                                    <a href="/">Standings</a>
+                                        <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
+                                            <li>
+                                                <a href="/">Standings</a>
+                                            </li>
+                                            {Standings.map(({season}) =>
+                                                <li key={`${season}-season`}>
+                                                    <a href="/">Season {season}</a>
                                                 </li>
-                                                {Standings.map(({season}) =>
-                                                    <li key={`${season}-season`}>
-                                                        <a href="/">Season {season}</a>
-                                                    </li>
-                                                )}
-                                            </ul>
-                                        </div>
+                                            )}
+                                        </ul>
                                     </div>
                                     <div className="uk-width-5-6">
                                         <ul id="contents" className="uk-switcher">

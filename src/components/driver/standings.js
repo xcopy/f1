@@ -27,10 +27,15 @@ export default function DriverStandings({standings}) {
             grow: 0,
             cell: ({position, positionText}) => {
                 const pos = parseInt(positionText || position);
+                const className = isNaN(pos)
+                    ? 'uk-text-danger'
+                    : pos === 1 ? 'uk-text-warning' : '';
 
-                return pos === 1 ? (
-                    <FontAwesomeIcon icon={faTrophy} style={{color: '#FFD700'}}/>
-                ) : pos;
+                return (
+                    <span className={className}>
+                        {pos === 1 ? <FontAwesomeIcon icon={faTrophy}/> : pos || positionText}
+                    </span>
+                );
             }
         }
     ];

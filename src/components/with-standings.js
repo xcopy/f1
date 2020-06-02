@@ -6,7 +6,7 @@ import Alert from './alert';
 import Spinner from './spinner';
 import DriverResults from './driver/results';
 import DriverStandings from './driver/standings';
-import {normalizeRaces} from '../helpers';
+import {normalizeRaces, getDecades} from '../helpers';
 
 export default function withStandings(WrappedComponent) {
     return class extends Component {
@@ -125,6 +125,7 @@ export default function withStandings(WrappedComponent) {
 
             // merge duplicate races with different results
             loadingRaces || (Races = normalizeRaces(Races));
+            loadingStandings || console.log();
 
             return (
                 <div className="uk-padding-small">
@@ -141,33 +142,32 @@ export default function withStandings(WrappedComponent) {
                             {loadingStandings ? <Spinner text="Loading standings..."/> : (Standings.length > 0 ? (
                                 <div data-uk-grid="" className="uk-grid-small">
                                     <div className="uk-width-1-6">
-                                        <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
+                                        <ul className="uk-list uk-list-divider uk-link-text">
                                             <li>
                                                 <a href="/">Standings</a>
                                             </li>
-                                            {Standings.map(({season}) =>
-                                                <li key={`${season}-season`}>
-                                                    <a href="/">Season {season}</a>
-                                                </li>
-                                            )}
+                                            {(() => {
+                                                const decades = getDecades(Standings);
+                                                return decades.map(year =>
+                                                    <li key={`${year}s`}>
+                                                        <dl>
+                                                            <dt>{`${year}s`}</dt>
+                                                        </dl>
+                                                    </li>
+                                                );
+                                            })()}
                                         </ul>
                                     </div>
                                     <div className="uk-width-5-6">
-                                        <ul id="contents" className="uk-switcher">
+                                        <ul id="contents" className="uk-switcher" data-uk-switcher="">
                                             <li>
                                                 <DriverStandings standings={Standings}/>
                                             </li>
-                                            {loadingRaces || Standings.map(({season}) => {
-                                                const races = Races.filter(({season: s}) => s === season);
-
-                                                return (
-                                                    <li key={`${season}-races`}>
-                                                        {races.length ? (
-                                                            <DriverResults races={races}/>
-                                                        ) : <Spinner/>}
-                                                    </li>
-                                                );
-                                            })}
+                                            {loadingRaces || (
+                                                <li>
+                                                    +++
+                                                </li>
+                                            )}
                                         </ul>
                                     </div>
                                 </div>

@@ -126,3 +126,20 @@ export function yearsToStr(years) {
         .map(a => a.join('–'))
         .join(', ');
 }
+
+/**
+ * @param {array} standings
+ * @returns {array}
+ */
+export function getDecades(standings) {
+    const
+        years = standings.map(standing => standing.season), 
+        min = Math.min(...years),
+        max = Math.max(...years);
+
+    return _.range(
+        min - (min % 10),
+        max - (max % 10) + 10,
+        10
+    );
+}

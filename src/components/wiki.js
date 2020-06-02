@@ -61,10 +61,10 @@ class Wiki extends Component {
                             <div data-uk-grid="" className="uk-grid-small">
                                 {imageSrc && (
                                     <div className="uk-width-auto">
-                                        <a href={`#modal`} data-uk-toggle="">
+                                        <a href={`#wiki-thumb-modal`} data-uk-toggle="">
                                             <img data-src={thumbSrc} data-uk-img="" alt={title}/>
                                         </a>
-                                        <div id="modal" className="uk-flex-top" data-uk-modal="">
+                                        <div id="wiki-thumb-modal" className="uk-flex-top" data-uk-modal="">
                                             <div className="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
                                                 <img data-src={imageSrc} data-uk-img="" alt={title}/>
                                             </div>

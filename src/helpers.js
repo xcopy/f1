@@ -88,22 +88,6 @@ export function timeToMs(timeString) {
 }
 
 /**
- * Returns array of consecutive numbers
- *
- * @param {number} start
- * @param {number|null} end
- * @returns {array}
- */
-export const range = (start, end = null) => {
-    let x = end ? start : 1;
-    let y = end || start;
-
-    return Array.from(function* () {
-        while (x <= y) yield x++;
-    }());
-};
-
-/**
  * Converts array of seasons (years) to string
  *
  * Examples:
@@ -119,7 +103,7 @@ export function yearsToStr(years) {
     const
         minYear = Math.min(...years),
         maxYear = Math.max(...years),
-        diff = _.difference(range(minYear, maxYear), years);
+        diff = _.difference(_.range(minYear, maxYear), years);
 
     let ranges = [];
 

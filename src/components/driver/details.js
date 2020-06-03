@@ -1,4 +1,5 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
+import {localApi} from '../../API';
 import _ from 'lodash';
 import Moment from 'react-moment';
 import Spinner from '../spinner';
@@ -6,36 +7,44 @@ import Alert from '../alert';
 import Wiki from '../wiki';
 import DriverTeams from './teams';
 import DriverRecords from './records';
-import withStandings from '../with-standings';
+import Standings from '../standings';
 import {yearsToStr} from '../../helpers';
 
-function DriverDetails(props) {
-    const {
-        match: {params: {driverId}},
-        Driver,
-        Standings,
-        Races,
-        onReady
-    } = props;
+export default function DriverDetails({match}) {
+    const
+        {params: {driverId}} = match,
+        [busy, setBusy] = useState(true),
+        [driver, setDriver] = useState(),
+        [standings, setStandings] = useState({busy: true, data: []}),
+        [races, setRaces] = useState({busy: true, data: []});
 
     useEffect(() => {
-        onReady({
-            id: driverId,
-            Model: 'Driver'
+        let isMounted = true;
+
+        localApi.get('drivers').then(response => {
+            const {data: {DriverTable: {Drivers}}} = response;
+
+            if (isMounted) {
+                setDriver(Drivers.find(({driverId: id}) => id === driverId));
+                setBusy(false);
+            }
         });
-        // eslint-disable-next-line
+
+        return () => {
+            isMounted = false;
+        };
     }, [driverId]);
 
     function getSeasonsList() {
         const
-            {data} = Standings,
+            {data} = standings,
             years = data.map(({season}) => parseInt(season));
 
         return `${years.length} (${yearsToStr(years)})`;
     }
 
     function getTeamsList() {
-        const {data} = Standings;
+        const {data} = standings;
 
         let teams = data.map(standing => {
             const {DriverStandings: [{Constructors}]} = standing;
@@ -47,56 +56,57 @@ function DriverDetails(props) {
         return <DriverTeams teams={teams}/>;
     }
 
-    return (() => {
-        const {busy, data: driver} = Driver;
+    return (
+        <div className="uk-padding-small">
+            {busy ? <Spinner text="Loading driver details"/> : (() => {
+                return driver ? (() => {
+                    const {url, familyName, givenName, nationality, dateOfBirth} = driver;
 
-        return (
-            <>
-                {busy ? <Spinner text="Loading driver details"/> : (() => {
-                    return driver ? (() => {
-                        const {url, familyName, givenName, nationality, dateOfBirth} = driver;
+                    return (
+                        <>
+                            <h1 className="uk-text-uppercase">{givenName} {familyName}</h1>
+                            <hr className="uk-divider-icon"/>
+                            <div
+                                data-uk-grid=""
+                                data-uk-height-match="target: > div > .uk-card"
+                                className="uk-grid-small">
+                                <div className="uk-width-3-4">
+                                    <Wiki url={url}>
+                                        {(() => {
+                                            const {busy} = standings;
 
-                        return (
-                            <>
-                                <h1 className="uk-text-uppercase">{givenName} {familyName}</h1>
-                                <hr className="uk-divider-icon"/>
-                                <div
-                                    data-uk-grid=""
-                                    data-uk-height-match="target: > div > .uk-card"
-                                    className="uk-grid-small">
-                                    <div className="uk-width-3-4">
-                                        <Wiki url={url}>
-                                            {(() => {
-                                                const {busy} = Standings;
-
-                                                return busy ? <Spinner text="Loading personal info..."/> : (
-                                                    <div data-uk-grid="" className="uk-grid-small">
-                                                        <div>
-                                                            <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
-                                                            <br/>
-                                                            <b>Nationality:</b> {nationality}
-                                                        </div>
-                                                        <div>
-                                                            <b>Seasons:</b> {getSeasonsList()}
-                                                            <br/>
-                                                            <b>Teams:</b> {getTeamsList()}
-                                                        </div>
+                                            return busy ? <Spinner text="Loading personal info..."/> : (
+                                                <div data-uk-grid="" className="uk-grid-small">
+                                                    <div>
+                                                        <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
+                                                        <br/>
+                                                        <b>Nationality:</b> {nationality}
                                                     </div>
-                                                );
-                                            })()}
-                                        </Wiki>
-                                    </div>
-                                    <div className="uk-width-1-4">
-                                        <DriverRecords standings={Standings} races={Races}/>
-                                    </div>
+                                                    <div>
+                                                        <b>Seasons:</b> {getSeasonsList()}
+                                                        <br/>
+                                                        <b>Teams:</b> {getTeamsList()}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })()}
+                                    </Wiki>
                                 </div>
-                            </>
-                        );
-                    })() : <Alert>Driver not found.</Alert>
-                })()}
-            </>
-        );
-    })();
+                                <div className="uk-width-1-4">
+                                    <DriverRecords standings={standings} races={races}/>
+                                </div>
+                            </div>
+                            <Standings
+                                input={{id: driverId, model: 'driver'}}
+                                onReady={({standings, races}) => {
+                                    setStandings(standings);
+                                    setRaces(races);
+                                }}
+                            />
+                        </>
+                    );
+                })() : <Alert>Driver not found.</Alert>
+            })()}
+        </div>
+    )
 }
-
-export default withStandings(DriverDetails);

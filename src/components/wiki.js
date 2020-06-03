@@ -4,7 +4,11 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faWikipediaW} from '@fortawesome/free-brands-svg-icons';
 import Spinner from './spinner';
 
-class Wiki extends Component {
+export default class Wiki extends Component {
+    static propTypes = {
+        url: PropTypes.string.isRequired
+    };
+
     state = {
         busy: true,
         data: null
@@ -92,9 +96,3 @@ class Wiki extends Component {
         );
     }
 }
-
-Wiki.propTypes = {
-    url: PropTypes.string.isRequired
-};
-
-export default Wiki;

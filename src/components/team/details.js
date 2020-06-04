@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {localApi} from '../../API';
 import Alert from '../alert';
 import Wiki from '../wiki';
+import Card from '../card';
 import Spinner from '../spinner';
 import Standings from '../standings';
 import DriverRecords from '../driver/records';
@@ -46,14 +47,9 @@ export default function TeamDetails({match}) {
                                 data-uk-height-match="target: > div > .uk-card"
                                 className="uk-grid-small">
                                 <div className="uk-width-3-4">
-                                    <div className="uk-card uk-card-default">
-                                        <div className="uk-card-header">
-                                            <h3 className="uk-card-title">Summary</h3>
-                                        </div>
-                                        <div className="uk-card-body">
-                                            <Wiki url={url}/>
-                                        </div>
-                                    </div>
+                                    <Card title="Summary">
+                                        <Wiki url={url}/>
+                                    </Card>
                                 </div>
                                 <div className="uk-width-1-4">
                                     <DriverRecords standings={standings} races={races}/>

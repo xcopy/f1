@@ -3,6 +3,7 @@ import {renderToString} from 'react-dom/server';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Spinner from './spinner';
+import Card from './card';
 
 const Highlight = styled.span`
     background-color: #FFFF33;
@@ -116,59 +117,60 @@ export default function ItemList({heading, items, keys, onClick}) {
 
                             return showCard > 0 ? (
                                 <div key={letter} className="uk-width-1-5">
-                                    <div className="uk-card uk-card-default">
-                                        <div className="uk-card-header">
-                                            <span className="uk-text-large">{letter}</span>
-                                            <small>({itemsArray.length})</small>
-                                        </div>
-                                        <div className="uk-card-body">
-                                            <dl className="uk-margin-remove uk-overflow-auto" style={{maxHeight: 240}}>
-                                                {itemsArray.map(item => {
-                                                    const {driverId, constructorId, visible} = item;
-                                                    const item$ = {...item};
-                                                    const id = driverId || constructorId;
+                                    <Card title={() => {
+                                        return (
+                                            <>
+                                                <span className="uk-text-large">{letter}</span>
+                                                <small>({itemsArray.length})</small>
+                                            </>
+                                        );
+                                    }}>
+                                        <dl className="uk-margin-remove uk-overflow-auto" style={{maxHeight: 240}}>
+                                            {itemsArray.map(item => {
+                                                const {driverId, constructorId, visible} = item;
+                                                const item$ = {...item};
+                                                const id = driverId || constructorId;
 
-                                                    filter && keys.forEach(key => {
-                                                        const {[key]: str} = item$;
+                                                filter && keys.forEach(key => {
+                                                    const {[key]: str} = item$;
 
-                                                        // just replace string value(s)
-                                                        // equivalent to:
-                                                        // item.prop = test ? item.prop.replace(...) : item.prop
-                                                        item$[key] = regexp.test(str)
-                                                            ? str.replace(
-                                                                regexp,
-                                                                renderToString(<Highlight>$1</Highlight>)
-                                                            )
-                                                            : str;
-                                                    });
+                                                    // just replace string value(s)
+                                                    // equivalent to:
+                                                    // item.prop = test ? item.prop.replace(...) : item.prop
+                                                    item$[key] = regexp.test(str)
+                                                        ? str.replace(
+                                                            regexp,
+                                                            renderToString(<Highlight>$1</Highlight>)
+                                                        )
+                                                        : str;
+                                                });
 
-                                                    return (
-                                                        <dd
-                                                            key={`item-${id}`}
-                                                            className={`uk-text-truncate${visible ? '' : ' uk-hidden'}`}>
-                                                            <a
-                                                                href="/"
-                                                                title={keys.map(key => item[key]).join(', ')}
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    onClick(item);
-                                                                }}
-                                                            >
-                                                                {keys.map((key, j) => {
-                                                                    return (
-                                                                        <Fragment key={`${key}-${id}`}>
-                                                                            <span dangerouslySetInnerHTML={{__html: item$[key]}}/>
-                                                                            {j === keys.length - 1 ? '' : ', '}
-                                                                        </Fragment>
-                                                                    );
-                                                                })}
-                                                            </a>
-                                                        </dd>
-                                                    );
-                                                })}
-                                            </dl>
-                                        </div>
-                                    </div>
+                                                return (
+                                                    <dd
+                                                        key={`item-${id}`}
+                                                        className={`uk-text-truncate${visible ? '' : ' uk-hidden'}`}>
+                                                        <a
+                                                            href="/"
+                                                            title={keys.map(key => item[key]).join(', ')}
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                onClick(item);
+                                                            }}
+                                                        >
+                                                            {keys.map((key, j) => {
+                                                                return (
+                                                                    <Fragment key={`${key}-${id}`}>
+                                                                        <span dangerouslySetInnerHTML={{__html: item$[key]}}/>
+                                                                        {j === keys.length - 1 ? '' : ', '}
+                                                                    </Fragment>
+                                                                );
+                                                            })}
+                                                        </a>
+                                                    </dd>
+                                                );
+                                            })}
+                                        </dl>
+                                    </Card>
                                 </div>
                             ) : null;
                         })}

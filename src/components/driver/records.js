@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faInfoCircle} from '@fortawesome/free-solid-svg-icons';
 import Spinner from '../spinner';
+import Card from '../card';
 
 export default function DriverRecords({standings, races}) {
     const
@@ -47,44 +48,39 @@ export default function DriverRecords({standings, races}) {
     }
 
     return (
-        <div className="uk-card uk-card-default">
-            <div className="uk-card-header">
-                <h3 className="uk-card-title">Records</h3>
-            </div>
-            <div className="uk-card-body">
-                {loadingStandings && loadingRaces ? <Spinner text="Loading records..."/> : (() => {
-                    const rows = [
-                        ['Championships', getTitlesCount()],
-                        ['Entries', Races.length],
-                        ['Pole positions', getPolePositionsCount()],
-                        ['Wins', getTotalCountOf('wins')],
-                        ['Podiums', getPodiumsCount()],
-                        ['Points', getTotalCountOf('points')],
-                        ['Fastest Laps', getFastestLapsCount()]
-                    ];
+        <Card title="Records">
+            {loadingStandings && loadingRaces ? <Spinner text="Loading records..."/> : (() => {
+                const rows = [
+                    ['Championships', getTitlesCount()],
+                    ['Entries', Races.length],
+                    ['Pole positions', getPolePositionsCount()],
+                    ['Wins', getTotalCountOf('wins')],
+                    ['Podiums', getPodiumsCount()],
+                    ['Points', getTotalCountOf('points')],
+                    ['Fastest Laps', getFastestLapsCount()]
+                ];
 
-                    return (
-                        <>
-                            {rows.map(([label, qty]) =>
-                                <div
-                                    key={label}
-                                    data-uk-grid=""
-                                    className="uk-grid-small">
-                                    <div className="uk-width-expand" data-uk-leader="">
-                                        {label}
-                                    </div>
-                                    <div className="uk-text-bold">{qty}</div>
+                return (
+                    <>
+                        {rows.map(([label, qty]) =>
+                            <div
+                                key={label}
+                                data-uk-grid=""
+                                className="uk-grid-small">
+                                <div className="uk-width-expand" data-uk-leader="">
+                                    {label}
                                 </div>
-                            )}
-
-                            <div className="uk-text-muted uk-margin-top">
-                                <FontAwesomeIcon icon={faInfoCircle}/> Some items may be inaccurate.
+                                <div className="uk-text-bold">{qty}</div>
                             </div>
-                        </>
-                    );
-                })()}
-            </div>
-        </div>
+                        )}
+
+                        <div className="uk-text-muted uk-margin-top">
+                            <FontAwesomeIcon icon={faInfoCircle}/> Some items may be inaccurate.
+                        </div>
+                    </>
+                );
+            })()}
+        </Card>
     );
 }
 

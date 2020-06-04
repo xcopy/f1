@@ -15,6 +15,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCalendar} from '@fortawesome/free-regular-svg-icons';
 import {faMapMarkerAlt, faPlayCircle} from '@fortawesome/free-solid-svg-icons';
 import Wiki from '../wiki';
+import Card from '../card';
 
 const GPDetails = ({match}) => {
     const
@@ -93,9 +94,9 @@ const GPDetails = ({match}) => {
                             {circuitName} / {locality}, {country}
                         </div>
                         <hr className="uk-divider-icon"/>
-                        <div className="uk-card uk-card-default uk-card-body">
+                        <Card>
                             <Wiki url={url}/>
-                        </div>
+                        </Card>
                         <hr className="uk-divider-icon"/>
                         <div data-uk-grid="" className="uk-grid-small">
                             <div className="uk-width-1-6">

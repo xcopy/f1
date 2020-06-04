@@ -8,6 +8,7 @@ import DataTable, {
     pointsCell,
     positionCell
 } from '../data-table';
+import Card from '../card';
 
 const columns = [
     driverCell,
@@ -34,17 +35,18 @@ export default function DriverResults({races}) {
 
                 return (
                     <div key={key} className="uk-width-1-2">
-                        <div className="uk-card uk-card-default">
-                            <div className="uk-card-header">
-                                <h3 className="uk-card-title uk-margin-remove">{raceName}</h3>
-                                <small className="uk-text-muted">
-                                    Round {round}, {moment(date).format('DD MMM YYYY')}
-                                </small>
-                            </div>
-                            <div className="uk-card-body">
-                                <DataTable {...{columns, data}}/>
-                            </div>
-                        </div>
+                        <Card title={() => {
+                            return (
+                                <>
+                                    <div>{raceName}</div>
+                                    <div className="uk-text-muted uk-text-small">
+                                        Round {round}, {moment(date).format('DD MMM YYYY')}
+                                    </div>
+                                </>
+                            );
+                        }}>
+                            <DataTable {...{columns, data}}/>
+                        </Card>
                     </div>
                 );
             })}

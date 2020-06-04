@@ -5,6 +5,7 @@ import Moment from 'react-moment';
 import Spinner from '../spinner';
 import Alert from '../alert';
 import Wiki from '../wiki';
+import Card from '../card';
 import DriverTeams from './teams';
 import DriverRecords from './records';
 import Standings from '../standings';
@@ -71,33 +72,28 @@ export default function DriverDetails({match}) {
                                 data-uk-height-match="target: > div > .uk-card"
                                 className="uk-grid-small">
                                 <div className="uk-width-3-4">
-                                    <div className="uk-card uk-card-default">
-                                        <div className="uk-card-header">
-                                            <h3 className="uk-card-title">Summary</h3>
-                                        </div>
-                                        <div className="uk-card-body">
-                                            <Wiki url={url}>
-                                                {(() => {
-                                                    const {busy} = standings;
+                                    <Card title="Summary">
+                                        <Wiki url={url}>
+                                            {(() => {
+                                                const {busy} = standings;
 
-                                                    return busy ? <Spinner text="Loading personal info..."/> : (
-                                                        <div data-uk-grid="" className="uk-grid-small">
-                                                            <div>
-                                                                <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
-                                                                <br/>
-                                                                <b>Nationality:</b> {nationality}
-                                                            </div>
-                                                            <div>
-                                                                <b>Seasons:</b> {getSeasonsList()}
-                                                                <br/>
-                                                                <b>Teams:</b> {getTeamsList()}
-                                                            </div>
+                                                return busy ? <Spinner text="Loading personal info..."/> : (
+                                                    <div data-uk-grid="" className="uk-grid-small">
+                                                        <div>
+                                                            <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
+                                                            <br/>
+                                                            <b>Nationality:</b> {nationality}
                                                         </div>
-                                                    );
-                                                })()}
-                                            </Wiki>
-                                        </div>
-                                    </div>
+                                                        <div>
+                                                            <b>Seasons:</b> {getSeasonsList()}
+                                                            <br/>
+                                                            <b>Teams:</b> {getTeamsList()}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })()}
+                                        </Wiki>
+                                    </Card>
                                 </div>
                                 <div className="uk-width-1-4">
                                     <DriverRecords standings={standings} races={races}/>

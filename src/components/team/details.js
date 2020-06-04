@@ -46,7 +46,14 @@ export default function TeamDetails({match}) {
                                 data-uk-height-match="target: > div > .uk-card"
                                 className="uk-grid-small">
                                 <div className="uk-width-3-4">
-                                    <Wiki url={url}/>
+                                    <div className="uk-card uk-card-default">
+                                        <div className="uk-card-header">
+                                            <h3 className="uk-card-title">Summary</h3>
+                                        </div>
+                                        <div className="uk-card-body">
+                                            <Wiki url={url}/>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="uk-width-1-4">
                                     <DriverRecords standings={standings} races={races}/>

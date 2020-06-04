@@ -93,7 +93,9 @@ const GPDetails = ({match}) => {
                             {circuitName} / {locality}, {country}
                         </div>
                         <hr className="uk-divider-icon"/>
-                        <Wiki url={url}/>
+                        <div className="uk-card uk-card-default uk-card-body">
+                            <Wiki url={url}/>
+                        </div>
                         <hr className="uk-divider-icon"/>
                         <div data-uk-grid="" className="uk-grid-small">
                             <div className="uk-width-1-6">

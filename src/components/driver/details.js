@@ -71,26 +71,33 @@ export default function DriverDetails({match}) {
                                 data-uk-height-match="target: > div > .uk-card"
                                 className="uk-grid-small">
                                 <div className="uk-width-3-4">
-                                    <Wiki url={url}>
-                                        {(() => {
-                                            const {busy} = standings;
+                                    <div className="uk-card uk-card-default">
+                                        <div className="uk-card-header">
+                                            <h3 className="uk-card-title">Summary</h3>
+                                        </div>
+                                        <div className="uk-card-body">
+                                            <Wiki url={url}>
+                                                {(() => {
+                                                    const {busy} = standings;
 
-                                            return busy ? <Spinner text="Loading personal info..."/> : (
-                                                <div data-uk-grid="" className="uk-grid-small">
-                                                    <div>
-                                                        <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
-                                                        <br/>
-                                                        <b>Nationality:</b> {nationality}
-                                                    </div>
-                                                    <div>
-                                                        <b>Seasons:</b> {getSeasonsList()}
-                                                        <br/>
-                                                        <b>Teams:</b> {getTeamsList()}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })()}
-                                    </Wiki>
+                                                    return busy ? <Spinner text="Loading personal info..."/> : (
+                                                        <div data-uk-grid="" className="uk-grid-small">
+                                                            <div>
+                                                                <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
+                                                                <br/>
+                                                                <b>Nationality:</b> {nationality}
+                                                            </div>
+                                                            <div>
+                                                                <b>Seasons:</b> {getSeasonsList()}
+                                                                <br/>
+                                                                <b>Teams:</b> {getTeamsList()}
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </Wiki>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div className="uk-width-1-4">
                                     <DriverRecords standings={standings} races={races}/>

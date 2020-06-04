@@ -47,52 +47,43 @@ export default class Wiki extends Component {
         const {url, children} = this.props;
         const {busy, data} = this.state;
 
-        return (
-            <div className="uk-card uk-card-default">
-                <div className="uk-card-header">
-                    <h3 className="uk-card-title">Summary</h3>
-                </div>
-                <div className="uk-card-body">
-                    {busy ? <Spinner/> : (() => {
-                        const {
-                            title,
-                            extract_html: html,
-                            originalimage: {source: imageSrc} = {},
-                            thumbnail: {source: thumbSrc} = {}
-                        } = data;
+        return busy ? <Spinner/> : (() => {
+            const {
+                title,
+                extract_html: html,
+                originalimage: {source: imageSrc} = {},
+                thumbnail: {source: thumbSrc} = {}
+            } = data;
 
-                        return (
-                            <div data-uk-grid="" className="uk-grid-small">
-                                {imageSrc && (
-                                    <div className="uk-width-auto">
-                                        <a href={`#wiki-thumb-modal`} data-uk-toggle="">
-                                            <img data-src={thumbSrc} data-uk-img="" alt={title}/>
-                                        </a>
-                                        <div id="wiki-thumb-modal" className="uk-flex-top" data-uk-modal="">
-                                            <div className="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
-                                                <img data-src={imageSrc} data-uk-img="" alt={title}/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                                <div className="uk-width-expand">
-                                    {html && (
-                                        <>
-                                            <div dangerouslySetInnerHTML={{__html: html}}/>
-                                            <FontAwesomeIcon icon={faWikipediaW}/>
-                                            {' '}
-                                            <a href={url} target="_blank" rel="noopener noreferrer">Read more</a>
-                                        </>
-                                    )}
-                                    <div className="uk-margin-top">
-                                        {children}
-                                    </div>
+            return (
+                <div data-uk-grid="" className="uk-grid-small">
+                    {imageSrc && (
+                        <div className="uk-width-auto">
+                            <a href={`#wiki-thumb-modal`} data-uk-toggle="">
+                                <img data-src={thumbSrc} data-uk-img="" alt={title}/>
+                            </a>
+                            <div id="wiki-thumb-modal" className="uk-flex-top" data-uk-modal="">
+                                <div className="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
+                                    <img data-src={imageSrc} data-uk-img="" alt={title}/>
                                 </div>
                             </div>
-                        );
-                    })()}
+                        </div>
+                    )}
+                    <div className="uk-width-expand">
+                        {html && (
+                            <>
+                                <div dangerouslySetInnerHTML={{__html: html}}/>
+                                <FontAwesomeIcon icon={faWikipediaW}/>
+                                {' '}
+                                <a href={url} target="_blank" rel="noopener noreferrer">Read more</a>
+                            </>
+                        )}
+                        <div className="uk-margin-top">
+                            {children}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        })()
     }
 }

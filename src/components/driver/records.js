@@ -7,8 +7,7 @@ import Spinner from '../spinner';
 export default function DriverRecords({standings, races}) {
     const
         {busy: loadingStandings, data: Standings} = standings,
-        {busy: loadingRaces, data: Races} = races,
-        reducer = (total, num) => total + num;
+        {busy: loadingRaces, data: Races} = races;
 
     function getTitlesCount() {
         return Standings.filter(standing => {
@@ -30,7 +29,7 @@ export default function DriverRecords({standings, races}) {
             const {DriverStandings, ConstructorStandings} = standing;
             const [obj] = (DriverStandings || ConstructorStandings);
             return parseInt(obj[prop]);
-        }).reduce(reducer);
+        }).reduce((total, num) => total + num, 0);
     }
 
     function getPodiumsCount() {

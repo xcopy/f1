@@ -15,6 +15,7 @@ export default function Navbar() {
                     <li><Link to="/">Standings</Link></li>
                     <li><Link to="/drivers">Drivers</Link></li>
                     <li><Link to="/teams">Teams</Link></li>
+                    <li><Link to="/circuits">Circuits</Link></li>
                 </ul>
             </div>
             <div className="uk-navbar-right">

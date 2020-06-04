@@ -51,22 +51,14 @@ export default class Wiki extends Component {
             const {
                 title,
                 extract_html: html,
-                originalimage: {source: imageSrc} = {},
                 thumbnail: {source: thumbSrc} = {}
             } = data;
 
             return (
                 <div data-uk-grid="" className="uk-grid-small">
-                    {imageSrc && (
+                    {thumbSrc && (
                         <div className="uk-width-auto">
-                            <a href={`#wiki-thumb-modal`} data-uk-toggle="">
-                                <img data-src={thumbSrc} data-uk-img="" alt={title}/>
-                            </a>
-                            <div id="wiki-thumb-modal" className="uk-flex-top" data-uk-modal="">
-                                <div className="uk-modal-dialog uk-width-auto uk-margin-auto-vertical">
-                                    <img data-src={imageSrc} data-uk-img="" alt={title}/>
-                                </div>
-                            </div>
+                            <img data-src={thumbSrc} data-uk-img="" alt={title}/>
                         </div>
                     )}
                     <div className="uk-width-expand">

@@ -105,7 +105,7 @@ export default function ItemList({heading, items, keys, onClick}) {
                     </div>
                     <div
                         data-uk-grid=""
-                        data-uk-height-match="target: > div > .uk-card; row: false"
+                        data-uk-height-match="target: > div > .uk-card"
                         className="uk-grid-small uk-grid-match">
                         {Object.keys(data).map(letter => {
                             const

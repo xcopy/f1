@@ -22,7 +22,7 @@ export default function DriverResults({races}) {
     return (
         <div
             data-uk-grid=""
-            data-uk-height-match="target: > div > .uk-card; row: true"
+            data-uk-height-match="target: > div > .uk-card"
             className="uk-grid-small">
             {races.map(race => {
                 const {season, round, date, raceName, Results: data} = race;

@@ -62,17 +62,15 @@ export default class Wiki extends Component {
                         </div>
                     )}
                     <div className="uk-width-expand">
-                        {html && (
-                            <>
-                                <div dangerouslySetInnerHTML={{__html: html}}/>
-                                <FontAwesomeIcon icon={faWikipediaW}/>
-                                {' '}
-                                <a href={url} target="_blank" rel="noopener noreferrer">Read more</a>
-                            </>
-                        )}
-                        <div className="uk-margin-top">
-                            {children}
+                        {html && <div dangerouslySetInnerHTML={{__html: html}}/>}
+
+                        <div>
+                            <FontAwesomeIcon icon={faWikipediaW}/>
+                            {' '}
+                            <a href={url} target="_blank" rel="noopener noreferrer">Read more</a>
                         </div>
+
+                        {children && <div className="uk-margin-top">{children}</div>}
                     </div>
                 </div>
             );

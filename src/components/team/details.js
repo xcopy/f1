@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {localApi} from '../../API';
+import {remoteApi} from '../../API';
 import Alert from '../alert';
 import Wiki from '../wiki';
 import Card from '../card';
@@ -18,11 +18,11 @@ export default function TeamDetails({match}) {
     useEffect(() => {
         let isMounted = true;
 
-        localApi.get('constructors').then(response => {
-            const {data: {ConstructorTable: {Constructors}}} = response;
+        remoteApi.get(`constructors/${teamId}`).then(response => {
+            const {data: {ConstructorTable: {Constructors: [Team]}}} = response;
 
             if (isMounted) {
-                setTeam(Constructors.find(({constructorId}) => constructorId === teamId));
+                setTeam(Team);
                 setBusy(false);
             }
         });

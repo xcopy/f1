@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {localApi} from '../../API';
+import {remoteApi} from '../../API';
 import _ from 'lodash';
 import Moment from 'react-moment';
 import Spinner from '../spinner';
@@ -22,11 +22,11 @@ export default function DriverDetails({match}) {
     useEffect(() => {
         let isMounted = true;
 
-        localApi.get('drivers').then(response => {
-            const {data: {DriverTable: {Drivers}}} = response;
+        remoteApi.get(`drivers/${driverId}`).then(response => {
+            const {data: {DriverTable: {Drivers: [Driver]}}} = response;
 
             if (isMounted) {
-                setDriver(Drivers.find(({driverId: id}) => id === driverId));
+                setDriver(Driver);
                 setBusy(false);
             }
         });

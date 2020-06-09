@@ -21,7 +21,7 @@ export default class Wiki extends Component {
             {url} = this.props,
             {pathname} = new URL(url),
             [, , path] = pathname.split('/'),
-            input = `https://en.wikipedia.org/api/rest_v1/page/summary/${path}`,
+            input = `https://en.wikipedia.org/api/rest_v1/page/summary/${path}?redirect=true&ts=${Date.now()}`,
             init = {
                 signal: this.abortCtrl.signal
             },

@@ -13,6 +13,7 @@ import DriverDetails from './components/driver/details';
 import TeamList from './components/team/list';
 import TeamDetails from './components/team/details';
 import CircuitList from './components/circuit/list';
+// import CircuitDetails from './components/circuit/details';
 
 import 'uikit/dist/css/uikit.min.css';
 import UIkit from 'uikit';
@@ -64,6 +65,7 @@ function App() {
                     }}/>
 
                     <Route exact path="/circuits" component={CircuitList}/>
+                    {/*<Route exact path="/circuits/:circuitId([a-z-_]+)" component={CircuitDetails}/>*/}
 
                     <Route exact path="/teams" component={TeamList}/>
                     <Route exact path="/teams/:teamId([a-z0-9-_]+)" component={TeamDetails}/>

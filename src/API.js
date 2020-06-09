@@ -22,7 +22,7 @@ const axiosInstances = [
 ];
 
 axiosInstances.forEach(instance => {
-    instance.interceptors.request.use((config) => {
+    instance.interceptors.request.use(config => {
         const {params, url} = config;
 
         return {
@@ -35,7 +35,7 @@ axiosInstances.forEach(instance => {
         };
     });
 
-    instance.interceptors.response.use((response) => {
+    instance.interceptors.response.use(response => {
         const {data: {MRData}} = response;
 
         return {

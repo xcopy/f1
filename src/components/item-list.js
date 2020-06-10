@@ -2,6 +2,7 @@ import React, {Fragment, useEffect, useState} from 'react';
 import {renderToString} from 'react-dom/server';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import classNames from 'classnames';
 import Spinner from './spinner';
 import Card from './card';
 
@@ -148,7 +149,7 @@ export default function ItemList({heading, items, keys, onClick}) {
                                                 return (
                                                     <dd
                                                         key={`item-${id}`}
-                                                        className={`uk-text-truncate${visible ? '' : ' uk-hidden'}`}>
+                                                        className={classNames({'uk-text-truncate': true, 'uk-hidden': !visible})}>
                                                         <a
                                                             href="/"
                                                             title={keys.map(key => item[key]).join(', ')}

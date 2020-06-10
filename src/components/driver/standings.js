@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import DataTable, {pointsCell, teamCell, winsCell} from '../data-table';
+import classNames from 'classnames';
 import {faTrophy} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import DataTable, {pointsCell, teamCell, winsCell} from '../data-table';
 
 export default function DriverStandings({standings}) {
     const columns = [
@@ -27,12 +28,12 @@ export default function DriverStandings({standings}) {
             grow: 0,
             cell: ({position, positionText}) => {
                 const pos = parseInt(positionText || position);
-                const className = isNaN(pos)
-                    ? 'uk-text-danger'
-                    : pos === 1 ? 'uk-text-warning' : '';
 
                 return (
-                    <span className={className}>
+                    <span className={classNames({
+                        'uk-text-danger': isNaN(pos),
+                        'uk-text-warning': pos === 1
+                    })}>
                         {pos === 1 ? <FontAwesomeIcon icon={faTrophy}/> : pos || positionText}
                     </span>
                 );

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import _ from 'lodash';
 
 Card.propTypes = {
@@ -12,7 +13,12 @@ export default function Card(props) {
     const {primary, secondary, title, children} = props;
 
     return (
-        <div className={`uk-card uk-card-${primary ? 'primary' : (secondary ? 'secondary' : 'default')}`}>
+        <div className={classNames({
+            'uk-card': true,
+            'uk-card-primary': primary,
+            'uk-card-secondary': secondary,
+            'uk-card-default': !primary && !secondary
+        })}>
             {title && (
                 <div className="uk-card-header">
                     <h3 className="uk-card-title">

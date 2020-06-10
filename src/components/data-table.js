@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import {Link} from 'react-router-dom';
 import ReactDataTable, {createTheme} from 'react-data-table-component';
+import classNames from 'classnames';
 import LinkDriver from './link/driver';
 import DriverTeams from './driver/teams';
 
@@ -104,7 +105,7 @@ export const positionCell = {
             isPodium = !isRetired && pos >= 1 && pos <= 3;
 
         return (
-            <span className={isRetired ? 'uk-text-danger' : (isPodium ? 'uk-text-success' : '')}>
+            <span className={classNames({'uk-text-danger': isRetired, 'uk-text-success': isPodium})}>
                 {positionText || position}
             </span>
         );

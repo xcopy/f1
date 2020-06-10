@@ -1,5 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
+import _ from 'lodash';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faClock} from '@fortawesome/free-regular-svg-icons';
 import {
@@ -11,7 +13,6 @@ import './v11n.scss';
 import {normalizeResults, timeToMs} from '../../helpers';
 import LinkDriver from '../link/driver';
 import LinkTeam from '../link/team';
-import _ from 'lodash';
 
 function Button({title, onClick, children, ...attrs}) {
     return (
@@ -351,7 +352,10 @@ function GPV11n({race}) {
                                 const key = i + 1;
 
                                 return (
-                                    <div key={key} className={`light ${lights.includes(key) ? 'on' : ''}`}/>
+                                    <div key={key} className={classNames({
+                                        'light': true,
+                                        'on': lights.includes(key)
+                                    })}/>
                                 );
                             })}
                             <div/>
@@ -368,16 +372,16 @@ function GPV11n({race}) {
                                         id={code}
                                         className="driver"
                                         style={css}>
-                                        <small className={`pit${pit ? '' : ' uk-hidden'}`}>
+                                        <small className={classNames({'pit': true, 'uk-hidden': !pit})}>
                                             {pit}
                                         </small>
-                                        <small className={`fastest-lap${fastestLap ? '' : ' uk-hidden'}`}>
+                                        <small className={classNames({'fastest-lap': true, 'uk-hidden': !fastestLap})}>
                                             <FontAwesomeIcon icon={faClock}/>
                                         </small>
-                                        <small className={`time uk-text-truncate${time ? '' : ' uk-hidden'}`}>
+                                        <small className={classNames({'time uk-text-truncate': true, 'uk-hidden': !time})}>
                                             {time}
                                         </small>
-                                        <small className={`team ${team}`}>
+                                        <small className={classNames({'team': true, [team]: true})}>
                                             {code}
                                         </small>
                                     </div>

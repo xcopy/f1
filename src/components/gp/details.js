@@ -1,10 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
+import Moment from 'react-moment';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faCalendar} from '@fortawesome/free-regular-svg-icons';
+import {faMapMarkerAlt, faPlayCircle, faChevronLeft, faChevronRight} from '@fortawesome/free-solid-svg-icons';
+import classNames from 'classnames';
+
 import {localApi} from '../../API';
 import Spinner from '../spinner';
 import Alert from '../alert';
-import Moment from 'react-moment';
 import GPRaceResult from './race-result';
 import GPQualifying from './qualifying';
 import GPFastestLaps from './fastest-laps';
@@ -12,9 +17,6 @@ import GPStartingGrid from './starting-grid';
 import GPPitStops from './pit-stops';
 import GPV11n from './v11n';
 // import GPHighlights from './highlights';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCalendar} from '@fortawesome/free-regular-svg-icons';
-import {faMapMarkerAlt, faPlayCircle, faChevronLeft, faChevronRight} from '@fortawesome/free-solid-svg-icons';
 import Wiki from '../wiki';
 import Card from '../card';
 
@@ -22,8 +24,16 @@ const Nav = ({year, race, next = true}) => {
     const {round, raceName: name} = race || {};
 
     return race ? (
-        <div className="uk-grid-small uk-flex uk-flex-middle" data-uk-grid="">
-            <div className={`uk-text-large uk-flex-${next ? 'last' : 'first'}`}>
+        <div className={classNames({
+            'uk-grid-small': true,
+            'uk-flex uk-flex-middle': true,
+            'uk-flex-right': next,
+            'uk-text-right': next
+        })} data-uk-grid="">
+            <div className={classNames({
+                'uk-text-large': true,
+                'uk-flex-last': next
+            })}>
                 <FontAwesomeIcon icon={next ? faChevronRight : faChevronLeft}/>
             </div>
             <div>
@@ -133,7 +143,7 @@ const GPDetails = ({match}) => {
                                         {circuitName} / {locality}, {country}
                                     </div>
                                 </div>
-                                <div className="uk-width-1-6 uk-text-right">
+                                <div className="uk-width-1-6">
                                     <Nav year={year} race={getNextRace()} next={true}/>
                                 </div>
                             </div>

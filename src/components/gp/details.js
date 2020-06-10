@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import {Link} from 'react-router-dom';
 import axios from 'axios';
 import {localApi} from '../../API';
 import Spinner from '../spinner';
@@ -13,32 +14,55 @@ import GPV11n from './v11n';
 // import GPHighlights from './highlights';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCalendar} from '@fortawesome/free-regular-svg-icons';
-import {faMapMarkerAlt, faPlayCircle} from '@fortawesome/free-solid-svg-icons';
+import {faMapMarkerAlt, faPlayCircle, faChevronLeft, faChevronRight} from '@fortawesome/free-solid-svg-icons';
 import Wiki from '../wiki';
 import Card from '../card';
+
+const Nav = ({year, race, next = true}) => {
+    const {round, raceName: name} = race || {};
+
+    return race ? (
+        <div className="uk-grid-small uk-flex uk-flex-middle" data-uk-grid="">
+            <div className={`uk-text-large uk-flex-${next ? 'last' : 'first'}`}>
+                <FontAwesomeIcon icon={next ? faChevronRight : faChevronLeft}/>
+            </div>
+            <div>
+                <div className="uk-text-small">Round {round}</div>
+                <Link to={`/${year}/results/${round}`} className="uk-text-bold">{name}</Link>
+            </div>
+        </div>
+    ) : null;
+};
 
 const GPDetails = ({match}) => {
     const
         {params: {year, round}} = match,
         [busy, setBusy] = useState(true),
-        [race, setRace] = useState(null);
+        [races, setRaces] = useState([]),
+        [race, setRace] = useState();
 
     useEffect(() => {
         let isMounted = true;
 
         const path = `${year}/${round}`;
 
+        setBusy(true);
+        setRaces([]);
+        setRace();
+
         axios.all([
+            localApi.get(`${year}/results/1`),
             // the first 3 are always there
             localApi.get(`${path}/results`),
             localApi.get(`${path}/qualifying`),
             localApi.get(`${path}/pitstops`),
             // except the laps
             localApi.get(`${path}/laps`).catch(() => null)
-        ]).then(responses => {
+        ]).then(([results, ...rest]) => {
+            const {data: {RaceTable: {Races}}} = results;
             const objects = [];
 
-            responses.forEach(response => {
+            rest.forEach(response => {
                 const {
                     data: {
                         RaceTable: {
@@ -52,6 +76,7 @@ const GPDetails = ({match}) => {
 
             if (isMounted) {
                 objects.length && setRace(Object.assign({}, ...objects));
+                setRaces(Races);
                 setBusy(false);
             }
         }).catch((/*error*/) => {
@@ -64,6 +89,14 @@ const GPDetails = ({match}) => {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [year, round]);
+
+    function getPrevRace() {
+        return races.find(({round: r}) => round - r === 1);
+    }
+
+    function getNextRace() {
+        return races.find(({round: r}) => r - 1 === parseInt(round));
+    }
 
     return (
         <>
@@ -86,13 +119,25 @@ const GPDetails = ({match}) => {
 
                 return (
                     <>
-                        <h1 className="uk-text-uppercase">{season} {raceName}</h1>
-                        <FontAwesomeIcon icon={faCalendar}/>{' '}
-                        <Moment format="DD MMM YYYY" className="uk-text-bold">{date}</Moment> / Round {round}
-                        <div>
-                            <FontAwesomeIcon icon={faMapMarkerAlt}/>{' '}
-                            {circuitName} / {locality}, {country}
-                        </div>
+                        <Card>
+                            <div className="uk-grid-small uk-flex uk-flex-middle" data-uk-grid="">
+                                <div className="uk-width-1-6">
+                                    <Nav year={year} race={getPrevRace()} next={false}/>
+                                </div>
+                                <div className="uk-width-expand uk-text-center">
+                                    <h1 className="uk-text-uppercase">{season} {raceName}</h1>
+                                    <FontAwesomeIcon icon={faCalendar}/>{' '}
+                                    <Moment format="DD MMM YYYY" className="uk-text-bold">{date}</Moment> / Round {round}
+                                    <div>
+                                        <FontAwesomeIcon icon={faMapMarkerAlt}/>{' '}
+                                        {circuitName} / {locality}, {country}
+                                    </div>
+                                </div>
+                                <div className="uk-width-1-6 uk-text-right">
+                                    <Nav year={year} race={getNextRace()} next={true}/>
+                                </div>
+                            </div>
+                        </Card>
                         <hr className="uk-divider-icon"/>
                         <Card>
                             <Wiki url={url}/>

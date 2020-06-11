@@ -2,8 +2,6 @@ import axios from 'axios';
 import localforage from 'localforage';
 import {setup} from 'axios-cache-adapter';
 
-console.log(process.env.NODE_ENV);
-
 const LIMIT = 1000;
 
 const axiosInstances = [

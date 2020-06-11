@@ -77,10 +77,10 @@ function GPV11n({race}) {
 
         [winner, setWinner] = useState(),
         [fastestLap, setFastestLap] = useState(),
-        [fastestPitStop, setFastestPitStop] = useState({});
+        [fastestPitStop, setFastestPitStop] = useState();
 
     function init() {
-        let {Results, PitStops, Laps} = race;
+        let {Results, PitStops = [], Laps} = race;
 
         Results = normalizeResults(race);
 
@@ -142,19 +142,22 @@ function GPV11n({race}) {
         setWinner(Results.find(({position}) => parseInt(position) === 1));
         setFastestLap(Results.find(({FastestLap: {rank} = {}}) => parseInt(rank) === 1));
         setFastestPitStop(() => {
-            const
-                {driverId, lap, duration} = PitStops.find((el, i, arr) => {
-                    const times = arr.map(({duration}) => timeToMs(duration));
-                    return timeToMs(el.duration) === Math.min(...times);
-                }),
-                {Driver, Constructor} = Results.find(({Driver}) => Driver.driverId === driverId);
+            const pitStop = PitStops.find((el, i, arr) => {
+                const times = arr.map(({duration}) => timeToMs(duration));
+                return timeToMs(el.duration) === Math.min(...times);
+            });
 
-            return {
-                lap,
-                duration,
-                Driver,
-                Constructor
-            };
+            if (pitStop) {
+                const {driverId, lap, duration} = pitStop;
+                const {Driver, Constructor} = Results.find(({Driver: {driverId: id}}) => id === driverId);
+
+                return {
+                    lap,
+                    duration,
+                    Driver,
+                    Constructor
+                };
+            }
         });
         setBusy(false);
     }
@@ -212,7 +215,7 @@ function GPV11n({race}) {
         let intervalId = null;
 
         const
-            {Results, PitStops} = race,
+            {Results, PitStops = []} = race,
             step = Math.round(lapWidth * (lapsShown - 2) / lapsCount),
             retiredDrivers = [];
 
@@ -455,27 +458,33 @@ function GPV11n({race}) {
                 </div>
 
                 {raceFinished && (() => {
-                    const {Driver: D1, Constructor: C1, number} = winner;
-                    const {Driver: D2, Constructor: C2, FastestLap: {lap: lap1, Time: {time}}} = fastestLap;
-                    const {Driver: D3, Constructor: C3, lap: lap2, duration} = fastestPitStop;
+                    const {Driver: D1, Constructor: C1} = winner;
+                    const {Driver: D2, Constructor: C2, FastestLap: {lap: lap, Time: {time}}} = fastestLap;
 
                     return (
                         <dl className="uk-description-list uk-description-list-divider">
                             <dt>Winner:</dt>
                             <dd>
-                                <div>#{number} <LinkDriver driver={D1}/></div>
-                                <LinkTeam team={C1}/>
+                                <LinkDriver driver={D1}/>, <LinkTeam team={C1}/>
                             </dd>
                             <dt>Fastest Lap:</dt>
                             <dd>
-                                <div>{time}, Lap #{lap1}</div>
                                 <LinkDriver driver={D2}/>, <LinkTeam team={C2}/>
+                                <div>{time}, Lap #{lap}</div>
                             </dd>
-                            <dt>Fastest Pit Stop:</dt>
-                            <dd>
-                                <div>{duration}s, Lap #{lap2}</div>
-                                <LinkDriver driver={D3}/>, <LinkTeam team={C3}/>
-                            </dd>
+                            {fastestPitStop && (() => {
+                                const {Driver, Constructor, lap, duration} = fastestPitStop;
+
+                                return (
+                                    <>
+                                        <dt>Fastest Pit Stop:</dt>
+                                        <dd>
+                                            <LinkDriver driver={Driver}/>, <LinkTeam team={Constructor}/>
+                                            <div>{duration}s, Lap #{lap}</div>
+                                        </dd>
+                                    </>
+                                );
+                            })()}
                         </dl>
                     );
                 })()}

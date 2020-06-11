@@ -7,7 +7,7 @@ import DataTable, {
     timeCell
 } from '../data-table';
 
-export default function GPPitStops({race: {Results, PitStops}}) {
+export default function GPPitStops({race: {Results, PitStops = []}}) {
     const columns = [
         {
             name: 'Stops',

@@ -7,7 +7,7 @@ import {faCalendar} from '@fortawesome/free-regular-svg-icons';
 import {faMapMarkerAlt, faPlayCircle, faChevronLeft, faChevronRight} from '@fortawesome/free-solid-svg-icons';
 import classNames from 'classnames';
 
-import {localApi} from '../../API';
+import {localApi, remoteApi} from '../../API';
 import Spinner from '../spinner';
 import Alert from '../alert';
 import GPRaceResult from './race-result';
@@ -61,11 +61,11 @@ const GPDetails = ({match}) => {
         setRace();
 
         axios.all([
-            localApi.get(`${year}/results/1`),
+            remoteApi.get(`${year}/results/1`),
             // the first 3 are always there
-            localApi.get(`${path}/results`),
-            localApi.get(`${path}/qualifying`),
-            localApi.get(`${path}/pitstops`),
+            remoteApi.get(`${path}/results`),
+            remoteApi.get(`${path}/qualifying`),
+            remoteApi.get(`${path}/pitstops`),
             // except the laps
             localApi.get(`${path}/laps`).catch(() => null)
         ]).then(([results, ...rest]) => {

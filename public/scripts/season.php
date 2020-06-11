@@ -14,8 +14,9 @@ foreach ($years as $year) {
     $races = json_decode($season)->MRData->RaceTable->Races;
     $baseDir = '../api/f1/'.$year;
 
-    @mkdir($baseDir.'/results', 0755, true);
+    // @mkdir($baseDir.'/results', 0755, true);
 
+    /*
     if (!file_exists($baseDir.'/results/1.json')) {
         fwrite(STDOUT, "- results\n");
         file_put_contents($baseDir.'/results/1.json', $season);
@@ -30,6 +31,7 @@ foreach ($years as $year) {
         fwrite(STDOUT, "- constructor standings\n");
         file_put_contents($baseDir.'/constructorStandings.json', request($year.'/constructorStandings'));
     }
+    */
 
     foreach ($races as $race) {
         $round = $race->round;
@@ -39,6 +41,7 @@ foreach ($years as $year) {
 
         @mkdir($roundDir, 0755, true);
 
+        /*
         foreach (['results', 'qualifying', 'pitstops'] as $path) {
             $file = $roundDir.'/'.$path.'.json';
 
@@ -47,6 +50,7 @@ foreach ($years as $year) {
                 file_put_contents($file, request($year.'/'.$round.'/'.$path));
             }
         }
+        */
 
         $lapsFile = $roundDir.'/laps.json';
 

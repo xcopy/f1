@@ -6,6 +6,7 @@ import Card from '../card';
 import Spinner from '../spinner';
 import Standings from '../standings';
 import DriverRecords from '../driver/records';
+import {yearsToStr} from '../../helpers';
 
 export default function TeamDetails({match}) {
     const
@@ -32,11 +33,19 @@ export default function TeamDetails({match}) {
         };
     }, [teamId]);
 
+    function getSeasonsList() {
+        const
+            {data} = standings,
+            years = data.map(({season}) => season);
+
+        return `${years.length} (${yearsToStr(years)})`;
+    }
+
     return (
         <div className="uk-padding-small">
             {busy ? <Spinner text="Loading team details"/> : (() => {
                 return team ? (() => {
-                    const {url, name} = team;
+                    const {url, name, nationality} = team;
 
                     return (
                         <>
@@ -48,7 +57,19 @@ export default function TeamDetails({match}) {
                                 className="uk-grid-small">
                                 <div className="uk-width-3-4">
                                     <Card title="Summary">
-                                        <Wiki url={url}/>
+                                        <Wiki url={url}>
+                                            {(() => {
+                                                const {busy} = standings;
+
+                                                return busy ? <Spinner/> : (
+                                                    <>
+                                                        <b>Nationality:</b> {nationality}
+                                                        <br/>
+                                                        <b>Seasons:</b> {getSeasonsList()}
+                                                    </>
+                                                );
+                                            })()}
+                                        </Wiki>
                                     </Card>
                                 </div>
                                 <div className="uk-width-1-4">

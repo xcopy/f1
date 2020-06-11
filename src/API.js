@@ -2,6 +2,8 @@ import axios from 'axios';
 import localforage from 'localforage';
 import {setup} from 'axios-cache-adapter';
 
+console.log(process.env.NODE_ENV);
+
 const LIMIT = 1000;
 
 const axiosInstances = [
@@ -9,7 +11,7 @@ const axiosInstances = [
     setup({
         baseURL: 'https://ergast.com/api/f1/',
         cache: {
-            maxAge: 24 * 60 * 60 * 1000, // 24 hrs
+            maxAge: 60 * 60 * 1000 * (process.env.NODE_ENV === 'development' ? 24 : 1),
             exclude: {
                 query: false
             },

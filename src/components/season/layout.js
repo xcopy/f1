@@ -5,7 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faList, faUser, faCar} from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 
-export const minYear = 2013;
+export const minYear = 2010;
 export const currentYear = new Date().getFullYear();
 
 export default class SeasonLayout extends Component {

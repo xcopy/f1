@@ -459,7 +459,7 @@ function GPV11n({race}) {
 
                 {raceFinished && (() => {
                     const {Driver: D1, Constructor: C1} = winner;
-                    const {Driver: D2, Constructor: C2, FastestLap: {lap: lap, Time: {time}}} = fastestLap;
+                    const {Driver: D2, Constructor: C2, FastestLap: {lap, Time: {time}}} = fastestLap;
 
                     return (
                         <dl className="uk-description-list uk-description-list-divider">

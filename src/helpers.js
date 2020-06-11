@@ -103,7 +103,7 @@ export function yearsToStr(years) {
     const
         minYear = Math.min(...years),
         maxYear = Math.max(...years),
-        diff = _.difference(_.range(minYear, maxYear), years);
+        diff = _.difference(_.range(minYear, maxYear), years.map(Number));
 
     let ranges = [];
 

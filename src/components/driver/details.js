@@ -39,7 +39,7 @@ export default function DriverDetails({match}) {
     function getSeasonsList() {
         const
             {data} = standings,
-            years = data.map(({season}) => parseInt(season));
+            years = data.map(({season}) => season);
 
         return `${years.length} (${yearsToStr(years)})`;
     }

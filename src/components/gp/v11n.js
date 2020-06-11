@@ -140,7 +140,7 @@ function GPV11n({race}) {
         setRacePaused(false);
         setRaceFinished(false);
         setWinner(Results.find(({position}) => parseInt(position) === 1));
-        setFastestLap(Results.find(({FastestLap: {rank}}) => parseInt(rank) === 1));
+        setFastestLap(Results.find(({FastestLap: {rank} = {}}) => parseInt(rank) === 1));
         setFastestPitStop(() => {
             const
                 {driverId, lap, duration} = PitStops.find((el, i, arr) => {

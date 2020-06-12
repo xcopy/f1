@@ -117,7 +117,7 @@ $lapWidth: 100px;
               "renault": (#FFF500, #000),
               "haas": (#F0D787, #000),
               "racing_point": (#F596C8, #000),
-              "force_india": (#F596C8, #000),
+              "force_india": (#000, #c33c02),
               "toro_rosso": (#469BFF),
               "mclaren": (#FF8700),
               "alfa": (#9B0000),
@@ -129,7 +129,13 @@ $lapWidth: 100px;
               "caterham": (#004f30, #fbcd34),
               "marussia": (#fd1101, #000),
               "virgin": (#000, #fd1101),
-              "hrt": (#634f22, #fff)
+              "hrt": (#634f22, #fff),
+              "brawn": (#b1f445, #000),
+              "bmw_sauber": (#0f1021),
+              "toyota": (#d83e4b),
+              "super_aguri": (#e20010),
+              "honda": (#ef1836),
+              "spyker": (#3c3e3d)
             );
 
             @each $name, $colors in $teams {

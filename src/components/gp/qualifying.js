@@ -7,7 +7,7 @@ import DataTable, {
     teamCell
 } from '../data-table';
 
-export default function GPQualifying({race: {QualifyingResults}}) {
+export default function GPQualifying({race: {QualifyingResults = []}}) {
     const columns = [
         positionCell,
         numberCell,

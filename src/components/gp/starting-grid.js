@@ -19,7 +19,7 @@ export default function GPStartingGrid({race}) {
     ];
 
     const
-        {QualifyingResults} = race,
+        {QualifyingResults = []} = race,
         results = normalizeResults(race);
 
     const data = results

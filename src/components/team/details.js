@@ -5,8 +5,8 @@ import Wiki from '../wiki';
 import Card from '../card';
 import Spinner from '../spinner';
 import Standings from '../standings';
+import ActiveYears from '../active-years';
 import DriverRecords from '../driver/records';
-import {yearsToStr} from '../../helpers';
 
 export default function TeamDetails({match}) {
     const
@@ -33,14 +33,6 @@ export default function TeamDetails({match}) {
         };
     }, [teamId]);
 
-    function getSeasonsList() {
-        const
-            {data} = standings,
-            years = data.map(({season}) => season);
-
-        return `${years.length} (${yearsToStr(years)})`;
-    }
-
     return (
         <div className="uk-padding-small">
             {busy ? <Spinner text="Loading team details"/> : (() => {
@@ -59,13 +51,13 @@ export default function TeamDetails({match}) {
                                     <Card title="Summary">
                                         <Wiki url={url}>
                                             {(() => {
-                                                const {busy} = standings;
+                                                const {busy, data} = standings;
 
                                                 return busy ? <Spinner/> : (
                                                     <>
                                                         <b>Nationality:</b> {nationality}
                                                         <br/>
-                                                        <b>Seasons:</b> {getSeasonsList()}
+                                                        <b>Seasons:</b> <ActiveYears standings={data}/>
                                                     </>
                                                 );
                                             })()}

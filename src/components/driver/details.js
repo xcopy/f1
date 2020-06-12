@@ -9,7 +9,7 @@ import Card from '../card';
 import DriverTeams from './teams';
 import DriverRecords from './records';
 import Standings from '../standings';
-import {yearsToStr} from '../../helpers';
+import ActiveYears from '../active-years';
 
 export default function DriverDetails({match}) {
     const
@@ -35,14 +35,6 @@ export default function DriverDetails({match}) {
             isMounted = false;
         };
     }, [driverId]);
-
-    function getSeasonsList() {
-        const
-            {data} = standings,
-            years = data.map(({season}) => season);
-
-        return `${years.length} (${yearsToStr(years)})`;
-    }
 
     function getTeamsList() {
         const {data} = standings;
@@ -75,7 +67,7 @@ export default function DriverDetails({match}) {
                                     <Card title="Summary">
                                         <Wiki url={url}>
                                             {(() => {
-                                                const {busy} = standings;
+                                                const {busy, data} = standings;
 
                                                 return busy ? <Spinner text="Loading personal info..."/> : (
                                                     <div data-uk-grid="" className="uk-grid-small">
@@ -85,7 +77,7 @@ export default function DriverDetails({match}) {
                                                             <b>Nationality:</b> {nationality}
                                                         </div>
                                                         <div>
-                                                            <b>Seasons:</b> {getSeasonsList()}
+                                                            <b>Seasons:</b> <ActiveYears standings={data}/>
                                                             <br/>
                                                             <b>Teams:</b> {getTeamsList()}
                                                         </div>

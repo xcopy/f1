@@ -87,6 +87,7 @@ export function timeToMs(timeString) {
  * Converts array of seasons (years) to string
  *
  * Examples:
+ * [] -> ""
  * [2001] -> "2001"
  * [2001, 2010] -> "2001, 2010"
  * [2001, 2002, 2003] -> "2001-2003"
@@ -96,37 +97,39 @@ export function timeToMs(timeString) {
  * @returns {string}
  */
 export function yearsToStr(years) {
-    const
-        minYear = Math.min(...years),
-        maxYear = Math.max(...years),
-        diff = _.difference(_.range(minYear, maxYear), years.map(Number));
-
-    let ranges = [];
-
-    diff.unshift(minYear - 1);
-    diff.push(maxYear + 1);
-
-    for (let i = 0; i < diff.length; i++) {
+    if (_.isArray(years) && years.length) {
         const
-            curr = diff[i], next = diff[i + 1],
-            sum = curr + 1, sub = next - 1;
+            minYear = Math.min(...years),
+            maxYear = Math.max(...years),
+            diff = _.difference(_.range(minYear, maxYear), years.map(Number));
 
-        if (next && sub >= sum) {
-            ranges[i] = [sum, sub]
-                .filter((v, i, a) => a.indexOf(v) === i);
+        let ranges = [];
+
+        diff.unshift(minYear - 1);
+        diff.push(maxYear + 1);
+
+        for (let i = 0; i < diff.length; i++) {
+            const
+                curr = diff[i], next = diff[i + 1],
+                sum = curr + 1, sub = next - 1;
+
+            next && sub >= sum && (ranges[i] = _.uniq([sum, sub]));
         }
+
+        return ranges
+            .filter(Boolean) // remove empty elements
+            .map(a => a.join('–'))
+            .join(', ');
     }
 
-    return ranges
-        .filter(Boolean) // remove empty elements
-        .map(a => a.join('–'))
-        .join(', ');
+    return '';
 }
 
 /**
  * @param {array} standings
  * @returns {array}
  */
+/*
 export function getDecades(standings) {
     const
         years = standings.map(standing => standing.season), 
@@ -139,3 +142,4 @@ export function getDecades(standings) {
         10
     );
 }
+*/

@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import _ from 'lodash';
 import {remoteApi} from '../../API';
 import Alert from '../alert';
 import Wiki from '../wiki';
@@ -6,6 +7,7 @@ import Card from '../card';
 import Spinner from '../spinner';
 import Standings from '../standings';
 import ActiveYears from '../active-years';
+import TeamDrivers from './drivers';
 import DriverRecords from '../driver/records';
 
 export default function TeamDetails({match}) {
@@ -33,6 +35,18 @@ export default function TeamDetails({match}) {
         };
     }, [teamId]);
 
+    function getDriversList() {
+        const {data} = races;
+
+        let drivers = data
+            .map(({Results}) => Results.map(({Driver}) => Driver))
+            .flat();
+
+        drivers = _.sortBy(_.uniqWith(drivers, _.isEqual), 'familyName');
+
+        return <TeamDrivers drivers={drivers}/>;
+    }
+
     return (
         <div className="uk-padding-small">
             {busy ? <Spinner text="Loading team details"/> : (() => {
@@ -58,6 +72,8 @@ export default function TeamDetails({match}) {
                                                         <b>Nationality:</b> {nationality}
                                                         <br/>
                                                         <b>Seasons:</b> <ActiveYears standings={data}/>
+                                                        <br/>
+                                                        <b>Drivers:</b> {getDriversList()}
                                                     </>
                                                 );
                                             })()}

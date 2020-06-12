@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {remoteApi} from '../../API';
 import _ from 'lodash';
+import {remoteApi} from '../../API';
 import Moment from 'react-moment';
 import Spinner from '../spinner';
 import Alert from '../alert';
@@ -39,12 +39,11 @@ export default function DriverDetails({match}) {
     function getTeamsList() {
         const {data} = standings;
 
-        let teams = data.map(standing => {
-            const {DriverStandings: [{Constructors}]} = standing;
-            return Constructors;
-        }).flat();
+        let teams = data
+            .map(({DriverStandings: [{Constructors}]}) => Constructors)
+            .flat();
 
-        teams = _.uniqWith(teams, _.isEqual);
+        teams = _.sortBy(_.uniqWith(teams, _.isEqual), 'name');
 
         return <DriverTeams teams={teams}/>;
     }

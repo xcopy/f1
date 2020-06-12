@@ -1,14 +1,10 @@
 import moment from 'moment';
 import _ from 'lodash';
 
-function isZero(r) {
-    const {grid} = r;
-    return parseInt(grid) === 0;
-}
-
 // todo: sort by qualifying results
 export function normalizeResults(race) {
     const {Results /*QualifyingResults*/} = race;
+    const isZero = ({grid}) => parseInt(grid) === 0;
 
     Results.forEach(r => {
         const

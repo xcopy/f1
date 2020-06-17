@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faWikipediaW} from '@fortawesome/free-brands-svg-icons';
+import axios from 'axios';
 import Spinner from './spinner';
 
 export default class Wiki extends Component {
@@ -11,54 +12,57 @@ export default class Wiki extends Component {
 
     state = {
         busy: true,
-        data: null
+        summary: null,
+        media: null
     };
 
-    abortCtrl = new AbortController();
+    // cancelSource = axios.CancelToken.source();
 
-    async fetchData() {
+    componentDidMount() {
         const
             {url} = this.props,
             {pathname} = new URL(url),
-            [, , path] = pathname.split('/'),
-            input = `https://en.wikipedia.org/api/rest_v1/page/summary/${path}?redirect=true&ts=${Date.now()}`,
-            init = {
-                signal: this.abortCtrl.signal
-            },
-            response = await fetch(input, init);
+            [, , path] = pathname.split('/');
 
-        return await response.json();
-    }
+        axios.all([
+            axios.get(`https://en.wikipedia.org/api/rest_v1/page/summary/${path}`),
+            axios.get(`https://en.wikipedia.org/api/rest_v1/page/media-list/${path}`)
+        ]).then(axios.spread((S, M) => {
+            const {data: summary} = S, {data: media} = M;
 
-    componentDidMount() {
-        this.fetchData().then(data => {
             this.setState({
                 busy: false,
-                data
+                summary,
+                media
             });
-        });
+        }));
     }
 
     componentWillUnmount() {
-        this.abortCtrl.abort();
+        // this.cancelSource.cancel('Request cancelled');
     }
 
     render() {
         const {url, children} = this.props;
-        const {busy, data} = this.state;
+        const {busy, summary, media} = this.state;
 
         return busy ? <Spinner/> : (() => {
-            const {
-                title,
-                extract_html: html,
-                thumbnail: {source: thumbSrc} = {}
-            } = data;
+            const
+                {title, extract_html: html, thumbnail: {source: src} = {}} = summary,
+                {items} = media,
+                {srcset: sources = []} = items[0] || {},
+                srcset = sources.map(({src, scale}) => `${src} ${scale}`);
 
             return (
                 <div data-uk-grid="" className="uk-grid-small">
-                    {thumbSrc && (
-                        <div className="uk-width-auto">
-                            <img data-src={thumbSrc} data-uk-img="" alt={title}/>
+                    {src && srcset && (
+                        <div className="uk-width-1-4">
+                            <img
+                                data-src={src}
+                                data-srcset={srcset}
+                                data-uk-img=""
+                                alt={title}
+                            />
                         </div>
                     )}
                     <div className="uk-width-expand">

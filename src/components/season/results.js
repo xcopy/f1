@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import DataTable, {
     roundCell,
     dateCell,
@@ -11,19 +11,28 @@ import DataTable, {
 } from '../data-table';
 import seasonWithData from './with-data';
 import Spinner from '../spinner';
+import Card from '../card';
+import Wiki from '../wiki';
 
 const SeasonResults = ({busy, data, match, onReady}) => {
     const {params: {year}} = match;
+    const [url, setUrl] = useState('');
 
     useEffect(() => {
         onReady(`${year}/results/1`);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        setUrl(`https://en.wikipedia.org/wiki/${year}_Formula_One_${year <= 1980 ? 'season' : 'World_Championship'}`);
+        // eslint-disable-next-line
     }, [year]);
 
-    return (
+    return busy ? <Spinner/> : (
         <>
             <h1 className="uk-text-uppercase">{year} Race Results</h1>
-            {busy ? <Spinner/> : (() => {
+            <hr className="uk-divider-icon"/>
+            <Card title="Summary">
+                <Wiki url={url}/>
+            </Card>
+            <hr className="uk-divider-icon"/>
+            {(() => {
                 const {RaceTable: {Races}} = data;
                 const tableColumns = [
                     roundCell,

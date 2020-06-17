@@ -12,6 +12,10 @@ export default function seasonWithData(WrappedComponent) {
         cancelSource = axios.CancelToken.source();
 
         fetchData(url) {
+            this.setState({
+                busy: true
+            });
+
             remoteApi.get(url, {
                 cancelToken: this.cancelSource.token
             }).then(response => {

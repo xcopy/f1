@@ -61,7 +61,7 @@ function GPV11n({race}) {
             order: 0,
             number: 0
         }),
-        [drivers, setDrivers] = useState({}),
+        [drivers, setDrivers] = useState([]),
 
         [laps, setLaps] = useState([]),
         [currentLap, setCurrentLap] = useState(1),
@@ -85,17 +85,6 @@ function GPV11n({race}) {
         Results = normalizeResults(race);
 
         Laps.forEach((lap, i) => {
-            const {Timings} = lap;
-
-            Timings.forEach(timing => {
-                const
-                    {driverId: id} = timing,
-                    {number, Driver: {code}} = Results.find(({Driver: {driverId}}) => id === driverId);
-
-                timing.code = code;
-                timing.number = number;
-            });
-
             lap.order = i + 1;
 
             setLaps(prevState => {
@@ -107,8 +96,8 @@ function GPV11n({race}) {
         Results.forEach(result => {
             const {
                 grid,
-                Driver: {code},
-                Constructor: {constructorId: team}
+                Driver,
+                Constructor
             } = result, css = {
                 width: lapWidth - (grid - 1),
                 top: (grid - 1) * driverHeight
@@ -116,16 +105,17 @@ function GPV11n({race}) {
             };
 
             setDrivers(prevState => {
-                return {
+                return [
                     ...prevState,
-                    [code]: {
-                        team,
+                    {
+                        Driver,
+                        Constructor,
                         css,
                         fastestLap: false,
                         pit: false,
                         time: false
                     }
-                };
+                ];
             });
         });
 
@@ -241,20 +231,20 @@ function GPV11n({race}) {
                         });
                     }
 
-                    Results.forEach(r => {
+                    Results.forEach(result => {
                         const
                             {
                                 position: pos,
                                 status,
-                                Driver: {code, driverId},
+                                Driver: {driverId},
                                 FastestLap: {lap} = {},
                                 Time
-                            } = r,
+                            } = result,
                             {
                                 time = '',
                                 position = 0
-                            } = {...Timings.find(t => code === t.code)},
-                            ps = PitStops.find(({lap, driverId: id}) => currentLap === parseInt(lap) && driverId === id),
+                            } = {...Timings.find(({driverId: id}) => id === driverId)},
+                            ps = PitStops.find(({lap, driverId: id}) => parseInt(lap) === currentLap && id === driverId),
                             xLaps = status.match(/\+(\d+)/),
                             // driver is:
                             order = position
@@ -271,12 +261,13 @@ function GPV11n({race}) {
                                 ? 0
                                 : (ms / fastestTime) * 100 - lapWidth;
 
-                        retired && retiredDrivers.indexOf(code) < 0 && retiredDrivers.push(code);
+                        retired && retiredDrivers.indexOf(driverId) < 0 && retiredDrivers.push(driverId);
 
                         setDrivers(prevState => {
                             const
-                                drivers = {...prevState},
-                                driver = drivers[code],
+                                drivers = [...prevState],
+                                i = drivers.findIndex(({Driver: {driverId: id}}) => id === driverId),
+                                driver = drivers[i],
                                 {css: {width: prevWidth}} = driver,
                                 width = retired
                                     ? isFinalLap ? lapWidth : 0
@@ -287,7 +278,7 @@ function GPV11n({race}) {
                                     ? 'auto'
                                     : (order - 1) * driverHeight,
                                 bottom = retired
-                                    ? retiredDrivers.indexOf(code) * driverHeight
+                                    ? retiredDrivers.indexOf(driverId) * driverHeight
                                     : 'auto',
                                 transitionDuration = `${delay}ms`,
                                 css = {
@@ -300,18 +291,15 @@ function GPV11n({race}) {
                                 pit = ps ? `Pit${ps.stop}` : false,
                                 time = isFinalLap ? (Time?.time || status) : false;
 
-                            return {
-                                ...drivers,
-                                ...{
-                                    [code]: {
-                                        ...driver,
-                                        css,
-                                        fastestLap,
-                                        pit,
-                                        time
-                                    }
-                                }
+                            drivers[i] = {
+                                ...driver,
+                                css,
+                                fastestLap,
+                                pit,
+                                time
                             };
+
+                            return drivers;
                         });
                     });
 
@@ -331,6 +319,7 @@ function GPV11n({race}) {
         race,
         raceStarted,
         racePaused,
+        drivers,
         laps,
         currentLap,
         lapsShown,
@@ -365,15 +354,16 @@ function GPV11n({race}) {
                         </div>
 
                         <div id="drivers">
-                            {Object.keys(drivers).map(code => {
+                            {drivers.map(driver => {
                                 const
-                                    driver = drivers[code],
-                                    {team, css, fastestLap, pit, time} = driver;
+                                    {Driver, Constructor, css, fastestLap, pit, time} = driver,
+                                    {code, driverId, givenName, familyName} = Driver,
+                                    {constructorId, name: team} = Constructor;
 
                                 return (
-                                    <div key={code}
-                                        id={code}
+                                    <div key={driverId}
                                         className="driver"
+                                        title={`${givenName[0]}. ${familyName}, ${team}`}
                                         style={css}>
                                         <small className={classNames({'pit': true, 'uk-hidden': !pit})}>
                                             {pit}
@@ -384,7 +374,7 @@ function GPV11n({race}) {
                                         <small className={classNames({'time uk-text-truncate': true, 'uk-hidden': !time})}>
                                             {time}
                                         </small>
-                                        <small className={classNames({'team': true, [team]: true})}>
+                                        <small className={classNames({'team': true, [constructorId]: true})}>
                                             {code}
                                         </small>
                                     </div>

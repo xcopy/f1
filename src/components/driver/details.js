@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import _ from 'lodash';
-import {remoteApi} from '../../API';
+import moment from 'moment';
 import Moment from 'react-moment';
+import {remoteApi} from '../../API';
 import Spinner from '../spinner';
 import Alert from '../alert';
 import Wiki from '../wiki';
@@ -53,6 +54,7 @@ export default function DriverDetails({match}) {
             {busy ? <Spinner text="Loading driver details"/> : (() => {
                 return driver ? (() => {
                     const {url, familyName, givenName, nationality, dateOfBirth} = driver;
+                    const age = moment().diff(moment(dateOfBirth), 'years');
 
                     return (
                         <>
@@ -72,6 +74,7 @@ export default function DriverDetails({match}) {
                                                     <div data-uk-grid="" className="uk-grid-small">
                                                         <div>
                                                             <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
+                                                            {' '}<span className="uk-text-muted">(age {age})</span>
                                                             <br/>
                                                             <b>Nationality:</b> {nationality}
                                                         </div>

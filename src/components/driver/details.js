@@ -78,7 +78,7 @@ export default function DriverDetails({match}) {
                                                             <br/>
                                                             <b>Nationality:</b> {nationality}
                                                         </div>
-                                                        <div>
+                                                        <div className="uk-width-expand">
                                                             <b>Seasons:</b> <ActiveYears standings={data}/>
                                                             <br/>
                                                             <b>Teams:</b> {getTeamsList()}

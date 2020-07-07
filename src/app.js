@@ -30,7 +30,7 @@ const SeasonRouteWrapper = ({component: Component, ...rest}) => {
             </SeasonLayout>
         }/>
     );
-}
+};
 
 const Layout = styled.div`
     display: flex;

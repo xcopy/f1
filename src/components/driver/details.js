@@ -64,7 +64,7 @@ export default function DriverDetails({match}) {
                                 data-uk-grid=""
                                 data-uk-height-match="target: > div > .uk-card"
                                 className="uk-grid-small">
-                                <div className="uk-width-3-4">
+                                <div className="uk-width-3-4@m">
                                     <Card title="Summary">
                                         <Wiki url={url}>
                                             {(() => {
@@ -72,7 +72,7 @@ export default function DriverDetails({match}) {
 
                                                 return busy ? <Spinner text="Loading personal info..."/> : (
                                                     <div data-uk-grid="" className="uk-grid-small">
-                                                        <div>
+                                                        <div className="uk-width-auto@m">
                                                             <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
                                                             {' '}<span className="uk-text-muted">(age {age})</span>
                                                             <br/>
@@ -89,7 +89,7 @@ export default function DriverDetails({match}) {
                                         </Wiki>
                                     </Card>
                                 </div>
-                                <div className="uk-width-1-4">
+                                <div className="uk-width-1-4@m">
                                     <DriverRecords standings={standings} races={races}/>
                                 </div>
                             </div>

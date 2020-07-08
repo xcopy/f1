@@ -129,7 +129,7 @@ export default class Standings extends Component {
                     ? <Spinner text="Loading standings..."/>
                     : (standings.length > 0 ? (
                         <div data-uk-grid="" className="uk-grid-small">
-                            <div className="uk-width-1-6">
+                            <div className="uk-width-1-6@m">
                                 <ul data-uk-tab="" className="uk-tab-left">
                                     <li>
                                         <a
@@ -150,7 +150,7 @@ export default class Standings extends Component {
                                     )}
                                 </ul>
                             </div>
-                            <div className="uk-width-5-6">
+                            <div className="uk-width-5-6@m">
                                 {season
                                     ? loadingRaces
                                         ? <Spinner/>

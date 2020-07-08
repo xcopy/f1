@@ -61,7 +61,7 @@ export default function TeamDetails({match}) {
                                 data-uk-grid=""
                                 data-uk-height-match="target: > div > .uk-card"
                                 className="uk-grid-small">
-                                <div className="uk-width-3-4">
+                                <div className="uk-width-3-4@m">
                                     <Card title="Summary">
                                         <Wiki url={url}>
                                             {(() => {
@@ -80,7 +80,7 @@ export default function TeamDetails({match}) {
                                         </Wiki>
                                     </Card>
                                 </div>
-                                <div className="uk-width-1-4">
+                                <div className="uk-width-1-4@m">
                                     <DriverRecords standings={standings} races={races}/>
                                 </div>
                             </div>

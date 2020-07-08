@@ -34,7 +34,7 @@ export default function DriverResults({races}) {
                 });
 
                 return (
-                    <div key={key} className="uk-width-1-2">
+                    <div key={key} className="uk-width-1-2@m">
                         <Card title={() => {
                             return (
                                 <>

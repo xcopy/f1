@@ -39,7 +39,7 @@ export default function CircuitList() {
                             const {circuitId: id, circuitName: name, url} = circuit;
 
                             return (
-                                <div key={id} className="uk-width-1-2">
+                                <div key={id} className="uk-width-1-2@m">
                                     <Card title={name}>
                                         <Wiki url={url}/>
                                     </Card>

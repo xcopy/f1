@@ -40,15 +40,17 @@ createTheme('uk-table', {
     }
 });
 
-export default function DataTable(props) {
-    return <ReactDataTable
+const DataTable = (props) => (
+    <ReactDataTable
         noHeader={true}
         striped={true}
         theme="uk-table"
         customStyles={customStyles}
         {...props}
     />
-}
+);
+
+export default DataTable;
 
 export const roundCell = {
     name: 'Round',
@@ -89,7 +91,7 @@ export const locationCell = {
             </div>
         );
     }
-}
+};
 
 export const positionCell = {
     name: (() => {
@@ -139,7 +141,7 @@ export const teamCell = {
         <DriverTeams teams={Constructors || [Constructor]}/>
     ),
     conditionalCellStyles: [{
-        when: row => row.Constructors,
+        when: ({Constructors}) => Constructors,
         style: {
             display: 'block'
         }

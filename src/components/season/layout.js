@@ -35,7 +35,7 @@ export default class SeasonLayout extends Component {
             <>
                 <div className="uk-padding-small">
                     <div className="uk-grid-small" data-uk-grid="">
-                        <div className="uk-width-1-6">
+                        <div className="uk-width-1-6@m">
                             <select
                                 className="uk-select"
                                 value={year}
@@ -43,15 +43,21 @@ export default class SeasonLayout extends Component {
                                 {years.map(y => <option key={y} value={y}>{y}</option>)}
                             </select>
                         </div>
-
-                        <div className="uk-width-auto">
-                            {links.map(([label, icon]) =>
-                                <NavLink to={`/${year}/${label}`} key={label}
-                                    className="uk-button uk-button-default"
-                                    activeClassName="uk-button-primary">
-                                    <FontAwesomeIcon icon={icon}/>{' '}{label}
-                                </NavLink>
-                            )}
+                        <div className="uk-width-1-3@m">
+                            <div className="uk-button-group uk-width-expand">
+                                {links.map(([label, icon]) =>
+                                    <NavLink
+                                        to={`/${year}/${label}`} key={label}
+                                        className="uk-button uk-button-default uk-text-capitalize uk-width-1-3"
+                                        activeClassName="uk-button-primary">
+                                        <span className="uk-visible@m">
+                                            <FontAwesomeIcon icon={icon}/>
+                                            {' '}
+                                        </span>
+                                        {label}
+                                    </NavLink>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

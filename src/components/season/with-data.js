@@ -7,7 +7,7 @@ export default function seasonWithData(WrappedComponent) {
         state = {
             busy: true,
             data: {}
-        }
+        };
 
         cancelSource = axios.CancelToken.source();
 

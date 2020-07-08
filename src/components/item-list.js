@@ -73,10 +73,10 @@ export default function ItemList({heading, items, keys, onClick}) {
             {data ? (
                 <>
                     <div data-uk-grid="" className="uk-grid-small uk-flex uk-flex-middle">
-                        <div className="uk-width-3-5">
+                        <div className="uk-width-1-2 uk-width-3-5@m">
                             <h1 className="uk-text-uppercase">{heading}</h1>
                         </div>
-                        <div className="uk-width-expand">
+                        <div className="uk-width-1-2 uk-width-expand@m">
                             <form
                                 onSubmit={(e) => {e.preventDefault()}}
                                 className="uk-search uk-search-default uk-width-1-1">
@@ -117,7 +117,7 @@ export default function ItemList({heading, items, keys, onClick}) {
                             visibleCards += Number(showCard);
 
                             return showCard > 0 ? (
-                                <div key={letter} className="uk-width-1-5">
+                                <div key={letter} className="uk-width-1-5@m">
                                     <Card title={() => {
                                         return (
                                             <>

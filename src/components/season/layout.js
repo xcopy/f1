@@ -43,7 +43,7 @@ export default class SeasonLayout extends Component {
                                 {years.map(y => <option key={y} value={y}>{y}</option>)}
                             </select>
                         </div>
-                        <div className="uk-width-1-3@m">
+                        <div className="uk-width-1-2@m uk-width-1-3@l">
                             <div className="uk-button-group uk-width-expand">
                                 {links.map(([label, icon]) =>
                                     <NavLink

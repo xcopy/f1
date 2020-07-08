@@ -56,7 +56,7 @@ export default class Wiki extends Component {
             return (
                 <div data-uk-grid="" className="uk-grid-small">
                     {src && srcset && (
-                        <div className="uk-width-1-4">
+                        <div className="uk-width-1-4@m">
                             <img
                                 data-src={src}
                                 data-srcset={srcset}

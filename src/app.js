@@ -1,6 +1,6 @@
 import React from 'react';
 import {Switch, Route, Redirect} from 'react-router-dom';
-import styled from 'styled-components';
+// import styled from 'styled-components';
 import Navbar from './components/navbar';
 import Footer from './components/footer';
 import SeasonLayout, {minYear, currentYear} from './components/season/layout';
@@ -32,23 +32,14 @@ const SeasonRouteWrapper = ({component: Component, ...rest}) => {
     );
 };
 
-const Layout = styled.div`
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    main {
-        flex-grow: 1;
-    }
-`;
-
 function App() {
     return (
-        <Layout>
+        <div className="uk-flex uk-flex-column uk-height-viewport">
             <header>
                 <Navbar/>
             </header>
 
-            <main>
+            <main style={{flexGrow: 1}}>
                 <Switch>
                     <SeasonRouteWrapper exact path="/:year(\d+)/results" component={SeasonResults}/>
                     <SeasonRouteWrapper exact path="/:year(\d+)/results/:round(\d+)" component={GPDetails}/>
@@ -87,7 +78,7 @@ function App() {
             <footer>
                 <Footer/>
             </footer>
-        </Layout>
+        </div>
     );
 }
 

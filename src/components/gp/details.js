@@ -58,7 +58,7 @@ const GPDetails = ({match}) => {
 
         setBusy(true);
         setRaces([]);
-        setRace();
+        setRace(null);
 
         axios.all([
             remoteApi.get(`${year}/results/1`),
@@ -131,10 +131,10 @@ const GPDetails = ({match}) => {
                     <>
                         <Card>
                             <div className="uk-grid-small uk-flex uk-flex-middle" data-uk-grid="">
-                                <div className="uk-width-1-6">
+                                <div className="uk-width-1-6@m">
                                     <Nav year={year} race={getPrevRace()} next={false}/>
                                 </div>
-                                <div className="uk-width-expand uk-text-center">
+                                <div className="uk-width-expand@m uk-text-center">
                                     <h1 className="uk-text-uppercase">{season} {raceName}</h1>
                                     <FontAwesomeIcon icon={faCalendar}/>{' '}
                                     <Moment format="DD MMM YYYY" className="uk-text-bold">{date}</Moment> / Round {round}
@@ -143,7 +143,7 @@ const GPDetails = ({match}) => {
                                         {circuitName} / {locality}, {country}
                                     </div>
                                 </div>
-                                <div className="uk-width-1-6">
+                                <div className="uk-width-1-6@m">
                                     <Nav year={year} race={getNextRace()} next={true}/>
                                 </div>
                             </div>
@@ -154,7 +154,7 @@ const GPDetails = ({match}) => {
                         </Card>
                         <hr className="uk-divider-icon"/>
                         <div data-uk-grid="" className="uk-grid-small">
-                            <div className="uk-width-1-6">
+                            <div className="uk-width-1-6@m">
                                 <ul className="uk-tab-left" data-uk-tab="connect: #contents; animation: uk-animation-fade">
                                     <li><a href="/">Race Result</a></li>
                                     <li><a href="/">Qualifying</a></li>
@@ -164,12 +164,12 @@ const GPDetails = ({match}) => {
                                 </ul>
 
                                 {Laps.length > 0 && (
-                                    <>
+                                    <div className="uk-visible@m">
                                         <button
                                             data-uk-toggle="target: #modal"
                                             type="button"
                                             className="uk-button uk-button-secondary uk-button-small">
-                                            <FontAwesomeIcon icon={faPlayCircle}/>
+                                            <FontAwesomeIcon icon={faPlayCircle} className="uk-visible@l"/>
                                             {' '}Visualization
                                             {' '}<span className="uk-text-lowercase">&beta;</span>
                                         </button>
@@ -178,10 +178,10 @@ const GPDetails = ({match}) => {
                                                 <GPV11n race={race}/>
                                             </div>
                                         </div>
-                                    </>
+                                    </div>
                                 )}
                             </div>
-                            <div className="uk-width-5-6">
+                            <div className="uk-width-5-6@m">
                                 <ul id="contents" className="uk-switcher">
                                     <li>
                                         <GPRaceResult race={race}/>

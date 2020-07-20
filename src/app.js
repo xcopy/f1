@@ -14,7 +14,6 @@ import TeamList from './components/team/list';
 import TeamDetails from './components/team/details';
 import CircuitList from './components/circuit/list';
 // import CircuitDetails from './components/circuit/details';
-import Race from './components/race';
 
 import 'uikit/dist/css/uikit.min.css';
 import UIkit from 'uikit';
@@ -55,8 +54,6 @@ function App() {
 
                         return <Redirect to={`/${year}/results`}/>;
                     }}/>
-
-                    <Route exact path="/race" component={Race}/>
 
                     <Route exact path="/circuits" component={CircuitList}/>
                     {/*<Route exact path="/circuits/:circuitId([a-z-_]+)" component={CircuitDetails}/>*/}

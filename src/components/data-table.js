@@ -68,6 +68,7 @@ export const dateCell = {
 export const raceCell = {
     name: 'Grand Prix',
     selector: 'raceName',
+    grow: 2,
     cell: ({season, round, raceName}) => (
         <Link to={`/${season}/results/${round}`}>{raceName}</Link>
     )
@@ -151,7 +152,8 @@ export const teamCell = {
 export const lapsCell = {
     name: 'Laps',
     selector: 'laps',
-    center: true
+    center: true,
+    grow: 0
 };
 
 export const timeCell = {

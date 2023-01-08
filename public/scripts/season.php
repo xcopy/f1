@@ -8,11 +8,11 @@ require 'request.php';
 $years = is_array($year) ? $year : [$year];
 
 foreach ($years as $year) {
-    fwrite(STDOUT, "--- {$year} ---\n");
+    fwrite(STDOUT, "--- $year ---\n");
 
     $season = request($year.'/results/1');
     $races = json_decode($season)->MRData->RaceTable->Races;
-    $baseDir = '../api/f1/'.$year;
+    $baseDir = __DIR__ . "/../api/f1/$year";
 
     // @mkdir($baseDir.'/results', 0755, true);
 
@@ -35,11 +35,11 @@ foreach ($years as $year) {
 
     foreach ($races as $race) {
         $round = $race->round;
-        $roundDir = $baseDir.'/'.$round;
+        $roundDir = "$baseDir/$round";
 
-        fwrite(STDOUT, "--- round {$round} ---\n");
+        fwrite(STDOUT, "--- round $round ---\n");
 
-        @mkdir($roundDir, 0755, true);
+        is_dir($roundDir) or mkdir($roundDir, 0755, true);
 
         /*
         foreach (['results', 'qualifying', 'pitstops'] as $path) {
@@ -58,17 +58,15 @@ foreach ($years as $year) {
             fwrite(STDOUT, "--- laps ---\n");
             fwrite(STDOUT, "- lap 1\n");
 
-            $laps = json_decode(request($year.'/'.$round.'/laps/1'));
+            $laps = json_decode(request("$year/$round/laps/1"));
 
             for ($i = 2; $i <= $race->Results[0]->laps; $i++) {
-                fwrite(STDOUT, "- lap {$i}\n");
+                fwrite(STDOUT, "- lap $i\n");
 
-                $response = json_decode(request($year.'/'.$round.'/laps/'.$i));
+                $response = json_decode(request("$year/$round/laps/$i"));
 
-                array_push(
-                    $laps->MRData->RaceTable->Races[0]->Laps,
-                    $response->MRData->RaceTable->Races[0]->Laps[0]
-                );
+                $lap = $response->MRData?->RaceTable?->Races[0]?->Laps[0];
+                $lap and $laps->MRData->RaceTable->Races[0]->Laps[] = $lap;
             }
 
             file_put_contents($lapsFile, json_encode($laps));

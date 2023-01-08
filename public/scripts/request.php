@@ -1,6 +1,7 @@
 <?php
 
-function request($path, $page = 0) {
+function request($path, $page = 0): bool|string
+{
     $limit = 100;
 
     $qs = http_build_query([

@@ -3,7 +3,7 @@
 
 require 'request.php';
 
-$filename = '../api/f1/drivers.json';
+$filename = __DIR__ . '/../api/f1/drivers.json';
 
 fwrite(STDOUT, "- page 0\n");
 
@@ -13,12 +13,12 @@ $pages = ceil((int) $response->MRData->total / 100);
 
 if (!file_exists($filename)) {
     for ($i = 1; $i < $pages; $i++) {
-        fwrite(STDOUT, "- page {$i}\n");
+        fwrite(STDOUT, "- page $i\n");
 
         $data = json_decode(request('drivers', $i))->MRData;
 
         foreach ($data->DriverTable->Drivers as $driver) {
-            array_push($response->MRData->DriverTable->Drivers, $driver);
+            $response->MRData->DriverTable->Drivers[] = $driver;
         }
     }
 

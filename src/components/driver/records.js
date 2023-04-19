@@ -23,10 +23,12 @@ export default function DriverRecords({standings, races}) {
         {busy: loadingStandings, data: Standings} = standings,
         {busy: loadingRaces, data: Races} = races;
 
+    /*
     function round(num, exp = 2) {
         const pow = Math.pow(10, exp);
         return Math.round((num + Number.EPSILON) * pow) / pow;
     }
+    */
 
     function getTitles() {
         return Standings.filter(({DriverStandings, ConstructorStandings}) => {

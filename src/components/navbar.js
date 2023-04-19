@@ -14,14 +14,14 @@ const MenuItems = () => (
 );
 
 const GithubLink = () => (
-    <a href="https://github.com/xcopy/f1" className="uk-navbar-item uk-logo">
+    <a href="https://github.com/xcopy/f1" className="uk-navbar-item uk-text-large">
         <FontAwesomeIcon icon={faGithub}/>
     </a>
 );
 
 export default function Navbar() {
     return (
-        <nav className="uk-background-secondary" data-uk-navbar="">
+        <nav className="uk-background-secondary uk-padding-small uk-padding-remove-vertical" data-uk-navbar="">
             <div className="uk-navbar-left">
                 <a href="/" className="uk-navbar-item uk-logo">
                     <img src={logo} alt="" style={{height: 20}} data-uk-img=""/>

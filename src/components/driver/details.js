@@ -46,7 +46,7 @@ export default function DriverDetails({match}) {
 
         teams = _.sortBy(_.uniqWith(teams, _.isEqual), 'name');
 
-        return <DriverTeams teams={teams}/>;
+        return teams.length ? <DriverTeams teams={teams}/> : '-';
     }
 
     return (
@@ -73,8 +73,11 @@ export default function DriverDetails({match}) {
                                                 return busy ? <Spinner text="Loading personal info..."/> : (
                                                     <div data-uk-grid="" className="uk-grid-small">
                                                         <div className="uk-width-auto@m">
-                                                            <b>Born:</b> <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
-                                                            {' '}<span className="uk-text-muted">(age {age})</span>
+                                                            <b>Born:</b>
+                                                            {' '}
+                                                            <Moment format="DD MMMM YYYY">{dateOfBirth}</Moment>
+                                                            {' '}
+                                                            <span className="uk-text-muted">(age {age})</span>
                                                             <br/>
                                                             <b>Nationality:</b> {nationality}
                                                         </div>

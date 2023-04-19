@@ -8,10 +8,13 @@ ActiveYears.propTypes = {
 
 export default function ActiveYears({standings}) {
     const years = standings.map(({season}) => season);
+    console.log(years);
 
-    return (
-        <>
-            {years.length} <span className="uk-text-muted">({yearsToStr(years)})</span>
-        </>
-    );
+    return years.length
+        ? (
+            <>
+                {years.length} <span className="uk-text-muted">({yearsToStr(years)})</span>
+            </>
+        )
+        : '-';
 }
